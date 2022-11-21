@@ -1,0 +1,62 @@
+{
+  "name": "rettle",
+  "version": "0.0.6beta.09",
+  "main": "./rettle.js",
+  "scripts": {
+    "start": "tsc",
+    "build:w": "tsc -w",
+    "test": "ts-node src/index.ts -d",
+    "test:node": "node ./bin/index.js -d",
+    "version": "node ./commands/index.js"
+  },
+  "typesVersions": {
+    "*": [
+      "./rettle.d.ts"
+    ]
+  },
+  "bin": {
+    "rettle": "./bin/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/glob": "^8.0.0",
+    "@types/node": "^18.11.9",
+    "@types/webpack": "^5.28.0",
+    "cross-env": "^7.0.3",
+    "npm-run-all": "^4.1.5",
+    "ts-node": "^10.9.1",
+    "tsc-alias": "^1.7.1",
+    "typescript": "^4.8.4",
+    "webpack-cli": "^5.0.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.20.2",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
+    "@emotion/babel-plugin": "^11.10.5",
+    "@emotion/cache": "^11.10.5",
+    "@emotion/react": "^11.10.5",
+    "@emotion/server": "^11.10.0",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "babel-loader": "^9.1.0",
+    "chokidar": "^3.5.3",
+    "commander": "^9.4.1",
+    "deepmerge": "^4.2.2",
+    "glob": "^8.0.3",
+    "interpret": "^3.1.1",
+    "is-plain-object": "^5.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rechoir": "^0.8.0",
+    "static-server": "^2.2.1",
+    "ts-loader": "^9.4.1",
+    "webpack": "^5.75.0",
+    "webpack-node-externals": "^3.0.0"
+  }
+}
