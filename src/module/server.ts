@@ -21,7 +21,7 @@ const watchSources = () => {
           `}`
         ].join("\n"));
       };
-      if (fs.existsSync(path.resolve(".cache"))) {
+      if (!fs.existsSync(path.resolve(".cache"))) {
         fs.mkdirSync(path.resolve(".cache"));
       };
       fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");

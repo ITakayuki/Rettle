@@ -51,7 +51,7 @@ var watchSources = function () {
                 ].join("\n"));
             }
             ;
-            if (fs_1.default.existsSync(path.resolve(".cache"))) {
+            if (!fs_1.default.existsSync(path.resolve(".cache"))) {
                 fs_1.default.mkdirSync(path.resolve(".cache"));
             }
             ;
