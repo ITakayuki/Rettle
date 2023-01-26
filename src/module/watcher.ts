@@ -8,7 +8,7 @@ interface watchFileArgs {
 }
 
 export const watchFiles = (args: watchFileArgs) => {
-  const srcAllFilesPath = path.resolve("./src/**/*.[ts,tsx,js,jsx]");
+  const srcAllFilesPath = path.resolve("./src/**/*.{ts,tsx,js,jsx}");
 
   const watcher = Chokidar.watch(srcAllFilesPath, {
     persistent: true,

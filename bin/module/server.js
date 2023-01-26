@@ -36,7 +36,7 @@ var watchSources = function () {
     (0, watcher_1.watchFiles)({
         change: function (filename, watcher) {
             console.log("change file: ", filename);
-            var files = glob_1.default.sync(path.resolve("./src/**/*.[tsx,jsx]"));
+            var files = glob_1.default.sync(path.resolve("./src/**/*.{tsx,jsx}"));
             var appFilePath = path.resolve(".cache/app.ts");
             var appImports = [];
             var scriptRunner = [];

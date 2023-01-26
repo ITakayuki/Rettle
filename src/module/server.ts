@@ -8,7 +8,7 @@ const watchSources = () => {
   watchFiles({
     change: (filename, watcher) => {
       console.log("change file: ", filename)
-      const files = glob.sync(path.resolve("./src/**/*.[tsx,jsx]"));
+      const files = glob.sync(path.resolve("./src/**/*.{tsx,jsx}"));
       const appFilePath = path.resolve(".cache/app.ts");
       const appImports = [];
       const scriptRunner = [];

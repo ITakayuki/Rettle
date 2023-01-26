@@ -30,7 +30,7 @@ exports.watchFiles = void 0;
 var chokidar_1 = __importDefault(require("chokidar"));
 var path = __importStar(require("path"));
 var watchFiles = function (args) {
-    var srcAllFilesPath = path.resolve("./src/**/*.[ts,tsx,js,jsx]");
+    var srcAllFilesPath = path.resolve("./src/**/*.{ts,tsx,js,jsx}");
     var watcher = chokidar_1.default.watch(srcAllFilesPath, {
         persistent: true,
         awaitWriteFinish: true,
