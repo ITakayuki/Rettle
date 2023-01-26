@@ -53,7 +53,7 @@ var watchSources = function () {
             for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
                 var file = files_1[_i];
                 var hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push("import {script as ".concat(hashName, "} from \"").concat(path.relative(path.resolve(".cache"), file), "\";"));
+                appImports.push("import {script as ".concat(hashName, "} from \"").concat(path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", ""), "\";"));
                 scriptRunner.push([
                     "checkRunScript(".concat(hashName, ");")
                 ].join("\n"));

@@ -24,7 +24,7 @@ const watchSources = () => {
       ];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file)}";`)
+        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
           `checkRunScript(${hashName});`
         ].join("\n"));
