@@ -59,6 +59,9 @@ var watchSources = function () {
         },
         add: function (filename, watcher) {
             watcher.add(filename);
+        },
+        ready: function () {
+            console.log("READY WATCH");
         }
     });
 };

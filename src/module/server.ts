@@ -28,6 +28,9 @@ const watchSources = () => {
     },
     add: (filename, watcher) => {
       watcher.add(filename);
+    },
+    ready: () => {
+      console.log("READY WATCH");
     }
   })
 }
