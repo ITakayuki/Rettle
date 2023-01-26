@@ -9,12 +9,12 @@ const watchSources = () => {
     change: (filename, watcher) => {
       console.log("change file: ", filename)
       const files = glob.sync(path.resolve("./src/**/*.{tsx,jsx}"));
-      const appFilePath = path.resolve(".cache/app.ts");
+      const appFilePath = path.resolve(".cache/app.tsx");
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as ${hashName} from "${path.relative(path.resolve(".cache/app.ts"), file)}";`)
+        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file)}";`)
         scriptRunner.push([
           `if (${hashName}) {`,
           `${hashName}()`,

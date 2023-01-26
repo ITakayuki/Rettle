@@ -37,13 +37,13 @@ var watchSources = function () {
         change: function (filename, watcher) {
             console.log("change file: ", filename);
             var files = glob_1.default.sync(path.resolve("./src/**/*.{tsx,jsx}"));
-            var appFilePath = path.resolve(".cache/app.ts");
+            var appFilePath = path.resolve(".cache/app.tsx");
             var appImports = [];
             var scriptRunner = [];
             for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
                 var file = files_1[_i];
                 var hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push("import {script as ".concat(hashName, " from \"").concat(path.relative(path.resolve(".cache/app.ts"), file), "\";"));
+                appImports.push("import {script as ".concat(hashName, "} from \"").concat(path.relative(path.resolve(".cache"), file), "\";"));
                 scriptRunner.push([
                     "if (".concat(hashName, ") {"),
                     "".concat(hashName, "()"),
