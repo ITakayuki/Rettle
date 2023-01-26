@@ -13,11 +13,11 @@ const watchSources = () => {
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
-        const hashName = crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as hashName} from "${file}";`)
+        const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
+        appImports.push(`import {script as ${hashName} from "${path.relative(path.resolve(".cache/app.ts"), file)}";`)
         scriptRunner.push([
           `if (${hashName}) {`,
-          `hashName()`,
+          `${hashName}()`,
           `}`
         ].join("\n"));
       };
