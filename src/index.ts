@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 "use strict";
-const {Command} = require("commander");
+import {Command} from "commander";
+import {server} from "./module/server";
 
 const program = new Command();
 
@@ -20,4 +21,5 @@ const opts = program.opts() as OptsInterface;
 if (opts.build) {
   console.log("build!!!???")
 } else {
+  server();
 }

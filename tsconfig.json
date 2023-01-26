@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es5",
     "moduleResolution": "node",
     "jsx": "react-jsx",
     "rootDir": "./src/",
@@ -13,5 +13,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "exclude": ["bin"]
+  "include": ["./src/**/*"]
 }

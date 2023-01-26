@@ -4,7 +4,7 @@
   "main": "./rettle.js",
   "scripts": {
     "start": "tsc",
-    "build:w": "tsc -w",
+    "watch": "tsc -w",
     "test": "ts-node src/index.ts -d",
     "test:node": "node ./bin/index.js -d",
     "version": "node ./commands/index.js"
@@ -48,6 +48,7 @@
     "babel-loader": "^9.1.0",
     "chokidar": "^3.5.3",
     "commander": "^9.4.1",
+    "crypto": "^1.0.1",
     "deepmerge": "^4.2.2",
     "express": "^4.18.2",
     "glob": "^8.0.3",

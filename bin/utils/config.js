@@ -1,15 +1,15 @@
 "use strict";
-exports.getConfigure = () => {
-    const path = require("path");
-    const fs = require("fs");
-    const { extensions } = require("inspector");
-    const deepmerge = require("deepmerge");
-    const { defaultConfig } = require("./defaultConfigure");
-    const { isPlainObject } = require("is-plain-object");
-    const rechoir = require("rechoir");
-    const tsConfigPath = path.resolve("./rettle.config.ts");
-    const jsConfigPath = path.resolve("./rettle.config.js");
-    const inputConfig = (() => {
+exports.getConfigure = function () {
+    var path = require("path");
+    var fs = require("fs");
+    var extensions = require("inspector").extensions;
+    var deepmerge = require("deepmerge");
+    var defaultConfig = require("./defaultConfigure").defaultConfig;
+    var isPlainObject = require("is-plain-object").isPlainObject;
+    var rechoir = require("rechoir");
+    var tsConfigPath = path.resolve("./rettle.config.ts");
+    var jsConfigPath = path.resolve("./rettle.config.js");
+    var inputConfig = (function () {
         if (fs.existsSync(tsConfigPath)) {
             rechoir.prepare(extensions, './rettle.config.ts');
             return require(tsConfigPath);
@@ -21,7 +21,7 @@ exports.getConfigure = () => {
             return {};
         }
     });
-    const config = deepmerge(defaultConfig, inputConfig, {
+    var config = deepmerge(defaultConfig, inputConfig, {
         isMergeableObject: isPlainObject
     });
     return config;
