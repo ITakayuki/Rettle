@@ -23,6 +23,11 @@ const watchSources = () => {
         "\n"
       ];
       for (const file of files) {
+        const component = require(file);
+        console.log("FILENAME: ", file)
+        Object.keys(component).forEach(key => {
+          console.log("KEY: ", key);
+        })
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import * as ${hashName} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
