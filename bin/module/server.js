@@ -52,23 +52,20 @@ var watchSources = function () {
                 "\n"];
             for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
                 var file = files_1[_i];
-                var component = require(file);
-                console.log("FILENAME: ", file);
-                Object.keys(component).forEach(function (key) {
-                    console.log("KEY: ", key);
-                });
-                var hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push("import * as ".concat(hashName, " from \"").concat(path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", ""), "\";"));
-                scriptRunner.push([
-                    "checkRunScript(".concat(hashName, ");")
-                ].join("\n"));
+                var Component = fs_1.default.readFileSync(file, "utf-8");
+                if (Component.includes("export const script")) {
+                    var hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
+                    appImports.push("import {script as ".concat(hashName, "} from \"").concat(path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", ""), "\";"));
+                    scriptRunner.push([
+                        "".concat(hashName, "();")
+                    ].join("\n"));
+                    if (!fs_1.default.existsSync(path.resolve(".cache"))) {
+                        fs_1.default.mkdirSync(path.resolve(".cache"));
+                    }
+                    ;
+                    fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+                }
             }
-            ;
-            if (!fs_1.default.existsSync(path.resolve(".cache"))) {
-                fs_1.default.mkdirSync(path.resolve(".cache"));
-            }
-            ;
-            fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
         },
         add: function (filename, watcher) {
             watcher.add(filename);

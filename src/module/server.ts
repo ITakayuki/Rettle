@@ -23,21 +23,19 @@ const watchSources = () => {
         "\n"
       ];
       for (const file of files) {
-        const component = require(file);
-        console.log("FILENAME: ", file)
-        Object.keys(component).forEach(key => {
-          console.log("KEY: ", key);
-        })
-        const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import * as ${hashName} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
-        scriptRunner.push([
-          `checkRunScript(${hashName});`
-        ].join("\n"));
-      };
-      if (!fs.existsSync(path.resolve(".cache"))) {
-        fs.mkdirSync(path.resolve(".cache"));
-      };
-      fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+        const Component = fs.readFileSync(file, "utf-8");
+        if (Component.includes("export const script")) {
+          const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
+          appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
+          scriptRunner.push([
+            `${hashName}();`
+          ].join("\n"));
+          if (!fs.existsSync(path.resolve(".cache"))) {
+            fs.mkdirSync(path.resolve(".cache"));
+          };
+          fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+        }
+      }
     },
     add: (filename, watcher) => {
       watcher.add(filename);
