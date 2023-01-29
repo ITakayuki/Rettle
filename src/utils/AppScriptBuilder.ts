@@ -17,7 +17,7 @@ export const createTsConfigFile = () => {
     if(!fs.existsSync(path.resolve(".cache"))) {
       fs.mkdirSync(path.resolve(".cache"));
     }
-    fs.writeFileSync(path.resolve("./.cache/tsconfig.ts"), JSON.stringify(tsConfig, null, 2), "utf-8");
+    fs.writeFileSync(path.resolve("./.cache/tsconfig.json"), JSON.stringify(tsConfig, null, 2), "utf-8");
     resolve(null);
   })
 }
@@ -56,7 +56,7 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",
       target: "es6",
-      tsconfig: ".cache/tsconfig.ts",
+      tsconfig: ".cache/tsconfig.json",
       define: {
         "process.env": JSON.stringify(process.env),
       },
@@ -82,7 +82,7 @@ export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",
       target: "es6",
-      tsconfig: ".cache/tsconfig.ts",
+      tsconfig: ".cache/tsconfig.json",
       define: {
         "process.env": JSON.stringify(process.env),
       },

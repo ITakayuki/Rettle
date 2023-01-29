@@ -16,7 +16,7 @@ var createTsConfigFile = function () {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
             fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
         }
-        fs_1.default.writeFileSync(path_1.default.resolve("./.cache/tsconfig.ts"), JSON.stringify(template_tsconfig_json_1.default, null, 2), "utf-8");
+        fs_1.default.writeFileSync(path_1.default.resolve("./.cache/tsconfig.json"), JSON.stringify(template_tsconfig_json_1.default, null, 2), "utf-8");
         resolve(null);
     });
 };
@@ -57,7 +57,7 @@ var buildScript = function (_a) {
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
             target: "es6",
-            tsconfig: ".cache/tsconfig.ts",
+            tsconfig: ".cache/tsconfig.json",
             define: {
                 "process.env": JSON.stringify(process.env),
             },
@@ -85,7 +85,7 @@ var watchScript = function (_a) {
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
             target: "es6",
-            tsconfig: ".cache/tsconfig.ts",
+            tsconfig: ".cache/tsconfig.json",
             define: {
                 "process.env": JSON.stringify(process.env),
             },
