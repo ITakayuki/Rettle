@@ -8,10 +8,13 @@ const getConfigure = () => {
   const rechoir = require("rechoir");
   const tsConfigPath = path.resolve("./rettle.config.ts");
   const jsConfigPath = path.resolve("./rettle.config.js");
+  console.log("PATH: ", tsConfigPath)
   const inputConfig  = (() => {
     if (fs.existsSync(tsConfigPath)) {
       rechoir.prepare(extensions, './rettle.config.ts');
-      return require(tsConfigPath)
+      const requireConfig = require(tsConfigPath);
+      console.log("CONFIG: ", requireConfig)
+      return requireConfig
     } else if (fs.existsSync(jsConfigPath)) {
       return require(jsConfigPath)
     } else {
