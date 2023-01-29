@@ -86,7 +86,7 @@ var server = function () { return __awaiter(void 0, void 0, void 0, function () 
         switch (_a.label) {
             case 0:
                 buildSetupOptions = {
-                    minify: false,
+                    minify: true,
                     outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix, config_1.config.js)
                 };
                 watchSources();
