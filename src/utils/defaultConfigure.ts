@@ -1,3 +1,5 @@
+import {RettleConfigInterface} from "./config";
+
 const config:RettleConfigInterface = {
   pathPrefix: "./",
   port: 3000,
