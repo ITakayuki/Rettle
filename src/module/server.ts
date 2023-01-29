@@ -14,6 +14,14 @@ const watchSources = () => {
       console.log(color.blue(`【Add File】-> ${filename}`));
       watcher.add(filename);
     },
+    unlink: (filename, watcher) => {
+      console.log(color.blue(`【Unlink File】-> ${filename}`));
+      watcher.unwatch(filename);
+    },
+    unlinkDir: (filename, watcher) => {
+      console.log(color.blue(`【Unlink Dir】-> ${filename}`));
+      watcher.unwatch(filename);
+    },
     ready: () => {
       console.log(color.blue('Ready to Watching'));
     }

@@ -49,6 +49,16 @@ var watchFiles = function (args) {
                 args.add(filename, watcher);
             }
         });
+        watcher.on("unlink", function (filename) {
+            if (args.unlink) {
+                args.unlink(filename, watcher);
+            }
+        });
+        watcher.on("unlinkDir", function (filename) {
+            if (args.unlinkDir) {
+                args.unlinkDir(filename, watcher);
+            }
+        });
     });
 };
 exports.watchFiles = watchFiles;

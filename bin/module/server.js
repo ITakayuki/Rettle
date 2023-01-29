@@ -75,6 +75,14 @@ var watchSources = function () {
             console.log(Log_1.color.blue("\u3010Add File\u3011-> ".concat(filename)));
             watcher.add(filename);
         },
+        unlink: function (filename, watcher) {
+            console.log(Log_1.color.blue("\u3010Unlink File\u3011-> ".concat(filename)));
+            watcher.unwatch(filename);
+        },
+        unlinkDir: function (filename, watcher) {
+            console.log(Log_1.color.blue("\u3010Unlink Dir\u3011-> ".concat(filename)));
+            watcher.unwatch(filename);
+        },
         ready: function () {
             console.log(Log_1.color.blue('Ready to Watching'));
         }
