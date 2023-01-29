@@ -1,7 +1,7 @@
 {
   "name": "rettle-test",
   "version": "0.0.7",
-  "main": "./rettle.js",
+  "main": "./bin/rettle.js",
   "scripts": {
     "start": "tsc",
     "watch": "tsc -w",
