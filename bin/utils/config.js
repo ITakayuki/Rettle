@@ -9,12 +9,12 @@ var getConfigure = function () {
     var defaultConfig = require("./defaultConfigure").defaultConfig;
     var isPlainObject = require("is-plain-object").isPlainObject;
     var rechoir = require("rechoir");
-    var tsConfigPath = path.resolve("./rettle.config.ts");
-    var jsConfigPath = path.resolve("./rettle.config.js");
+    var tsConfigPath = path.resolve("./rettle-config.ts");
+    var jsConfigPath = path.resolve("./rettle-config.js");
     console.log("PATH: ", tsConfigPath);
     var inputConfig = (function () {
         if (fs.existsSync(tsConfigPath)) {
-            rechoir.prepare(extensions, './rettle.config.ts');
+            rechoir.prepare(extensions, './rettle-config.ts');
             var requireConfig = require(tsConfigPath);
             console.log("CONFIG: ", requireConfig);
             return requireConfig;
