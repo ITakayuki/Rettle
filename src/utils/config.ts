@@ -1,4 +1,4 @@
-exports.getConfigure = () => {
+const getConfigure = () => {
   const path = require("path");
   const fs = require("fs");
   const {extensions} = require("inspector");
@@ -23,3 +23,5 @@ exports.getConfigure = () => {
   })
   return config;
 }
+
+export const config = getConfigure();

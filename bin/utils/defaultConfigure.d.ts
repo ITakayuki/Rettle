@@ -1,1 +1,1 @@
-declare const config: RettleConfigInterface;
+export declare const defaultConfig: RettleConfigInterface;

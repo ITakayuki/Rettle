@@ -1,5 +1,7 @@
 "use strict";
-exports.getConfigure = function () {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.config = void 0;
+var getConfigure = function () {
     var path = require("path");
     var fs = require("fs");
     var extensions = require("inspector").extensions;
@@ -26,3 +28,4 @@ exports.getConfigure = function () {
     });
     return config;
 };
+exports.config = getConfigure();

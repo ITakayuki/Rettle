@@ -11,4 +11,4 @@ const config:RettleConfigInterface = {
   encode: "UTF-8"
 }
 
-exports.defaultConfig = config;
+export const defaultConfig = config;

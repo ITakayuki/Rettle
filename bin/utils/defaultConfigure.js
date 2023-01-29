@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.defaultConfig = void 0;
 var config = {
     pathPrefix: "./",
     port: 3000,

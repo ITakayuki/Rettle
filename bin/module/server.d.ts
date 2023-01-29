@@ -1,1 +1,1 @@
-export declare const server: () => void;
+export declare const server: () => Promise<void>;
