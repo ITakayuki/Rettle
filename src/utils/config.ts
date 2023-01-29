@@ -1,7 +1,7 @@
 const getConfigure = () => {
   const path = require("path");
   const fs = require("fs");
-  const {extensions} = require("inspector");
+  const {extensions} = require("interpret");
   const deepmerge = require("deepmerge");
   const {defaultConfig} = require("./defaultConfigure");
   const {isPlainObject} = require("is-plain-object");
