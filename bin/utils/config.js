@@ -15,12 +15,12 @@ var getConfigure = function () {
     var inputConfig = (function () {
         if (fs.existsSync(tsConfigPath)) {
             rechoir.prepare(extensions, './rettle-config.ts');
-            var requireConfig = require(tsConfigPath);
+            var requireConfig = require(tsConfigPath).default;
             console.log("CONFIG: ", requireConfig);
             return requireConfig;
         }
         else if (fs.existsSync(jsConfigPath)) {
-            return require(jsConfigPath);
+            return require(jsConfigPath).default;
         }
         else {
             return {};

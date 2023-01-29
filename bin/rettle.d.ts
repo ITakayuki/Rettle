@@ -1,2 +1,2 @@
 import { RettleConfigInterface } from "./utils/config";
-export declare const defineOption: (option: RettleConfigInterface) => RettleConfigInterface;
+export declare const defineOption: (option: Partial<RettleConfigInterface>) => Partial<RettleConfigInterface>;
