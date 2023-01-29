@@ -23,7 +23,7 @@ const watchSources = () => {
 export const server = async() => {
   const buildSetupOptions = {
     minify: false,
-    outDir: path.join(config.outDir, config.pathPrefix)
+    outDir: path.join(config.outDir, config.pathPrefix, config.assetsPath.js)
   }
   watchSources();
   await buildScript(buildSetupOptions);
