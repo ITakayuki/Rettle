@@ -4,10 +4,22 @@ import path from "path";
 import glob from "glob";
 import fs from "fs";
 import crypto from "crypto";
+import tsConfig from "./template-tsconfig.json";
+import {resolveFullImportPaths} from "tsc-alias/dist/utils";
 
 interface BuildScriptInterface {
   minify: boolean;
   outDir: string;
+}
+
+export const createTsConfigFile = () => {
+  return new Promise(resolve => {
+    if(!fs.existsSync(path.resolve(".cache"))) {
+      fs.mkdirSync(path.resolve(".cache"));
+    }
+    fs.writeFileSync(path.resolve("./.cache/tsconfig.ts"), JSON.stringify(tsConfig, null, 2), "utf-8");
+    resolve(null);
+  })
 }
 
 export const createCacheAppFile = () => {
@@ -44,7 +56,7 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",
       target: "es6",
-      tsconfig: "tsconfig.json",
+      tsconfig: ".cache/tsconfig.ts",
       define: {
         "process.env": JSON.stringify(process.env),
       },
@@ -70,7 +82,7 @@ export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",
       target: "es6",
-      tsconfig: "tsconfig.json",
+      tsconfig: ".cache/tsconfig.ts",
       define: {
         "process.env": JSON.stringify(process.env),
       },

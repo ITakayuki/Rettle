@@ -1,6 +1,6 @@
 import {watchFiles} from "./watcher";
 import {color} from "../utils/Log";
-import {createCacheAppFile, watchScript, buildScript} from "../utils/AppScriptBuilder";
+import {createCacheAppFile, watchScript, buildScript, createTsConfigFile} from "../utils/AppScriptBuilder";
 import {config} from "../utils/config";
 import * as path from "path";
 
@@ -33,6 +33,7 @@ export const server = async() => {
     minify: true,
     outDir: path.join(config.outDir, config.pathPrefix, config.js)
   }
+  await createTsConfigFile();
   await createCacheAppFile();
   watchSources();
   await buildScript(buildSetupOptions);
