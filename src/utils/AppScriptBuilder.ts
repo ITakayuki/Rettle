@@ -11,24 +11,28 @@ interface BuildScriptInterface {
 }
 
 export const createCacheAppFile = () => {
-  const files = glob.sync(path.resolve("./src/**/*.{tsx,jsx}"));
-  const appFilePath = path.resolve(".cache/app.tsx");
-  const appImports = [];
-  const scriptRunner = [];
-  for (const file of files) {
-    const Component = fs.readFileSync(file, "utf-8");
-    if (Component.includes("export const script")) {
-      const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-      appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
-      scriptRunner.push([
-        `${hashName}();`
-      ].join("\n"));
-      if (!fs.existsSync(path.resolve(".cache"))) {
-        fs.mkdirSync(path.resolve(".cache"));
-      };
-      fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+  return new Promise(resolve => {
+    const files = glob.sync(path.resolve("./src/**/*.{tsx,jsx}"));
+    const appFilePath = path.resolve(".cache/app.tsx");
+    const appImports = [];
+    const scriptRunner = [];
+    for (const file of files) {
+      const Component = fs.readFileSync(file, "utf-8");
+      if (Component.includes("export const script")) {
+        const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
+        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
+        scriptRunner.push([
+          `${hashName}();`
+        ].join("\n"));
+        if (!fs.existsSync(path.resolve(".cache"))) {
+          fs.mkdirSync(path.resolve(".cache"));
+        };
+        fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+      }
     }
-  }
+    resolve(null);
+  })
+
 }
 
 export const buildScript = ({minify, outDir}: BuildScriptInterface) => {

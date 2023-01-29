@@ -8,7 +8,7 @@ const watchSources = () => {
   watchFiles({
     change: (filename) => {
       console.log(color.blue(`【Change File】-> ${filename}`));
-      createCacheAppFile();
+      createCacheAppFile().then();
     },
     add: (filename, watcher) => {
       console.log(color.blue(`【Add File】-> ${filename}`));
@@ -33,6 +33,7 @@ export const server = async() => {
     minify: true,
     outDir: path.join(config.outDir, config.pathPrefix, config.js)
   }
+  await createCacheAppFile();
   watchSources();
   await buildScript(buildSetupOptions);
   await watchScript(buildSetupOptions)

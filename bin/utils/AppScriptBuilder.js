@@ -11,26 +11,29 @@ var glob_1 = __importDefault(require("glob"));
 var fs_1 = __importDefault(require("fs"));
 var crypto_1 = __importDefault(require("crypto"));
 var createCacheAppFile = function () {
-    var files = glob_1.default.sync(path_1.default.resolve("./src/**/*.{tsx,jsx}"));
-    var appFilePath = path_1.default.resolve(".cache/app.tsx");
-    var appImports = [];
-    var scriptRunner = [];
-    for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
-        var file = files_1[_i];
-        var Component = fs_1.default.readFileSync(file, "utf-8");
-        if (Component.includes("export const script")) {
-            var hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-            appImports.push("import {script as ".concat(hashName, "} from \"").concat(path_1.default.relative(path_1.default.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", ""), "\";"));
-            scriptRunner.push([
-                "".concat(hashName, "();")
-            ].join("\n"));
-            if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
-                fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
+    return new Promise(function (resolve) {
+        var files = glob_1.default.sync(path_1.default.resolve("./src/**/*.{tsx,jsx}"));
+        var appFilePath = path_1.default.resolve(".cache/app.tsx");
+        var appImports = [];
+        var scriptRunner = [];
+        for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+            var file = files_1[_i];
+            var Component = fs_1.default.readFileSync(file, "utf-8");
+            if (Component.includes("export const script")) {
+                var hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
+                appImports.push("import {script as ".concat(hashName, "} from \"").concat(path_1.default.relative(path_1.default.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", ""), "\";"));
+                scriptRunner.push([
+                    "".concat(hashName, "();")
+                ].join("\n"));
+                if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
+                    fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
+                }
+                ;
+                fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
             }
-            ;
-            fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
         }
-    }
+        resolve(null);
+    });
 };
 exports.createCacheAppFile = createCacheAppFile;
 var buildScript = function (_a) {

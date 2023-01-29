@@ -69,7 +69,7 @@ var watchSources = function () {
     (0, watcher_1.watchFiles)({
         change: function (filename) {
             console.log(Log_1.color.blue("\u3010Change File\u3011-> ".concat(filename)));
-            (0, AppScriptBuilder_1.createCacheAppFile)();
+            (0, AppScriptBuilder_1.createCacheAppFile)().then();
         },
         add: function (filename, watcher) {
             console.log(Log_1.color.blue("\u3010Add File\u3011-> ".concat(filename)));
@@ -97,12 +97,15 @@ var server = function () { return __awaiter(void 0, void 0, void 0, function () 
                     minify: true,
                     outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix, config_1.config.js)
                 };
-                watchSources();
-                return [4 /*yield*/, (0, AppScriptBuilder_1.buildScript)(buildSetupOptions)];
+                return [4 /*yield*/, (0, AppScriptBuilder_1.createCacheAppFile)()];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, (0, AppScriptBuilder_1.watchScript)(buildSetupOptions)];
+                watchSources();
+                return [4 /*yield*/, (0, AppScriptBuilder_1.buildScript)(buildSetupOptions)];
             case 2:
+                _a.sent();
+                return [4 /*yield*/, (0, AppScriptBuilder_1.watchScript)(buildSetupOptions)];
+            case 3:
                 _a.sent();
                 return [2 /*return*/];
         }
