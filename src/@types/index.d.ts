@@ -1,11 +1,9 @@
 declare interface RettleConfigInterface {
   pathPrefix: string;
   port: number;
-  assetsPath: {
-    css: string;
-    js: string;
-    images: string;
-  };
+  css: string;
+  js: string;
+  static: string;
   outDir: string;
   staticPath: string;
   envs?: Array<Record<string, string>>;

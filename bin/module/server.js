@@ -87,7 +87,7 @@ var server = function () { return __awaiter(void 0, void 0, void 0, function () 
             case 0:
                 buildSetupOptions = {
                     minify: false,
-                    outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix, config_1.config.assetsPath.js)
+                    outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix, config_1.config.js)
                 };
                 watchSources();
                 return [4 /*yield*/, (0, AppScriptBuilder_1.buildScript)(buildSetupOptions)];
