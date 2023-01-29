@@ -26,7 +26,7 @@ var getConfigure = function () {
             return {};
         }
     });
-    var config = deepmerge(defaultConfig, inputConfig, {
+    var config = deepmerge(defaultConfig, inputConfig(), {
         isMergeableObject: isPlainObject
     });
     return config;

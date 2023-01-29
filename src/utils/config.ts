@@ -21,7 +21,7 @@ const getConfigure = () => {
       return {}
     }
   });
-  const config = deepmerge(defaultConfig, inputConfig, {
+  const config = deepmerge(defaultConfig, inputConfig(), {
     isMergeableObject: isPlainObject
   })
   return config;
