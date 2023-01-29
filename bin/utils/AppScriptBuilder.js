@@ -3,13 +3,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.watchScript = exports.buildScript = exports.createCacheAppFile = void 0;
+exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
 var esbuild_1 = __importDefault(require("esbuild"));
 var Log_1 = require("./Log");
 var path_1 = __importDefault(require("path"));
 var glob_1 = __importDefault(require("glob"));
 var fs_1 = __importDefault(require("fs"));
 var crypto_1 = __importDefault(require("crypto"));
+var template_tsconfig_json_1 = __importDefault(require("./template-tsconfig.json"));
+var createTsConfigFile = function () {
+    return new Promise(function (resolve) {
+        if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
+            fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
+        }
+        fs_1.default.writeFileSync(path_1.default.resolve("./.cache/tsconfig.ts"), JSON.stringify(template_tsconfig_json_1.default, null, 2), "utf-8");
+        resolve(null);
+    });
+};
+exports.createTsConfigFile = createTsConfigFile;
 var createCacheAppFile = function () {
     return new Promise(function (resolve) {
         var files = glob_1.default.sync(path_1.default.resolve("./src/**/*.{tsx,jsx}"));
@@ -46,7 +57,7 @@ var buildScript = function (_a) {
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
             target: "es6",
-            tsconfig: "tsconfig.json",
+            tsconfig: ".cache/tsconfig.ts",
             define: {
                 "process.env": JSON.stringify(process.env),
             },
@@ -74,7 +85,7 @@ var watchScript = function (_a) {
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
             target: "es6",
-            tsconfig: "tsconfig.json",
+            tsconfig: ".cache/tsconfig.ts",
             define: {
                 "process.env": JSON.stringify(process.env),
             },

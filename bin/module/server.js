@@ -97,15 +97,18 @@ var server = function () { return __awaiter(void 0, void 0, void 0, function () 
                     minify: true,
                     outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix, config_1.config.js)
                 };
-                return [4 /*yield*/, (0, AppScriptBuilder_1.createCacheAppFile)()];
+                return [4 /*yield*/, (0, AppScriptBuilder_1.createTsConfigFile)()];
             case 1:
+                _a.sent();
+                return [4 /*yield*/, (0, AppScriptBuilder_1.createCacheAppFile)()];
+            case 2:
                 _a.sent();
                 watchSources();
                 return [4 /*yield*/, (0, AppScriptBuilder_1.buildScript)(buildSetupOptions)];
-            case 2:
+            case 3:
                 _a.sent();
                 return [4 /*yield*/, (0, AppScriptBuilder_1.watchScript)(buildSetupOptions)];
-            case 3:
+            case 4:
                 _a.sent();
                 return [2 /*return*/];
         }
