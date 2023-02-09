@@ -15,7 +15,7 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
   const dependenciesFiles:Array<string> = [];
   const madgePromises = [];
   for (const target of targets) {
-    const promiseFunction = () => new Promise(async(resolve) => {
+    const promiseFunction = new Promise(async(resolve) => {
         const res = await madge(target);
         const obj = res.obj();
         console.log("obj: ", obj)
