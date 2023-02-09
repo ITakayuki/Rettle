@@ -67,7 +67,7 @@ const buildScript = ({ minify, outDir }) => {
     return new Promise(resolve => {
         esbuild_1.default.build({
             bundle: true,
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*/tsx"), {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*.tsx"), {
                 nodir: true
             }),
             outfile: outDir,
@@ -96,7 +96,7 @@ const watchScript = ({ minify, outDir }) => {
                         console.error("watch build failed:", error);
                 },
             },
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*/tsx"), {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*.tsx"), {
                 nodir: true
             }),
             outfile: outDir,

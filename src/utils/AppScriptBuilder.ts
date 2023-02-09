@@ -58,7 +58,7 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
   return new Promise(resolve => {
     esBuild.build({
       bundle: true,
-      entryPoints: glob.sync(path.resolve("./.cache/**/*/tsx"), {
+      entryPoints: glob.sync(path.resolve("./.cache/**/*.tsx"), {
         nodir: true
       }),
       outfile: outDir,
@@ -86,7 +86,7 @@ export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
           if (error) console.error("watch build failed:", error);
         },
       },
-      entryPoints: glob.sync(path.resolve("./.cache/**/*/tsx"), {
+      entryPoints: glob.sync(path.resolve("./.cache/**/*.tsx"), {
         nodir: true
       }),
       outfile: outDir,
