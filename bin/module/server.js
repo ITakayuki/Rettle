@@ -62,9 +62,8 @@ const watchSources = () => {
     });
 };
 const server = () => __awaiter(void 0, void 0, void 0, function* () {
-    const jsBaseDir = path.basename(config_1.config.js);
     const buildSetupOptions = {
-        minify: true,
+        minify: config_1.config.esbuild.minify,
         outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix)
     };
     yield (0, AppScriptBuilder_1.createTsConfigFile)();

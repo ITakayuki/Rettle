@@ -23,6 +23,9 @@ export interface  RettleConfigInterface {
   encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
   alias?: Record<string, string>;
   build?: BuildOptionsInterface;
+  esbuild: {
+    minify: boolean;
+  }
 }
 
 const getConfigure = () => {

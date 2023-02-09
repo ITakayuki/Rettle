@@ -10,6 +10,9 @@ const config = {
     static: "/",
     endpoints: ["./src/views"],
     staticPath: "/static",
-    encode: "UTF-8"
+    encode: "UTF-8",
+    esbuild: {
+        minify: true
+    }
 };
 exports.defaultConfig = config;

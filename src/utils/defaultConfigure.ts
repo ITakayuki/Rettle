@@ -9,7 +9,10 @@ const config:RettleConfigInterface = {
   static: "/",
   endpoints: ["./src/views"],
   staticPath: "/static",
-  encode: "UTF-8"
+  encode: "UTF-8",
+  esbuild: {
+    minify: true
+  }
 }
 
 export const defaultConfig = config;

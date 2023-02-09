@@ -29,9 +29,8 @@ const watchSources = () => {
 }
 
 export const server = async() => {
-  const jsBaseDir = path.basename(config.js);
   const buildSetupOptions = {
-    minify: true,
+    minify: config.esbuild.minify,
     outDir: path.join(config.outDir, config.pathPrefix)
   }
   await createTsConfigFile();
