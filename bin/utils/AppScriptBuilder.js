@@ -44,7 +44,7 @@ const createCacheAppFile = () => {
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appFilename = createFileName(endpoint);
-            const appFilePath = path_1.default.resolve(`.cache/app-${appFilename}`);
+            const appFilePath = path_1.default.resolve(`.cache/app${appFilename.length !== 0 ? "-" : ""}${appFilename}`);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
