@@ -1,8 +1,16 @@
+interface BuildOptionsInterface {
+  copyStatic?: ()=>void;
+  buildScript?: () => void;
+  buildCss?: () => void;
+  buildHTML?: () => void;
+}
+
 export interface  RettleConfigInterface {
   pathPrefix: string;
   port: number;
   css: string;
   js: string;
+  endpoints: Array<string>;
   static: string;
   outDir: string;
   staticPath: string;
@@ -14,6 +22,7 @@ export interface  RettleConfigInterface {
   },
   encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
   alias?: Record<string, string>;
+  build?: BuildOptionsInterface;
 }
 
 const getConfigure = () => {

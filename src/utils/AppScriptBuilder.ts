@@ -1,11 +1,11 @@
 import esBuild from "esbuild";
 import {color} from "./Log";
 import path from "path";
-import glob from "glob";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {resolveFullImportPaths} from "tsc-alias/dist/utils";
+import {getDependencies} from "./Dependencies";
+import {config} from "./config";
 
 interface BuildScriptInterface {
   minify: boolean;
@@ -22,15 +22,20 @@ export const createTsConfigFile = () => {
   })
 }
 
+const createFileName = (filePath:string) => {
+  return "app-" +path.relative(path.resolve("./src/views/"), filePath).replace("/**/*", "").replace("/", "-") + ".tsx"
+}
+
 export const createCacheAppFile = () => {
-  return new Promise(resolve => {
-    const files = glob.sync(path.resolve("./src/**/*.{tsx,jsx}"));
-    const appFilePath = path.resolve(".cache/app.tsx");
-    const appImports = [];
-    const scriptRunner = [];
-    for (const file of files) {
-      const Component = fs.readFileSync(file, "utf-8");
-      if (Component.includes("export const script")) {
+  return new Promise(async(resolve) => {
+    for (const endpoint of config.endpoints) {
+      const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => self[i] !== endpoint);
+      const files = await getDependencies(endpoint, ignore);
+      const appFilename = createFileName(endpoint)
+      const appFilePath = path.resolve(`.cache/${appFilename}`);
+      const appImports = [];
+      const scriptRunner = [];
+      for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
@@ -42,9 +47,8 @@ export const createCacheAppFile = () => {
         fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
       }
     }
-    resolve(null);
+    resolve(null)
   })
-
 }
 
 export const buildScript = ({minify, outDir}: BuildScriptInterface) => {

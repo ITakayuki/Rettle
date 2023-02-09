@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2016",
     "moduleResolution": "node",
+    "module": "commonjs",
     "jsx": "react-jsx",
     "rootDir": "./src/",
     "baseUrl": "./",
@@ -11,7 +12,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": ["./src/rettle.ts", "node_modules"],
 }

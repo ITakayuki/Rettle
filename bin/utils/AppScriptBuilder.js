@@ -1,18 +1,28 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
-var esbuild_1 = __importDefault(require("esbuild"));
-var Log_1 = require("./Log");
-var path_1 = __importDefault(require("path"));
-var glob_1 = __importDefault(require("glob"));
-var fs_1 = __importDefault(require("fs"));
-var crypto_1 = __importDefault(require("crypto"));
-var template_tsconfig_json_1 = __importDefault(require("./template-tsconfig.json"));
-var createTsConfigFile = function () {
-    return new Promise(function (resolve) {
+const esbuild_1 = __importDefault(require("esbuild"));
+const Log_1 = require("./Log");
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const crypto_1 = __importDefault(require("crypto"));
+const template_tsconfig_json_1 = __importDefault(require("./template-tsconfig.json"));
+const Dependencies_1 = require("./Dependencies");
+const config_1 = require("./config");
+const createTsConfigFile = () => {
+    return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
             fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
         }
@@ -21,20 +31,23 @@ var createTsConfigFile = function () {
     });
 };
 exports.createTsConfigFile = createTsConfigFile;
-var createCacheAppFile = function () {
-    return new Promise(function (resolve) {
-        var files = glob_1.default.sync(path_1.default.resolve("./src/**/*.{tsx,jsx}"));
-        var appFilePath = path_1.default.resolve(".cache/app.tsx");
-        var appImports = [];
-        var scriptRunner = [];
-        for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
-            var file = files_1[_i];
-            var Component = fs_1.default.readFileSync(file, "utf-8");
-            if (Component.includes("export const script")) {
-                var hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push("import {script as ".concat(hashName, "} from \"").concat(path_1.default.relative(path_1.default.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", ""), "\";"));
+const createFileName = (filePath) => {
+    return "app-" + path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("/**/*", "").replace("/", "-") + ".tsx";
+};
+const createCacheAppFile = () => {
+    return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
+        for (const endpoint of config_1.config.endpoints) {
+            const ignore = config_1.config.endpoints.filter((x, i, self) => self[i] !== endpoint);
+            const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
+            const appFilename = createFileName(endpoint);
+            const appFilePath = path_1.default.resolve(`.cache/${appFilename}`);
+            const appImports = [];
+            const scriptRunner = [];
+            for (const file of files) {
+                const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
+                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`);
                 scriptRunner.push([
-                    "".concat(hashName, "();")
+                    `${hashName}();`
                 ].join("\n"));
                 if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
                     fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
@@ -44,12 +57,11 @@ var createCacheAppFile = function () {
             }
         }
         resolve(null);
-    });
+    }));
 };
 exports.createCacheAppFile = createCacheAppFile;
-var buildScript = function (_a) {
-    var minify = _a.minify, outDir = _a.outDir;
-    return new Promise(function (resolve) {
+const buildScript = ({ minify, outDir }) => {
+    return new Promise(resolve => {
         esbuild_1.default.build({
             bundle: true,
             entryPoints: [path_1.default.resolve(".cache/app.tsx")],
@@ -62,20 +74,19 @@ var buildScript = function (_a) {
                 "process.env": JSON.stringify(process.env),
             },
             minify: minify,
-        }).then(function () {
+        }).then(() => {
             console.log(Log_1.color.blue("Built Script."));
             resolve(null);
         });
     });
 };
 exports.buildScript = buildScript;
-var watchScript = function (_a) {
-    var minify = _a.minify, outDir = _a.outDir;
-    return new Promise(function (resolve) {
+const watchScript = ({ minify, outDir }) => {
+    return new Promise(resolve => {
         esbuild_1.default.build({
             bundle: true,
             watch: {
-                onRebuild: function (error, result) {
+                onRebuild(error, result) {
                     if (error)
                         console.error("watch build failed:", error);
                 },
@@ -90,7 +101,7 @@ var watchScript = function (_a) {
                 "process.env": JSON.stringify(process.env),
             },
             minify: minify,
-        }).then(function () {
+        }).then(() => {
             console.log(Log_1.color.blue("Watch App File."));
             resolve(null);
         });

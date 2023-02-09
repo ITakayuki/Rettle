@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.color = void 0;
-var target = {
+const target = {
     blue: "\x1b[34m",
     normal: "\x1b[0m",
     red: "\x1b[31m",
@@ -11,9 +11,9 @@ var target = {
     cyan: "\x1b[36m"
 };
 exports.color = new Proxy(target, {
-    get: function (target, prop) {
-        return function (log) {
-            console.log("".concat(prop).concat(log, "\u001B[0m"));
+    get: (target, prop) => {
+        return (log) => {
+            console.log(`${prop}${log}\x1b[0m`);
         };
     }
 });

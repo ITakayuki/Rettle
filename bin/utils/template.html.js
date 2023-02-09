@@ -1,5 +1,15 @@
 "use strict";
-exports.templateHtml = function (html) {
-    var version = require("./variable").version;
-    return "\n<doctype html>\n<head>\n<meta name=\"generator\" content=\"Rettle ".concat(version, "\">\n<link rel=\"stylesheet\" href=\"/style.css\">\n</head>\n<body>\n").concat(html, "\n<script src=\"/bundle.js\"></script>\n</body>\n  ");
+exports.templateHtml = (html) => {
+    const { version } = require("./variable");
+    return `
+<doctype html>
+<head>
+<meta name="generator" content="Rettle ${version}">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+${html}
+<script src="/bundle.js"></script>
+</body>
+  `;
 };

@@ -6,8 +6,9 @@ const config:RettleConfigInterface = {
   outDir: process.env.NODE_ENV === "develop" ? "./dist" : "./htdocs",
   css: "/assets/style/app.css",
   js: "/assets/script/app.js",
-  static: "/assets/",
-  staticPath: "/",
+  static: "/",
+  endpoints: ["./src/views"],
+  staticPath: "/static",
   encode: "UTF-8"
 }
 

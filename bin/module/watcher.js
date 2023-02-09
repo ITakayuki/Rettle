@@ -27,34 +27,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.watchFiles = void 0;
-var chokidar_1 = __importDefault(require("chokidar"));
-var path = __importStar(require("path"));
-var watchFiles = function (args) {
-    var srcAllFilesPath = path.resolve("./src/**/*.{ts,tsx,js,jsx}");
-    var watcher = chokidar_1.default.watch(srcAllFilesPath, {
+const chokidar_1 = __importDefault(require("chokidar"));
+const path = __importStar(require("path"));
+const watchFiles = (args) => {
+    const srcAllFilesPath = path.resolve("./src/**/*.{ts,tsx,js,jsx}");
+    const watcher = chokidar_1.default.watch(srcAllFilesPath, {
         persistent: true,
         awaitWriteFinish: true,
     });
-    watcher.on("ready", function () {
+    watcher.on("ready", () => {
         if (args.ready) {
             args.ready(watcher);
         }
-        watcher.on("change", function (filename, status) {
+        watcher.on("change", (filename, status) => {
             if (args.change) {
                 args.change(filename, watcher);
             }
         });
-        watcher.on("add", function (filename, status) {
+        watcher.on("add", (filename, status) => {
             if (args.add) {
                 args.add(filename, watcher);
             }
         });
-        watcher.on("unlink", function (filename) {
+        watcher.on("unlink", (filename) => {
             if (args.unlink) {
                 args.unlink(filename, watcher);
             }
         });
-        watcher.on("unlinkDir", function (filename) {
+        watcher.on("unlinkDir", (filename) => {
             if (args.unlinkDir) {
                 args.unlinkDir(filename, watcher);
             }
