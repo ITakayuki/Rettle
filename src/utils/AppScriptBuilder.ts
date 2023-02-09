@@ -24,7 +24,8 @@ export const createTsConfigFile = () => {
 }
 
 const createFileName = (filePath:string) => {
-  return path.relative(path.resolve("./src/views/"), filePath).replace("**/*/", "").replace("/", "-") + ".tsx"
+  const relativePath = path.relative(path.resolve("./src/views/"), filePath) + "/"
+  return relativePath.replace("/**/*/", "").replace("/", "-") + ".tsx"
 }
 
 export const createCacheAppFile = () => {
