@@ -30,7 +30,7 @@ exports.mkdirp = void 0;
 const path = __importStar(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const mkdirp = (filePath) => {
-    const dirPath = path.basename(filePath) ? path.dirname(filePath) : filePath;
+    const dirPath = path.extname(filePath) ? path.dirname(filePath) : filePath;
     const parts = path.resolve(dirPath).split(path.sep);
     for (let i = 1; i <= parts.length; i++) {
         const currPath = path.join.apply(null, parts.slice(0, i));
