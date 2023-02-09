@@ -25,7 +25,7 @@ export const createTsConfigFile = () => {
 
 const createFileName = (filePath:string) => {
   const relativePath = path.relative(path.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "")
-  return relativePath.replace("/", "-") + ".tsx"
+  return path.join(".cache/scripts",relativePath, "app.tsx")
 }
 
 export const createCacheAppFile = () => {
@@ -36,7 +36,7 @@ export const createCacheAppFile = () => {
       });
       const files = await getDependencies(endpoint, ignore);
       const appFilename = createFileName(endpoint)
-      const appFilePath = path.resolve(`.cache/app${appFilename === ".tsx" ? "":"-"}${appFilename}`);
+      const appFilePath = path.resolve(appFilename);
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
@@ -59,7 +59,7 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
   return new Promise(resolve => {
     esBuild.build({
       bundle: true,
-      entryPoints: glob.sync(path.resolve("./.cache/**/*.tsx"), {
+      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.tsx"), {
         nodir: true
       }),
       outdir: outDir,
@@ -87,7 +87,7 @@ export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
           if (error) console.error("watch build failed:", error);
         },
       },
-      entryPoints: glob.sync(path.resolve("./.cache/**/*.tsx"), {
+      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.tsx"), {
         nodir: true
       }),
       outdir: outDir,

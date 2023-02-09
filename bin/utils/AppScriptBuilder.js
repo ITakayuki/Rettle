@@ -34,7 +34,7 @@ const createTsConfigFile = () => {
 exports.createTsConfigFile = createTsConfigFile;
 const createFileName = (filePath) => {
     const relativePath = path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "");
-    return relativePath.replace("/", "-") + ".tsx";
+    return path_1.default.join(".cache/scripts", relativePath, "app.tsx");
 };
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,7 +44,7 @@ const createCacheAppFile = () => {
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appFilename = createFileName(endpoint);
-            const appFilePath = path_1.default.resolve(`.cache/app${appFilename === ".tsx" ? "" : "-"}${appFilename}`);
+            const appFilePath = path_1.default.resolve(appFilename);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
@@ -68,7 +68,7 @@ const buildScript = ({ minify, outDir }) => {
     return new Promise(resolve => {
         esbuild_1.default.build({
             bundle: true,
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*.tsx"), {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.tsx"), {
                 nodir: true
             }),
             outdir: outDir,
@@ -97,7 +97,7 @@ const watchScript = ({ minify, outDir }) => {
                         console.error("watch build failed:", error);
                 },
             },
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*.tsx"), {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.tsx"), {
                 nodir: true
             }),
             outdir: outDir,
