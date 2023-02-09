@@ -38,7 +38,9 @@ const createFileName = (filePath) => {
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         for (const endpoint of config_1.config.endpoints) {
-            const ignore = config_1.config.endpoints.filter((x, i, self) => self[i] !== endpoint);
+            const ignore = config_1.config.endpoints.filter((x, i, self) => {
+                return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""));
+            });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appFilename = createFileName(endpoint);
             const appFilePath = path_1.default.resolve(`.cache/${appFilename}`);

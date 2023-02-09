@@ -30,7 +30,9 @@ const createFileName = (filePath:string) => {
 export const createCacheAppFile = () => {
   return new Promise(async(resolve) => {
     for (const endpoint of config.endpoints) {
-      const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => self[i] !== endpoint);
+      const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => {
+        return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
+      });
       const files = await getDependencies(endpoint, ignore);
       const appFilename = createFileName(endpoint)
       const appFilePath = path.resolve(`.cache/${appFilename}`);
