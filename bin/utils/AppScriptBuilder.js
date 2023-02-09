@@ -42,7 +42,6 @@ const createCacheAppFile = () => {
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appFilename = createFileName(endpoint);
             const appFilePath = path_1.default.resolve(`.cache/${appFilename}`);
-            console.log(appFilePath);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
@@ -55,8 +54,9 @@ const createCacheAppFile = () => {
                     fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
                 }
                 ;
-                fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
             }
+            fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+            console.log("update cache: ", appFilePath);
         }
         resolve(null);
     }));
