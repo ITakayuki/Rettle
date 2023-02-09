@@ -13,7 +13,7 @@ const target = {
 exports.color = new Proxy(target, {
     get: (target, prop) => {
         return (log) => {
-            return `${prop}${log}\u001b[0m`;
+            return `${target[prop]}${log}\u001b[0m`;
         };
     }
 });

@@ -11,9 +11,9 @@ const target = {
 type TargetKeyTypes = keyof typeof target;
 
 export const color = new Proxy(target, {
-  get: (target, prop: string): (log:string) => void => {
+  get: (target, prop: TargetKeyTypes): (log:string) => void => {
     return (log: string) => {
-      return `${prop}${log}\u001b[0m`;
+      return `${target[prop]}${log}\u001b[0m`;
     };
   }
 }) as unknown as {[index in TargetKeyTypes]: (log:string) => void};
