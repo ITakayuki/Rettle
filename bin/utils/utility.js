@@ -33,7 +33,7 @@ const mkdirp = (filePath) => {
     return new Promise(resolve => {
         const dirPath = path.extname(filePath) !== "" ? path.dirname(filePath) : filePath;
         console.log("dire: ", dirPath);
-        const parts = path.resolve(dirPath).split(path.sep);
+        const parts = dirPath.split(path.sep);
         for (let i = 1; i <= parts.length; i++) {
             const currPath = path.join.apply(null, parts.slice(0, i));
             console.log("EXIST: ", !fs_1.default.existsSync(currPath));
