@@ -6,6 +6,7 @@ import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
 import {getDependencies} from "./Dependencies";
 import {config} from "./config";
+import glob from "glob";
 
 interface BuildScriptInterface {
   minify: boolean;
@@ -33,6 +34,7 @@ export const createCacheAppFile = () => {
       const files = await getDependencies(endpoint, ignore);
       const appFilename = createFileName(endpoint)
       const appFilePath = path.resolve(`.cache/${appFilename}`);
+      console.log(appFilePath)
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
@@ -55,7 +57,9 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
   return new Promise(resolve => {
     esBuild.build({
       bundle: true,
-      entryPoints: [path.resolve(".cache/app.tsx")],
+      entryPoints: glob.sync(".cache/**/*/tsx", {
+        nodir: true
+      }),
       outfile: outDir,
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",
@@ -81,7 +85,9 @@ export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
           if (error) console.error("watch build failed:", error);
         },
       },
-      entryPoints: [path.resolve(".cache/app.tsx")],
+      entryPoints: glob.sync(".cache/**/*/tsx", {
+        nodir: true
+      }),
       outfile: outDir,
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",

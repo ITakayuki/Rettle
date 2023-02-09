@@ -21,6 +21,7 @@ const crypto_1 = __importDefault(require("crypto"));
 const template_tsconfig_json_1 = __importDefault(require("./template-tsconfig.json"));
 const Dependencies_1 = require("./Dependencies");
 const config_1 = require("./config");
+const glob_1 = __importDefault(require("glob"));
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -41,6 +42,7 @@ const createCacheAppFile = () => {
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appFilename = createFileName(endpoint);
             const appFilePath = path_1.default.resolve(`.cache/${appFilename}`);
+            console.log(appFilePath);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
@@ -64,7 +66,9 @@ const buildScript = ({ minify, outDir }) => {
     return new Promise(resolve => {
         esbuild_1.default.build({
             bundle: true,
-            entryPoints: [path_1.default.resolve(".cache/app.tsx")],
+            entryPoints: glob_1.default.sync(".cache/**/*/tsx", {
+                nodir: true
+            }),
             outfile: outDir,
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
@@ -91,7 +95,9 @@ const watchScript = ({ minify, outDir }) => {
                         console.error("watch build failed:", error);
                 },
             },
-            entryPoints: [path_1.default.resolve(".cache/app.tsx")],
+            entryPoints: glob_1.default.sync(".cache/**/*/tsx", {
+                nodir: true
+            }),
             outfile: outDir,
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
