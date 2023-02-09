@@ -33,7 +33,7 @@ const createTsConfigFile = () => {
 };
 exports.createTsConfigFile = createTsConfigFile;
 const createFileName = (filePath) => {
-    return "app-" + path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("/**/*", "").replace("/", "-") + ".tsx";
+    return "app-" + path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("**/*", "").replace("/", "-") + ".tsx";
 };
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
@@ -67,7 +67,7 @@ const buildScript = ({ minify, outDir }) => {
     return new Promise(resolve => {
         esbuild_1.default.build({
             bundle: true,
-            entryPoints: glob_1.default.sync(".cache/**/*/tsx", {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*/tsx"), {
                 nodir: true
             }),
             outfile: outDir,
@@ -96,7 +96,7 @@ const watchScript = ({ minify, outDir }) => {
                         console.error("watch build failed:", error);
                 },
             },
-            entryPoints: glob_1.default.sync(".cache/**/*/tsx", {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*/tsx"), {
                 nodir: true
             }),
             outfile: outDir,
