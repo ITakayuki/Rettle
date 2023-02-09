@@ -33,7 +33,7 @@ const createTsConfigFile = () => {
 };
 exports.createTsConfigFile = createTsConfigFile;
 const createFileName = (filePath) => {
-    return "app-" + path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("**/*", "").replace("/", "-") + ".tsx";
+    return path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("**/*/", "").replace("/", "-") + ".tsx";
 };
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
@@ -43,7 +43,7 @@ const createCacheAppFile = () => {
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appFilename = createFileName(endpoint);
-            const appFilePath = path_1.default.resolve(`.cache/${appFilename}`);
+            const appFilePath = path_1.default.resolve(`.cache/app${appFilename[0] !== "-" ? "-" : ""}${appFilename}`);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {

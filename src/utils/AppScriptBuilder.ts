@@ -24,7 +24,7 @@ export const createTsConfigFile = () => {
 }
 
 const createFileName = (filePath:string) => {
-  return "app-" +path.relative(path.resolve("./src/views/"), filePath).replace("**/*", "").replace("/", "-") + ".tsx"
+  return path.relative(path.resolve("./src/views/"), filePath).replace("**/*/", "").replace("/", "-") + ".tsx"
 }
 
 export const createCacheAppFile = () => {
@@ -35,7 +35,7 @@ export const createCacheAppFile = () => {
       });
       const files = await getDependencies(endpoint, ignore);
       const appFilename = createFileName(endpoint)
-      const appFilePath = path.resolve(`.cache/${appFilename}`);
+      const appFilePath = path.resolve(`.cache/app${appFilename[0] !== "-" ? "-" :""}${appFilename}`);
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
