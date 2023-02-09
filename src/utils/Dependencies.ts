@@ -15,19 +15,22 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
   const dependenciesFiles:Array<string> = [];
   const madgePromises = [];
   for (const target of targets) {
-    madgePromises.push(async () => {
-      const res = await madge(target);
-      const obj = res.obj();
-      console.log("obj: ", obj)
-      Object.keys(obj).forEach((key: string) => {
-        if(checkScript(key)) {
-          dependenciesFiles.push(key);
-        }
-        for (const targetFilePath of obj[key]) {
+    madgePromises.push(() => {
+      return new Promise(async(resolve) => {
+        const res = await madge(target);
+        const obj = res.obj();
+        console.log("obj: ", obj)
+        Object.keys(obj).forEach((key: string) => {
           if(checkScript(key)) {
-            dependenciesFiles.push(targetFilePath);
+            dependenciesFiles.push(key);
           }
-        }
+          for (const targetFilePath of obj[key]) {
+            if(checkScript(key)) {
+              dependenciesFiles.push(targetFilePath);
+            }
+          }
+        })
+        resolve(null)
       })
     });
   };
