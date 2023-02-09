@@ -49,7 +49,7 @@ export const createCacheAppFile = () => {
           `${hashName}();`
         ].join("\n"));
       }
-      mkdirp(appFilePath);
+      await mkdirp(appFilePath);
       fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
     }
     resolve(null)

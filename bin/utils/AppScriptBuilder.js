@@ -57,7 +57,7 @@ const createCacheAppFile = () => {
                     `${hashName}();`
                 ].join("\n"));
             }
-            (0, utility_1.mkdirp)(appFilePath);
+            yield (0, utility_1.mkdirp)(appFilePath);
             fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
         }
         resolve(null);

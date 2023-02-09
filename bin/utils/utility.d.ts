@@ -1,1 +1,1 @@
-export declare const mkdirp: (filePath: string) => void;
+export declare const mkdirp: (filePath: string) => Promise<unknown>;
