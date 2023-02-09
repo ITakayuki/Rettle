@@ -28,7 +28,7 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
     const dependenciesFiles = [];
     const madgePromises = [];
     for (const target of targets) {
-        madgePromises.push(() => {
+        const promiseFunction = () => {
             return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
                 const res = yield (0, madge_1.default)(target);
                 const obj = res.obj();
@@ -45,9 +45,11 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
                 });
                 resolve(null);
             }));
-        });
+        };
+        madgePromises.push(promiseFunction);
     }
     ;
+    console.log(madgePromises);
     yield Promise.all(madgePromises);
     return dependenciesFiles.filter((x, i, self) => {
         return self.indexOf(x) === i;

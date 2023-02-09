@@ -15,7 +15,7 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
   const dependenciesFiles:Array<string> = [];
   const madgePromises = [];
   for (const target of targets) {
-    madgePromises.push(() => {
+    const promiseFunction = () => {
       return new Promise(async(resolve) => {
         const res = await madge(target);
         const obj = res.obj();
@@ -32,8 +32,10 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
         })
         resolve(null)
       })
-    });
+    }
+    madgePromises.push(promiseFunction);
   };
+  console.log(madgePromises)
   await Promise.all(madgePromises);
   return dependenciesFiles.filter((x, i, self) => {
     return self.indexOf(x) === i;
