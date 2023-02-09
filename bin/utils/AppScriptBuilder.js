@@ -58,7 +58,6 @@ const createCacheAppFile = () => {
                 ;
             }
             fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
-            console.log("update cache: ", appFilePath);
         }
         resolve(null);
     }));

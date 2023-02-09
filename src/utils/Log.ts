@@ -1,11 +1,11 @@
 const target = {
-  blue: "\x1b[34m",
-  normal: "\x1b[0m",
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  magenta: "\x1b[35m",
-  cyan: "\x1b[36m"
+  blue: "\u001b[34m",
+  normal: "\u001b[0m",
+  red: "\u001b[31m",
+  green: "\u001b[32m",
+  yellow: "\u001b[33m",
+  magenta: "\u001b[35m",
+  cyan: "\u001b[36m"
 }
 
 type TargetKeyTypes = keyof typeof target;
@@ -13,7 +13,7 @@ type TargetKeyTypes = keyof typeof target;
 export const color = new Proxy(target, {
   get: (target, prop: string): (log:string) => void => {
     return (log: string) => {
-      return `${prop}${log}\x1b[0m`;
+      return `${prop}${log}\u001b[0m`;
     };
   }
 }) as unknown as {[index in TargetKeyTypes]: (log:string) => void};
