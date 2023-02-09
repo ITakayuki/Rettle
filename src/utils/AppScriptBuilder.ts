@@ -31,8 +31,8 @@ const createFileName = (filePath:string) => {
 
 export const createCacheAppFile = () => {
   return new Promise(async(resolve) => {
-    const jsFileName = path.basename(config.js)
-    const jsBaseDir = path.basename(config.js);
+    const jsFileName = path.basename(config.js).replace(".js", "")
+    const jsBaseDir = path.dirname(config.js);
     for (const endpoint of config.endpoints) {
       const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => {
         return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
