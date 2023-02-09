@@ -16,7 +16,9 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
   const madgePromises = [];
   for (const target of targets) {
     const promiseFunction = new Promise(async(resolve) => {
-        const res = await madge(target);
+        const res = await madge(target, {
+          baseDir: "./"
+        });
         const obj = res.obj();
         console.log("obj: ", obj)
         Object.keys(obj).forEach((key: string) => {
