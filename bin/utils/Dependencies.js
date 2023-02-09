@@ -24,7 +24,6 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
         ignore: ignore,
         nodir: true
     });
-    console.log("targets: ", targets);
     const dependenciesFiles = [];
     const madgePromises = [];
     for (const target of targets) {
@@ -48,7 +47,6 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
         madgePromises.push(promiseFunction);
     }
     ;
-    console.log(madgePromises, new Promise(resolve => resolve(null)));
     yield Promise.all(madgePromises);
     return dependenciesFiles.filter((x, i, self) => {
         return self.indexOf(x) === i;
