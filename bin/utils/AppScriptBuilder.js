@@ -22,6 +22,7 @@ const template_tsconfig_json_1 = __importDefault(require("./template-tsconfig.js
 const Dependencies_1 = require("./Dependencies");
 const config_1 = require("./config");
 const glob_1 = __importDefault(require("glob"));
+const utility_1 = require("./utility");
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -49,18 +50,12 @@ const createCacheAppFile = () => {
             const scriptRunner = [];
             for (const file of files) {
                 const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`);
+                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(".cache/scripts"), file).replace(".tsx", "").replace(".jsx", "")}";`);
                 scriptRunner.push([
                     `${hashName}();`
                 ].join("\n"));
-                if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
-                    fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
-                }
-                ;
-                if (!fs_1.default.existsSync(path_1.default.resolve(".cache/scripts"))) {
-                    fs_1.default.mkdirSync(path_1.default.resolve(".cache/scripts"));
-                }
             }
+            (0, utility_1.mkdirp)(appFilePath);
             fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
         }
         resolve(null);

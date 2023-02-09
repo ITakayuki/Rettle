@@ -7,6 +7,7 @@ import tsConfig from "./template-tsconfig.json";
 import {getDependencies} from "./Dependencies";
 import {config} from "./config";
 import glob from "glob";
+import {mkdirp} from "./utility";
 
 interface BuildScriptInterface {
   minify: boolean;
@@ -41,17 +42,12 @@ export const createCacheAppFile = () => {
       const scriptRunner = [];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache"), file).replace(".tsx", "").replace(".jsx", "")}";`)
+        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache/scripts"), file).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
           `${hashName}();`
         ].join("\n"));
-        if (!fs.existsSync(path.resolve(".cache"))) {
-          fs.mkdirSync(path.resolve(".cache"));
-        };
-        if (!fs.existsSync(path.resolve(".cache/scripts"))) {
-          fs.mkdirSync(path.resolve(".cache/scripts"));
-        }
       }
+      mkdirp(appFilePath);
       fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
     }
     resolve(null)
