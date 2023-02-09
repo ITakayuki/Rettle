@@ -61,7 +61,7 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
       entryPoints: glob.sync(path.resolve("./.cache/**/*.tsx"), {
         nodir: true
       }),
-      outfile: outDir,
+      outdir: outDir,
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",
       target: "es6",
@@ -89,7 +89,7 @@ export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
       entryPoints: glob.sync(path.resolve("./.cache/**/*.tsx"), {
         nodir: true
       }),
-      outfile: outDir,
+      outdir: outDir,
       sourcemap: process.env.NODE_ENV === "develop",
       platform: "browser",
       target: "es6",

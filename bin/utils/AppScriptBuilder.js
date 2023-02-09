@@ -70,7 +70,7 @@ const buildScript = ({ minify, outDir }) => {
             entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*.tsx"), {
                 nodir: true
             }),
-            outfile: outDir,
+            outdir: outDir,
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
             target: "es6",
@@ -99,7 +99,7 @@ const watchScript = ({ minify, outDir }) => {
             entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/**/*.tsx"), {
                 nodir: true
             }),
-            outfile: outDir,
+            outdir: outDir,
             sourcemap: process.env.NODE_ENV === "develop",
             platform: "browser",
             target: "es6",

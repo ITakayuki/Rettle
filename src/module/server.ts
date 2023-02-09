@@ -31,7 +31,7 @@ const watchSources = () => {
 export const server = async() => {
   const buildSetupOptions = {
     minify: true,
-    outDir: path.join(config.outDir, config.pathPrefix, config.js)
+    outDir: path.join(config.outDir, config.pathPrefix)
   }
   await createTsConfigFile();
   await createCacheAppFile();
