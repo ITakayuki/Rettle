@@ -30,7 +30,7 @@ exports.mkdirp = void 0;
 const path = __importStar(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const mkdirp = (filePath) => {
-    const dirname = path.extname(filePath) ? path.dirname(filePath) : filePath;
+    const dirname = path.dirname(filePath);
     if (fs_1.default.existsSync(dirname)) {
         return;
     }
