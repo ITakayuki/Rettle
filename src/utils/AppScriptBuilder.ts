@@ -50,7 +50,7 @@ export const createCacheAppFile = () => {
         ].join("\n"));
       }
       await mkdirp(appFilePath);
-      fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+      // fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
     }
     resolve(null)
   })
