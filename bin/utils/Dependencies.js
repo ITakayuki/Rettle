@@ -33,13 +33,12 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
                 baseDir: "./"
             });
             const obj = res.obj();
-            console.log("obj: ", obj);
             Object.keys(obj).forEach((key) => {
                 if (checkScript(key)) {
                     dependenciesFiles.push(key);
                 }
                 for (const targetFilePath of obj[key]) {
-                    if (checkScript(key)) {
+                    if (checkScript(targetFilePath)) {
                         dependenciesFiles.push(targetFilePath);
                     }
                 }

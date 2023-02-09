@@ -20,13 +20,12 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
           baseDir: "./"
         });
         const obj = res.obj();
-        console.log("obj: ", obj)
         Object.keys(obj).forEach((key: string) => {
           if(checkScript(key)) {
             dependenciesFiles.push(key);
           }
           for (const targetFilePath of obj[key]) {
-            if(checkScript(key)) {
+            if(checkScript(targetFilePath)) {
               dependenciesFiles.push(targetFilePath);
             }
           }
