@@ -24,12 +24,14 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
         ignore: ignore,
         nodir: true
     });
+    console.log("targets: ", targets);
     const dependenciesFiles = [];
     const madgePromises = [];
     for (const target of targets) {
         madgePromises.push(() => __awaiter(void 0, void 0, void 0, function* () {
             const res = yield (0, madge_1.default)(target);
             const obj = res.obj();
+            console.log("obj: ", obj);
             Object.keys(obj).forEach((key) => {
                 if (checkScript(key)) {
                     dependenciesFiles.push(key);

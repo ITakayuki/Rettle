@@ -11,12 +11,14 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
     ignore: ignore,
     nodir: true
   });
+  console.log("targets: ", targets)
   const dependenciesFiles:Array<string> = [];
   const madgePromises = [];
   for (const target of targets) {
     madgePromises.push(async () => {
       const res = await madge(target);
       const obj = res.obj();
+      console.log("obj: ", obj)
       Object.keys(obj).forEach((key: string) => {
         if(checkScript(key)) {
           dependenciesFiles.push(key);
