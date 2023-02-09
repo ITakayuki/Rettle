@@ -26,7 +26,7 @@ export const createTsConfigFile = () => {
 
 const createFileName = (filePath:string) => {
   const relativePath = path.relative(path.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "")
-  return path.join(".cache/scripts",relativePath, "app.tsx")
+  return relativePath
 }
 
 export const createCacheAppFile = () => {
@@ -36,13 +36,13 @@ export const createCacheAppFile = () => {
         return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
       });
       const files = await getDependencies(endpoint, ignore);
-      const appFilename = createFileName(endpoint)
-      const appFilePath = path.resolve(appFilename);
+      const appResolvePath = createFileName(endpoint)
+      const appFilePath = path.join(".cache/scripts",appResolvePath, "app.tsx")
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(".cache/scripts"), file).replace(".tsx", "").replace(".jsx", "")}";`)
+        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath)), file).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
           `${hashName}();`
         ].join("\n"));

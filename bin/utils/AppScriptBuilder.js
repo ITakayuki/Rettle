@@ -35,7 +35,7 @@ const createTsConfigFile = () => {
 exports.createTsConfigFile = createTsConfigFile;
 const createFileName = (filePath) => {
     const relativePath = path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "");
-    return path_1.default.join(".cache/scripts", relativePath, "app.tsx");
+    return relativePath;
 };
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,13 +44,13 @@ const createCacheAppFile = () => {
                 return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""));
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
-            const appFilename = createFileName(endpoint);
-            const appFilePath = path_1.default.resolve(appFilename);
+            const appResolvePath = createFileName(endpoint);
+            const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, "app.tsx");
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
                 const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(".cache/scripts"), file).replace(".tsx", "").replace(".jsx", "")}";`);
+                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath)), file).replace(".tsx", "").replace(".jsx", "")}";`);
                 scriptRunner.push([
                     `${hashName}();`
                 ].join("\n"));
