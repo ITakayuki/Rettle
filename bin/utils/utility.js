@@ -38,6 +38,7 @@ const mkdirp = (filePath) => {
             const currPath = path.join.apply(null, parts.slice(0, i));
             console.log(currPath);
             if (!fs_1.default.existsSync(currPath)) {
+                console.log("create DIR");
                 fs_1.default.mkdirSync(currPath);
             }
             if (i === parts.length) {

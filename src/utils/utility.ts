@@ -10,6 +10,7 @@ export const mkdirp = (filePath: string) => {
       const currPath = path.join.apply(null, parts.slice(0, i));
       console.log(currPath)
       if (!fs.existsSync(currPath)) {
+        console.log("create DIR")
         fs.mkdirSync(currPath);
       }
       if (i === parts.length) {
