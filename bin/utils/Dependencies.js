@@ -47,7 +47,7 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
         madgePromises.push(promiseFunction);
     }
     ;
-    console.log(madgePromises);
+    console.log(madgePromises, new Promise(resolve => resolve(null)));
     yield Promise.all(madgePromises);
     return dependenciesFiles.filter((x, i, self) => {
         return self.indexOf(x) === i;

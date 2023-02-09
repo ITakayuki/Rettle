@@ -33,7 +33,7 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
     })
     madgePromises.push(promiseFunction);
   };
-  console.log(madgePromises)
+  console.log(madgePromises, new Promise(resolve => resolve(null)))
   await Promise.all(madgePromises);
   return dependenciesFiles.filter((x, i, self) => {
     return self.indexOf(x) === i;
