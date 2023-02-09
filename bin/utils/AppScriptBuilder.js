@@ -47,12 +47,12 @@ const createCacheAppFile = () => {
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appResolvePath = createFileName(endpoint);
-            const appFilePath = path_1.default.join(".cache/scripts", jsBaseDir, appResolvePath, `${jsFileName}.tsx`);
+            const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.tsx`);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
                 const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", jsBaseDir, appResolvePath)), file).replace(".tsx", "").replace(".jsx", "")}";`);
+                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file).replace(".tsx", "").replace(".jsx", "")}";`);
                 scriptRunner.push([
                     `${hashName}();`
                 ].join("\n"));
