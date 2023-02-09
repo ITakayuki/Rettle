@@ -30,11 +30,13 @@ exports.mkdirp = void 0;
 const path = __importStar(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const mkdirp = (filePath) => {
-    const dirname = path.dirname(filePath);
-    if (fs_1.default.existsSync(dirname)) {
-        return;
+    const dirPath = path.basename(filePath) ? path.dirname(filePath) : filePath;
+    const parts = path.resolve(dirPath).split(path.sep);
+    for (let i = 1; i <= parts.length; i++) {
+        const currPath = path.join.apply(null, parts.slice(0, i));
+        if (!fs_1.default.existsSync(currPath)) {
+            fs_1.default.mkdirSync(currPath);
+        }
     }
-    (0, exports.mkdirp)(dirname);
-    fs_1.default.mkdirSync(dirname);
 };
 exports.mkdirp = mkdirp;
