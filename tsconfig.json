@@ -15,5 +15,5 @@
     "skipLibCheck": true,
   },
   "include": ["./src/**/*"],
-  "exclude": ["./src/rettle.ts", "node_modules"],
+  "exclude": ["node_modules"],
 }
