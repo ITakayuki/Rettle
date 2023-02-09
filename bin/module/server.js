@@ -62,6 +62,7 @@ const watchSources = () => {
     });
 };
 const server = () => __awaiter(void 0, void 0, void 0, function* () {
+    const jsBaseDir = path.basename(config_1.config.js);
     const buildSetupOptions = {
         minify: true,
         outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix)

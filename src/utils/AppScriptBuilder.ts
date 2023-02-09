@@ -31,18 +31,20 @@ const createFileName = (filePath:string) => {
 
 export const createCacheAppFile = () => {
   return new Promise(async(resolve) => {
+    const jsFileName = path.basename(config.js)
+    const jsBaseDir = path.basename(config.js);
     for (const endpoint of config.endpoints) {
       const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => {
         return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
       });
       const files = await getDependencies(endpoint, ignore);
       const appResolvePath = createFileName(endpoint)
-      const appFilePath = path.join(".cache/scripts",appResolvePath, "app.tsx")
+      const appFilePath = path.join(".cache/scripts", jsBaseDir,appResolvePath, `${jsFileName}.tsx`)
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath)), file).replace(".tsx", "").replace(".jsx", "")}";`)
+        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", jsBaseDir,appResolvePath)), file).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
           `${hashName}();`
         ].join("\n"));

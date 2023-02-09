@@ -39,18 +39,20 @@ const createFileName = (filePath) => {
 };
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
+        const jsFileName = path_1.default.basename(config_1.config.js);
+        const jsBaseDir = path_1.default.basename(config_1.config.js);
         for (const endpoint of config_1.config.endpoints) {
             const ignore = config_1.config.endpoints.filter((x, i, self) => {
                 return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""));
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appResolvePath = createFileName(endpoint);
-            const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, "app.tsx");
+            const appFilePath = path_1.default.join(".cache/scripts", jsBaseDir, appResolvePath, `${jsFileName}.tsx`);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
                 const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath)), file).replace(".tsx", "").replace(".jsx", "")}";`);
+                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", jsBaseDir, appResolvePath)), file).replace(".tsx", "").replace(".jsx", "")}";`);
                 scriptRunner.push([
                     `${hashName}();`
                 ].join("\n"));

@@ -29,6 +29,7 @@ const watchSources = () => {
 }
 
 export const server = async() => {
+  const jsBaseDir = path.basename(config.js);
   const buildSetupOptions = {
     minify: true,
     outDir: path.join(config.outDir, config.pathPrefix)
