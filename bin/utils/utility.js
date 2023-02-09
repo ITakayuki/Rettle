@@ -35,6 +35,7 @@ const mkdirp = (filePath) => {
         const parts = path.resolve(dirPath).split(path.sep);
         for (let i = 1; i <= parts.length; i++) {
             const currPath = path.join.apply(null, parts.slice(0, i));
+            console.log(currPath);
             if (!fs_1.default.existsSync(currPath)) {
                 fs_1.default.mkdirSync(currPath);
             }

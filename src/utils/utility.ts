@@ -7,6 +7,7 @@ export const mkdirp = (filePath: string) => {
     const parts = path.resolve(dirPath).split(path.sep);
     for (let i = 1; i <= parts.length; i++) {
       const currPath = path.join.apply(null, parts.slice(0, i));
+      console.log(currPath)
       if (!fs.existsSync(currPath)) {
         fs.mkdirSync(currPath);
       }

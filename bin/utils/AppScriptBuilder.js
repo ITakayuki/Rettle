@@ -58,7 +58,7 @@ const createCacheAppFile = () => {
                 ].join("\n"));
             }
             yield (0, utility_1.mkdirp)(appFilePath);
-            // fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+            fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
         }
         resolve(null);
     }));
