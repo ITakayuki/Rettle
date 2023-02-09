@@ -48,6 +48,9 @@ export const createCacheAppFile = () => {
         if (!fs.existsSync(path.resolve(".cache"))) {
           fs.mkdirSync(path.resolve(".cache"));
         };
+        if (!fs.existsSync(path.resolve(".cache/scripts"))) {
+          fs.mkdirSync(path.resolve(".cache/scripts"));
+        }
       }
       fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
     }
