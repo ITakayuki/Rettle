@@ -74,7 +74,7 @@ const createCacheAppFile = () => {
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appResolvePath = createFileName(endpoint);
-            const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.jsx`);
+            const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.tsx`);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
