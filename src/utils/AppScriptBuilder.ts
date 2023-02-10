@@ -133,7 +133,7 @@ export const eraseExports = (code:string) => {
         objects[key] = text;
       }
       const exportName = exportNodes[0].declaration.name;
-      const exportLine = code.slice(exportNodes[0].declaration.name.start, exportNodes[0].declaration.name.end)
+      const exportLine = code.slice(exportNodes[0].start, exportNodes[0].end)
       const result = code.replace(objects[exportName], objects[exportName].split("\n").map(item => {
         return "//"+item
       }).join("\n")).replace(exportLine, "//"+exportLine);
