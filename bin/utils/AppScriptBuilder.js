@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
+exports.eraseExports = exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
 const esbuild_1 = __importDefault(require("esbuild"));
 const Log_1 = require("./Log");
 const path_1 = __importDefault(require("path"));
@@ -23,6 +46,7 @@ const Dependencies_1 = require("./Dependencies");
 const config_1 = require("./config");
 const glob_1 = __importDefault(require("glob"));
 const utility_1 = require("./utility");
+const acorn = __importStar(require("acorn"));
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -64,55 +88,79 @@ const createCacheAppFile = () => {
     }));
 };
 exports.createCacheAppFile = createCacheAppFile;
-const buildScript = ({ minify, outDir }) => {
+const buildScript = ({ outDir }) => {
     return new Promise(resolve => {
-        esbuild_1.default.build({
-            bundle: true,
+        esbuild_1.default.build(Object.assign({ bundle: true, 
+            // all cache scripts
             entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.tsx"), {
                 nodir: true
-            }),
-            outdir: outDir,
-            sourcemap: process.env.NODE_ENV === "develop",
-            platform: "browser",
-            target: "es6",
-            tsconfig: ".cache/tsconfig.json",
-            define: {
+            }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
-            },
-            minify: minify,
-        }).then(() => {
+            } }, config_1.config.esbuild)).then(() => {
             console.log(Log_1.color.blue("Built Script."));
             resolve(null);
         });
     });
 };
 exports.buildScript = buildScript;
-const watchScript = ({ minify, outDir }) => {
+const watchScript = ({ outDir }) => {
     return new Promise(resolve => {
-        esbuild_1.default.build({
-            bundle: true,
-            watch: {
+        esbuild_1.default.build(Object.assign({ bundle: true, watch: {
                 onRebuild(error, result) {
                     if (error)
                         console.error("watch build failed:", error);
                 },
-            },
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.tsx"), {
+            }, entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.tsx"), {
                 nodir: true
-            }),
-            outdir: outDir,
-            sourcemap: process.env.NODE_ENV === "develop",
-            platform: "browser",
-            target: "es6",
-            tsconfig: ".cache/tsconfig.json",
-            define: {
+            }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
-            },
-            minify: minify,
-        }).then(() => {
+            } }, config_1.config.esbuild)).then(() => {
             console.log(Log_1.color.blue("Watch App File."));
             resolve(null);
         });
     });
 };
 exports.watchScript = watchScript;
+const eraseExports = (code) => {
+    const ast = acorn.parse(code, {
+        ecmaVersion: 2023,
+        sourceType: "module"
+    });
+    //@ts-ignore
+    const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
+    //@ts-ignore
+    const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
+    const objects = {};
+    if (exportNodes[0].declaration.name) {
+        // export default **
+        for (const node of functionNodes) {
+            const { start, end } = node;
+            const text = code.slice(start, end);
+            if (node.type === "FunctionDeclaration") {
+                const key = node.id.name;
+                objects[key] = text;
+            }
+            else if (node.type === "VariableDeclaration") {
+                const key = node.declarations[0].id.name;
+                objects[key] = text;
+            }
+            const exportName = exportNodes[0].declaration.name;
+            const exportLine = code.slice(exportNodes[0].declaration.name.start, exportNodes[0].declaration.name.end);
+            const result = code.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+                return "//" + item;
+            }).join("\n")).replace(exportLine, "//" + exportLine);
+            return result;
+        }
+        ;
+    }
+    else {
+        // export default ()=>
+        const exportName = exportNodes[0];
+        const { start, end } = exportName;
+        const exportStr = code.slice(start, end);
+        const result = code.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n"));
+        return result;
+    }
+    return "";
+};
+exports.eraseExports = eraseExports;

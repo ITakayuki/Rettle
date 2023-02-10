@@ -1,5 +1,6 @@
 import {RettleConfigInterface} from "./config";
 
+
 const config:RettleConfigInterface = {
   pathPrefix: "./",
   port: 3000,
@@ -11,7 +12,7 @@ const config:RettleConfigInterface = {
   staticPath: "/static",
   encode: "UTF-8",
   esbuild: {
-    minify: true
+    minify: true,
   }
 }
 

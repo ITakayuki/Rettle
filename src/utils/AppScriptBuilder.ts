@@ -8,9 +8,9 @@ import {getDependencies} from "./Dependencies";
 import {config} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
+import * as acorn from 'acorn';
 
 interface BuildScriptInterface {
-  minify: boolean;
   outDir: string;
 }
 
@@ -56,10 +56,11 @@ export const createCacheAppFile = () => {
   })
 }
 
-export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
+export const buildScript = ({outDir}: BuildScriptInterface) => {
   return new Promise(resolve => {
     esBuild.build({
       bundle: true,
+      // all cache scripts
       entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.tsx"), {
         nodir: true
       }),
@@ -71,7 +72,7 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
       define: {
         "process.env": JSON.stringify(process.env),
       },
-      minify: minify,
+      ...config.esbuild
     }).then(() => {
       console.log(color.blue("Built Script."));
       resolve(null);
@@ -79,7 +80,7 @@ export const buildScript = ({minify, outDir}: BuildScriptInterface) => {
   })
 }
 
-export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
+export const watchScript = ({ outDir}: BuildScriptInterface) => {
   return new Promise(resolve => {
     esBuild.build({
       bundle: true,
@@ -99,10 +100,50 @@ export const watchScript = ({minify, outDir}: BuildScriptInterface) => {
       define: {
         "process.env": JSON.stringify(process.env),
       },
-      minify: minify,
+      ...config.esbuild
     }).then(() => {
       console.log(color.blue("Watch App File."));
       resolve(null);
     })
   })
+}
+
+export const eraseExports = (code:string) => {
+  const ast = acorn.parse(code, {
+    ecmaVersion: 2023,
+    sourceType: "module"
+  });
+  //@ts-ignore
+  const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
+  //@ts-ignore
+  const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
+  const objects: Record<string, string> = {};
+  if (exportNodes[0].declaration.name) {
+    // export default **
+    for (const node of functionNodes) {
+      const {start, end} = node;
+      const text = code.slice(start, end);
+      if (node.type === "FunctionDeclaration") {
+        const key = node.id.name;
+        objects[key] = text;
+      } else if (node.type === "VariableDeclaration") {
+        const key = node.declarations[0].id.name;
+        objects[key] = text;
+      }
+      const exportName = exportNodes[0].declaration.name;
+      const exportLine = code.slice(exportNodes[0].declaration.name.start, exportNodes[0].declaration.name.end)
+      const result = code.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+        return "//"+item
+      }).join("\n")).replace(exportLine, "//"+exportLine);
+      return result;
+    };
+  } else {
+    // export default ()=>
+    const exportName = exportNodes[0]
+    const {start, end} = exportName;
+    const exportStr = code.slice(start, end);
+    const result = code.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n"))
+    return result;
+  }
+  return ""
 }

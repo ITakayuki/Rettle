@@ -12,7 +12,7 @@ const config = {
     staticPath: "/static",
     encode: "UTF-8",
     esbuild: {
-        minify: true
+        minify: true,
     }
 };
 exports.defaultConfig = config;

@@ -31,6 +31,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.server = void 0;
 const watcher_1 = require("./watcher");
@@ -38,6 +41,10 @@ const Log_1 = require("../utils/Log");
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const config_1 = require("../utils/config");
 const path = __importStar(require("path"));
+const glob_1 = __importDefault(require("glob"));
+const AppScriptBuilder_2 = require("../utils/AppScriptBuilder");
+const fs_1 = __importDefault(require("fs"));
+const utility_1 = require("../utils/utility");
 const watchSources = () => {
     (0, watcher_1.watchFiles)({
         change: (filename) => {
@@ -63,9 +70,24 @@ const watchSources = () => {
 };
 const server = () => __awaiter(void 0, void 0, void 0, function* () {
     const buildSetupOptions = {
-        minify: config_1.config.esbuild.minify,
         outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix)
     };
+    const srcFiles = glob_1.default.sync("./src/**/*{ts,js,tsx,jsx,json}", {
+        nodir: true
+    });
+    yield Promise.all(srcFiles.map(file => new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
+        const outPath = path.join(".cache/", file);
+        const sourceCode = fs_1.default.readFileSync(file, "utf-8");
+        yield (0, utility_1.mkdirp)(outPath);
+        if (path.extname(file) === "tsx") {
+            const code = (0, AppScriptBuilder_2.eraseExports)(sourceCode);
+            fs_1.default.writeFileSync(outPath, code, "utf-8");
+        }
+        else {
+            fs_1.default.writeFileSync(outPath, sourceCode, "utf-8");
+        }
+        resolve(null);
+    }))));
     yield (0, AppScriptBuilder_1.createTsConfigFile)();
     yield (0, AppScriptBuilder_1.createCacheAppFile)();
     watchSources();

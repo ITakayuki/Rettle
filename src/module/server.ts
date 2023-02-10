@@ -3,6 +3,10 @@ import {color} from "../utils/Log";
 import {createCacheAppFile, watchScript, buildScript, createTsConfigFile} from "../utils/AppScriptBuilder";
 import {config} from "../utils/config";
 import * as path from "path";
+import glob from "glob";
+import {eraseExports} from "../utils/AppScriptBuilder";
+import fs from "fs";
+import {mkdirp} from "../utils/utility";
 
 const watchSources = () => {
   watchFiles({
@@ -30,9 +34,24 @@ const watchSources = () => {
 
 export const server = async() => {
   const buildSetupOptions = {
-    minify: config.esbuild.minify,
     outDir: path.join(config.outDir, config.pathPrefix)
   }
+  const srcFiles = glob.sync("./src/**/*{ts,js,tsx,jsx,json}", {
+    nodir: true
+  });
+  await Promise.all(srcFiles.map(file => new Promise(async(resolve) => {
+      const outPath = path.join(".cache/", file);
+      const sourceCode = fs.readFileSync(file, "utf-8");
+      await mkdirp(outPath);
+      if (path.extname(file) === "tsx") {
+        const code = eraseExports(sourceCode);
+        fs.writeFileSync(outPath, code, "utf-8");
+      } else {
+        fs.writeFileSync(outPath, sourceCode, "utf-8");
+      }
+      resolve(null);
+    })
+  ));
   await createTsConfigFile();
   await createCacheAppFile();
   watchSources();

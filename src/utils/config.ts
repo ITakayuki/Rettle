@@ -5,6 +5,16 @@ interface BuildOptionsInterface {
   buildHTML?: () => void;
 }
 
+interface esbuildInterface {
+  minify: boolean;
+  bundle?: boolean;
+  tsconfig?: string;
+  tsconfigRow?: string;
+  loader?: Record<string, string>;
+  charset?: string;
+
+}
+
 export interface  RettleConfigInterface {
   pathPrefix: string;
   port: number;
@@ -23,9 +33,7 @@ export interface  RettleConfigInterface {
   encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
   alias?: Record<string, string>;
   build?: BuildOptionsInterface;
-  esbuild: {
-    minify: boolean;
-  }
+  esbuild: esbuildInterface
 }
 
 const getConfigure = () => {
