@@ -140,10 +140,13 @@ const eraseExports = (code) => {
         ecmaVersion: 2019,
         sourceType: "module"
     });
+    // @ts-ignore
+    const importNodes = ast.body.filter(item => item.type === "ImportDeclaration" && (item.source.value === "react" || item.source.raw === "react"));
     //@ts-ignore
     const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
     //@ts-ignore
     const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
+    const importReact = importNodes ? jsCode.slice(importNodes.start, importNodes.end) : null;
     const objects = {};
     if (exportNodes[0].declaration.name) {
         // export default **
@@ -160,7 +163,8 @@ const eraseExports = (code) => {
             }
             const exportName = exportNodes[0].declaration.name;
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
-            const result = jsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+            const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
+            const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
                 return "//" + item;
             }).join("\n")).replace(exportLine, "export default () => {}");
             return result;
@@ -172,7 +176,8 @@ const eraseExports = (code) => {
         const exportName = exportNodes[0];
         const { start, end } = exportName;
         const exportStr = jsCode.slice(start, end);
-        const result = jsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
+        const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
+        const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
         return result;
     }
     return "";
