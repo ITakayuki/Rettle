@@ -66,7 +66,6 @@ const createFileName = (filePath) => {
 };
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("script rebuild");
         const jsFileName = path_1.default.basename(config_1.config.js).replace(".js", "");
         const jsBaseDir = path_1.default.dirname(config_1.config.js);
         for (const endpoint of config_1.config.endpoints) {
