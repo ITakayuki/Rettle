@@ -134,9 +134,8 @@ const translateTs2Js = (code) => {
 exports.translateTs2Js = translateTs2Js;
 const eraseExports = (code) => {
     const jsCode = (0, exports.translateTs2Js)(code);
-    console.log(jsCode);
     //@ts-ignore
-    const ast = acorn.Parser.extend((0, acorn_jsx_1.default)({})).parse(jsCode, {
+    const ast = acorn.Parser.extend((0, acorn_jsx_1.default)()).parse(jsCode, {
         ecmaVersion: 2019,
         sourceType: "module"
     });
@@ -149,7 +148,7 @@ const eraseExports = (code) => {
         // export default **
         for (const node of functionNodes) {
             const { start, end } = node;
-            const text = code.slice(start, end);
+            const text = jsCode.slice(start, end);
             if (node.type === "FunctionDeclaration") {
                 const key = node.id.name;
                 objects[key] = text;
@@ -160,7 +159,6 @@ const eraseExports = (code) => {
             }
             const exportName = exportNodes[0].declaration.name;
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
-            console.log(exportNodes[0]);
             const result = jsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
                 return "//" + item;
             }).join("\n")).replace(exportLine, "//" + exportLine);
