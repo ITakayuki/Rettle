@@ -162,7 +162,7 @@ const eraseExports = (code) => {
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
             const result = jsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
                 return "//" + item;
-            }).join("\n")).replace(exportLine, "//" + exportLine);
+            }).join("\n")).replace(exportLine, "export default () => {}");
             return result;
         }
         ;
