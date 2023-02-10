@@ -49,7 +49,6 @@ const utility_1 = require("./utility");
 const acorn = __importStar(require("acorn"));
 const acorn_jsx_1 = __importDefault(require("acorn-jsx"));
 const typescript_1 = __importDefault(require("typescript"));
-const terser_1 = require("terser");
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -178,16 +177,6 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
         const exportStr = jsCode.slice(start, end);
         const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
         const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
-        const temp = yield (0, terser_1.minify)(result, {
-            toplevel: false,
-            mangle: false,
-            format: {
-                beautify: true
-            },
-            compress: {
-                defaults: false
-            }
-        });
         return (0, exports.translateTs2Js)(result);
     }
     return "";

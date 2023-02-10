@@ -11,7 +11,6 @@ import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
 import jsx from "acorn-jsx";
 import ts from "typescript";
-import { minify } from "terser";
 
 
 interface BuildScriptInterface {
@@ -163,16 +162,6 @@ export const eraseExports = async(code:string) => {
     const exportStr = jsCode.slice(start, end);
     const removeReactJsCode = importReact ? jsCode.replace(importReact, "//"+importReact) : jsCode;
     const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
-    const temp = await minify(result, {
-      toplevel: false,
-      mangle: false,
-      format: {
-        beautify: true
-      },
-      compress: {
-        defaults: false
-      }
-    })
     return translateTs2Js(result);
   }
   return ""

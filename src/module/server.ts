@@ -31,6 +31,7 @@ const watchSources = () => {
 }
 
 export const server = async() => {
+  /* build app.js files */
   const buildSetupOptions = {
     outDir: path.join(config.outDir, config.pathPrefix)
   }
@@ -47,4 +48,5 @@ export const server = async() => {
   watchSources();
   await buildScript(buildSetupOptions);
   await watchScript(buildSetupOptions)
+  /* wake up html and css server */
 }
