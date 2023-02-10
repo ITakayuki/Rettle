@@ -42,12 +42,12 @@ export const createCacheAppFile = () => {
       });
       const files = await getDependencies(endpoint, ignore);
       const appResolvePath = createFileName(endpoint)
-      const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.tsx`)
+      const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.jsx`)
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file).replace(".tsx", "").replace(".jsx", "")}";`)
+        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace(path.resolve("./src"), path.resolve(".cache/src"))).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
           `${hashName}();`
         ].join("\n"));
