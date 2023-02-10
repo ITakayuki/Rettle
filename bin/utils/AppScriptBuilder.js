@@ -169,17 +169,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                 return "//" + item;
             }).join("\n")).replace(exportLine, "export default () => {}");
             console.log("result: ", result);
-            const temp = yield (0, terser_1.minify)(result, {
-                toplevel: false,
-                mangle: false,
-                format: {
-                    beautify: true
-                },
-                compress: {
-                    defaults: false
-                }
-            });
-            return temp.code;
+            return (0, exports.translateTs2Js)(result);
         }
         ;
     }
@@ -201,7 +191,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                 defaults: false
             }
         });
-        return temp.code;
+        return (0, exports.translateTs2Js)(result);
     }
     return "";
 });

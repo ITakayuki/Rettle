@@ -156,17 +156,7 @@ export const eraseExports = async(code:string) => {
         return "//" + item
       }).join("\n")).replace(exportLine, "export default () => {}");
       console.log("result: ", result)
-      const temp = await minify(result, {
-        toplevel: false,
-        mangle: false,
-        format: {
-          beautify: true
-        },
-        compress: {
-          defaults: false
-        }
-      })
-      return temp.code!;
+      return translateTs2Js(result);
     };
   } else {
     // export default ()=>
@@ -186,7 +176,7 @@ export const eraseExports = async(code:string) => {
         defaults: false
       }
     })
-    return temp.code!;
+    return translateTs2Js(result);
   }
   return ""
 }
