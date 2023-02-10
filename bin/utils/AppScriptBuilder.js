@@ -129,7 +129,7 @@ const translateTs2Js = (code) => {
     return typescript_1.default.transpileModule(code, {
         compilerOptions: {
             target: 99,
-            "jsx": 1
+            "jsx": 2
         }
     }).outputText;
 };
