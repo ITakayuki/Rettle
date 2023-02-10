@@ -170,16 +170,19 @@ export const eraseExports = (code:string) => {
   return ""
 }
 
-export const outputFormatFiles = async(file:string) => {
-  console.log("tsx 2 jsx: ", file)
-  const outPath = path.join(".cache/", file).replace(".ts", ".js");
-  const sourceCode = fs.readFileSync(file, "utf-8");
-  await mkdirp(outPath);
-  if (path.extname(file).includes("tsx")) {
-    const code = eraseExports(sourceCode);
-    fs.writeFileSync(outPath, code, "utf-8");
-  } else {
-    const code = translateTs2Js(sourceCode);
-    fs.writeFileSync(outPath, code, "utf-8");
-  }
+export const outputFormatFiles = (file:string) => {
+  return new Promise(async(resolve) => {
+    console.log("tsx 2 jsx: ", file)
+    const outPath = path.join(".cache/", file).replace(".ts", ".js");
+    const sourceCode = fs.readFileSync(file, "utf-8");
+    await mkdirp(outPath);
+    if (path.extname(file).includes("tsx")) {
+      const code = eraseExports(sourceCode);
+      fs.writeFileSync(outPath, code, "utf-8");
+    } else {
+      const code = translateTs2Js(sourceCode);
+      fs.writeFileSync(outPath, code, "utf-8");
+    }
+    resolve(null)
+  })
 }
