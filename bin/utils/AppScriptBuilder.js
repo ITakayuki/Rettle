@@ -95,7 +95,7 @@ const buildScript = ({ outDir }) => {
     return new Promise(resolve => {
         esbuild_1.default.build(Object.assign({ bundle: true, 
             // all cache scripts
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.tsx"), {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.jsx"), {
                 nodir: true
             }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
@@ -113,7 +113,7 @@ const watchScript = ({ outDir }) => {
                     if (error)
                         console.error("watch build failed:", error);
                 },
-            }, entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.tsx"), {
+            }, entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.jsx"), {
                 nodir: true
             }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
