@@ -65,6 +65,7 @@ const createFileName = (filePath) => {
 };
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log("script rebuild");
         const jsFileName = path_1.default.basename(config_1.config.js).replace(".js", "");
         const jsBaseDir = path_1.default.dirname(config_1.config.js);
         for (const endpoint of config_1.config.endpoints) {
@@ -78,7 +79,6 @@ const createCacheAppFile = () => {
             const scriptRunner = [];
             for (const file of files) {
                 const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                console.log(file);
                 appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
                 scriptRunner.push([
                     `${hashName}();`
@@ -184,6 +184,7 @@ const eraseExports = (code) => {
 };
 exports.eraseExports = eraseExports;
 const outputFormatFiles = (file) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("tsx 2 jsx: ", file);
     const outPath = path_1.default.join(".cache/", file).replace(".ts", ".js");
     const sourceCode = fs_1.default.readFileSync(file, "utf-8");
     yield (0, utility_1.mkdirp)(outPath);

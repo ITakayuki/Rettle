@@ -35,6 +35,7 @@ const createFileName = (filePath:string) => {
 
 export const createCacheAppFile = () => {
   return new Promise(async(resolve) => {
+    console.log("script rebuild")
     const jsFileName = path.basename(config.js).replace(".js", "")
     const jsBaseDir = path.dirname(config.js);
     for (const endpoint of config.endpoints) {
@@ -48,7 +49,6 @@ export const createCacheAppFile = () => {
       const scriptRunner = [];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        console.log(file)
         appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
           `${hashName}();`
@@ -171,6 +171,7 @@ export const eraseExports = (code:string) => {
 }
 
 export const outputFormatFiles = async(file:string) => {
+  console.log("tsx 2 jsx: ", file)
   const outPath = path.join(".cache/", file).replace(".ts", ".js");
   const sourceCode = fs.readFileSync(file, "utf-8");
   await mkdirp(outPath);
