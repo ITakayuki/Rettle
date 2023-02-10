@@ -42,15 +42,13 @@ const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const config_1 = require("../utils/config");
 const path = __importStar(require("path"));
 const glob_1 = __importDefault(require("glob"));
-const AppScriptBuilder_2 = require("../utils/AppScriptBuilder");
-const fs_1 = __importDefault(require("fs"));
-const utility_1 = require("../utils/utility");
 const watchSources = () => {
     (0, watcher_1.watchFiles)({
-        change: (filename) => {
+        change: (filename) => __awaiter(void 0, void 0, void 0, function* () {
             console.log(Log_1.color.blue(`【Change File】-> ${filename}`));
-            (0, AppScriptBuilder_1.createCacheAppFile)().then();
-        },
+            yield (0, AppScriptBuilder_1.outputFormatFiles)(filename);
+            yield (0, AppScriptBuilder_1.createCacheAppFile)();
+        }),
         add: (filename, watcher) => {
             console.log(Log_1.color.blue(`【Add File】-> ${filename}`));
             watcher.add(filename);
@@ -76,17 +74,7 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
         nodir: true
     });
     yield Promise.all(srcFiles.map(file => new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-        const outPath = path.join(".cache/", file).replace(".ts", ".js");
-        const sourceCode = fs_1.default.readFileSync(file, "utf-8");
-        yield (0, utility_1.mkdirp)(outPath);
-        if (path.extname(file).includes("tsx")) {
-            const code = (0, AppScriptBuilder_2.eraseExports)(sourceCode);
-            fs_1.default.writeFileSync(outPath, code, "utf-8");
-        }
-        else {
-            const code = (0, AppScriptBuilder_2.translateTs2Js)(sourceCode);
-            fs_1.default.writeFileSync(outPath, code, "utf-8");
-        }
+        yield (0, AppScriptBuilder_1.outputFormatFiles)(file);
         resolve(null);
     }))));
     yield (0, AppScriptBuilder_1.createTsConfigFile)();

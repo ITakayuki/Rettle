@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eraseExports = exports.translateTs2Js = exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
+exports.outputFormatFiles = exports.eraseExports = exports.translateTs2Js = exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
 const esbuild_1 = __importDefault(require("esbuild"));
 const Log_1 = require("./Log");
 const path_1 = __importDefault(require("path"));
@@ -183,3 +183,17 @@ const eraseExports = (code) => {
     return "";
 };
 exports.eraseExports = eraseExports;
+const outputFormatFiles = (file) => __awaiter(void 0, void 0, void 0, function* () {
+    const outPath = path_1.default.join(".cache/", file).replace(".ts", ".js");
+    const sourceCode = fs_1.default.readFileSync(file, "utf-8");
+    yield (0, utility_1.mkdirp)(outPath);
+    if (path_1.default.extname(file).includes("tsx")) {
+        const code = (0, exports.eraseExports)(sourceCode);
+        fs_1.default.writeFileSync(outPath, code, "utf-8");
+    }
+    else {
+        const code = (0, exports.translateTs2Js)(sourceCode);
+        fs_1.default.writeFileSync(outPath, code, "utf-8");
+    }
+});
+exports.outputFormatFiles = outputFormatFiles;

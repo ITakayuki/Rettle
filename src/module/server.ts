@@ -1,18 +1,16 @@
 import {watchFiles} from "./watcher";
 import {color} from "../utils/Log";
-import {createCacheAppFile, watchScript, buildScript, createTsConfigFile} from "../utils/AppScriptBuilder";
+import {createCacheAppFile, watchScript, buildScript, createTsConfigFile, outputFormatFiles} from "../utils/AppScriptBuilder";
 import {config} from "../utils/config";
 import * as path from "path";
 import glob from "glob";
-import {eraseExports, translateTs2Js} from "../utils/AppScriptBuilder";
-import fs from "fs";
-import {mkdirp} from "../utils/utility";
 
 const watchSources = () => {
   watchFiles({
-    change: (filename) => {
+    change: async(filename) => {
       console.log(color.blue(`【Change File】-> ${filename}`));
-      createCacheAppFile().then();
+      await outputFormatFiles(filename);
+      await createCacheAppFile()
     },
     add: (filename, watcher) => {
       console.log(color.blue(`【Add File】-> ${filename}`));
@@ -40,16 +38,7 @@ export const server = async() => {
     nodir: true
   });
   await Promise.all(srcFiles.map(file => new Promise(async(resolve) => {
-      const outPath = path.join(".cache/", file).replace(".ts", ".js");
-      const sourceCode = fs.readFileSync(file, "utf-8");
-      await mkdirp(outPath);
-      if (path.extname(file).includes("tsx")) {
-        const code = eraseExports(sourceCode);
-        fs.writeFileSync(outPath, code, "utf-8");
-      } else {
-        const code = translateTs2Js(sourceCode);
-        fs.writeFileSync(outPath, code, "utf-8");
-      }
+      await outputFormatFiles(file)
       resolve(null);
     })
   ));

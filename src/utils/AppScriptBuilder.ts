@@ -11,6 +11,7 @@ import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
 import jsx from "acorn-jsx";
 import ts from "typescript";
+import madge from "madge";
 
 
 interface BuildScriptInterface {
@@ -167,4 +168,17 @@ export const eraseExports = (code:string) => {
     return result;
   }
   return ""
+}
+
+export const outputFormatFiles = async(file:string) => {
+  const outPath = path.join(".cache/", file).replace(".ts", ".js");
+  const sourceCode = fs.readFileSync(file, "utf-8");
+  await mkdirp(outPath);
+  if (path.extname(file).includes("tsx")) {
+    const code = eraseExports(sourceCode);
+    fs.writeFileSync(outPath, code, "utf-8");
+  } else {
+    const code = translateTs2Js(sourceCode);
+    fs.writeFileSync(outPath, code, "utf-8");
+  }
 }
