@@ -172,7 +172,7 @@ const eraseExports = (code) => {
         const exportName = exportNodes[0];
         const { start, end } = exportName;
         const exportStr = jsCode.slice(start, end);
-        const result = jsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n"));
+        const result = jsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
         return result;
     }
     return "";
