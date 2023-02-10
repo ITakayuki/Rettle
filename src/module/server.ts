@@ -43,7 +43,7 @@ export const server = async() => {
       const outPath = path.join(".cache/", file);
       const sourceCode = fs.readFileSync(file, "utf-8");
       await mkdirp(outPath);
-      if (path.extname(file) === "tsx") {
+      if (path.extname(file).includes("tsx")) {
         const code = eraseExports(sourceCode);
         fs.writeFileSync(outPath, code, "utf-8");
       } else {

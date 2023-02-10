@@ -79,7 +79,7 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
         const outPath = path.join(".cache/", file);
         const sourceCode = fs_1.default.readFileSync(file, "utf-8");
         yield (0, utility_1.mkdirp)(outPath);
-        if (path.extname(file) === "tsx") {
+        if (path.extname(file).includes("tsx")) {
             const code = (0, AppScriptBuilder_2.eraseExports)(sourceCode);
             fs_1.default.writeFileSync(outPath, code, "utf-8");
         }
