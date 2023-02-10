@@ -47,6 +47,7 @@ const config_1 = require("./config");
 const glob_1 = __importDefault(require("glob"));
 const utility_1 = require("./utility");
 const acorn = __importStar(require("acorn"));
+const acorn_jsx_1 = __importDefault(require("acorn-jsx"));
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -122,7 +123,7 @@ const watchScript = ({ outDir }) => {
 };
 exports.watchScript = watchScript;
 const eraseExports = (code) => {
-    const ast = acorn.parse(code, {
+    const ast = acorn.Parser.extend((0, acorn_jsx_1.default)()).parse(code, {
         ecmaVersion: 2023,
         sourceType: "module"
     });

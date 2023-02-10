@@ -9,6 +9,7 @@ import {config} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
+import jsx from "acorn-jsx";
 
 interface BuildScriptInterface {
   outDir: string;
@@ -109,10 +110,11 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
 }
 
 export const eraseExports = (code:string) => {
-  const ast = acorn.parse(code, {
+
+  const ast = acorn.Parser.extend(jsx()).parse(code, {
     ecmaVersion: 2023,
     sourceType: "module"
-  });
+  })
   //@ts-ignore
   const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
   //@ts-ignore
