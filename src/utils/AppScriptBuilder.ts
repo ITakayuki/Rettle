@@ -172,11 +172,12 @@ export const eraseExports = (code:string) => {
 
 export const outputFormatFiles = (file:string) => {
   return new Promise(async(resolve) => {
-    console.log("tsx 2 jsx: ", file)
-    const outPath = path.join(".cache/", file).replace(".ts", ".js");
-    const sourceCode = fs.readFileSync(file, "utf-8");
+    const filePath = path.isAbsolute(file) ? path.relative("./", file): file;
+    console.log("tsx 2 jsx: ", filePath)
+    const outPath = path.join(".cache/", filePath).replace(".ts", ".js");
+    const sourceCode = fs.readFileSync(filePath, "utf-8");
     await mkdirp(outPath);
-    if (path.extname(file).includes("tsx")) {
+    if (path.extname(filePath).includes("tsx")) {
       const code = eraseExports(sourceCode);
       fs.writeFileSync(outPath, code, "utf-8");
     } else {
