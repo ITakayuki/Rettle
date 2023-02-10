@@ -47,7 +47,7 @@ const watchSources = () => {
         change: (filename) => __awaiter(void 0, void 0, void 0, function* () {
             console.log(Log_1.color.blue(`【Change File】-> ${filename}`));
             yield (0, AppScriptBuilder_1.outputFormatFiles)(filename);
-            yield (0, AppScriptBuilder_1.createCacheAppFile)();
+            // await createCacheAppFile()
         }),
         add: (filename, watcher) => {
             console.log(Log_1.color.blue(`【Add File】-> ${filename}`));
