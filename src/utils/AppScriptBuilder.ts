@@ -124,7 +124,6 @@ export const translateTs2Js = (code:string) => {
 
 export const eraseExports = async(code:string) => {
   const jsCode = translateTs2Js(code);
-  console.log(jsCode)
   //@ts-ignore
   const ast = acorn.Parser.extend(jsx()).parse(jsCode, {
     ecmaVersion: 2019,
@@ -156,6 +155,7 @@ export const eraseExports = async(code:string) => {
       const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
         return "//" + item
       }).join("\n")).replace(exportLine, "export default () => {}");
+      console.log("result: ", result)
       const temp = await minify(result, {
         toplevel: false,
         mangle: false,
@@ -167,8 +167,7 @@ export const eraseExports = async(code:string) => {
         }
       })
       return temp.code!;
-    }
-    ;
+    };
   } else {
     // export default ()=>
     const exportName = exportNodes[0]
@@ -176,6 +175,7 @@ export const eraseExports = async(code:string) => {
     const exportStr = jsCode.slice(start, end);
     const removeReactJsCode = importReact ? jsCode.replace(importReact, "//"+importReact) : jsCode;
     const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
+    console.log("result: ", result)
     const temp = await minify(result, {
       toplevel: false,
       mangle: false,
@@ -194,7 +194,6 @@ export const eraseExports = async(code:string) => {
 export const outputFormatFiles = (file:string) => {
   return new Promise(async(resolve) => {
     const filePath = path.isAbsolute(file) ? path.relative("./", file): file;
-    console.log("tsx 2 jsx: ", filePath)
     const outPath = path.join(".cache/", filePath).replace(".ts", ".js");
     const sourceCode = fs.readFileSync(filePath, "utf-8");
     await mkdirp(outPath);
