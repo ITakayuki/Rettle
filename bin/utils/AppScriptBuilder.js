@@ -135,17 +135,8 @@ const translateTs2Js = (code) => {
 };
 exports.translateTs2Js = translateTs2Js;
 const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield (0, terser_1.minify)((0, exports.translateTs2Js)(code), {
-        toplevel: false,
-        mangle: false,
-        format: {
-            beautify: true
-        },
-        compress: {
-            defaults: false
-        }
-    });
-    const jsCode = res.code;
+    const jsCode = (0, exports.translateTs2Js)(code);
+    console.log(jsCode);
     //@ts-ignore
     const ast = acorn.Parser.extend((0, acorn_jsx_1.default)()).parse(jsCode, {
         ecmaVersion: 2019,
@@ -178,7 +169,17 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
                 return "//" + item;
             }).join("\n")).replace(exportLine, "export default () => {}");
-            return result;
+            const temp = yield (0, terser_1.minify)(result, {
+                toplevel: false,
+                mangle: false,
+                format: {
+                    beautify: true
+                },
+                compress: {
+                    defaults: false
+                }
+            });
+            return temp.code;
         }
         ;
     }
@@ -189,7 +190,17 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
         const exportStr = jsCode.slice(start, end);
         const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
         const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
-        return result;
+        const temp = yield (0, terser_1.minify)(result, {
+            toplevel: false,
+            mangle: false,
+            format: {
+                beautify: true
+            },
+            compress: {
+                defaults: false
+            }
+        });
+        return temp.code;
     }
     return "";
 });

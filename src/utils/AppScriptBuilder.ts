@@ -117,23 +117,14 @@ export const translateTs2Js = (code:string) => {
   return ts.transpileModule(code, {
     compilerOptions: {
       target: 99,
-      "jsx": 1
+      "jsx": 2
     }
   }).outputText;
 }
 
 export const eraseExports = async(code:string) => {
-  const res = await minify(translateTs2Js(code), {
-    toplevel: false,
-    mangle: false,
-    format: {
-      beautify: true
-    },
-    compress: {
-      defaults: false
-    }
-  });
-  const jsCode = res.code!;
+  const jsCode = translateTs2Js(code);
+  console.log(jsCode)
   //@ts-ignore
   const ast = acorn.Parser.extend(jsx()).parse(jsCode, {
     ecmaVersion: 2019,
@@ -165,7 +156,17 @@ export const eraseExports = async(code:string) => {
       const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
         return "//" + item
       }).join("\n")).replace(exportLine, "export default () => {}");
-      return result;
+      const temp = await minify(result, {
+        toplevel: false,
+        mangle: false,
+        format: {
+          beautify: true
+        },
+        compress: {
+          defaults: false
+        }
+      })
+      return temp.code!;
     }
     ;
   } else {
@@ -175,7 +176,17 @@ export const eraseExports = async(code:string) => {
     const exportStr = jsCode.slice(start, end);
     const removeReactJsCode = importReact ? jsCode.replace(importReact, "//"+importReact) : jsCode;
     const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
-    return result;
+    const temp = await minify(result, {
+      toplevel: false,
+      mangle: false,
+      format: {
+        beautify: true
+      },
+      compress: {
+        defaults: false
+      }
+    })
+    return temp.code!;
   }
   return ""
 }
