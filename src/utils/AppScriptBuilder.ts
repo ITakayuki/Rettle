@@ -170,7 +170,7 @@ export const eraseExports = async(code:string) => {
 export const outputFormatFiles = (file:string) => {
   return new Promise(async(resolve) => {
     const filePath = path.isAbsolute(file) ? path.relative("./", file): file;
-    const outPath = path.join(".cache/", filePath).replace(".ts", ".js");
+    const outPath = path.join(".cache/", filePath).replace(".tsx", ".js");
     const sourceCode = fs.readFileSync(filePath, "utf-8");
     await mkdirp(outPath);
     if (path.extname(filePath).includes("tsx")) {

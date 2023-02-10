@@ -185,7 +185,7 @@ exports.eraseExports = eraseExports;
 const outputFormatFiles = (file) => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const filePath = path_1.default.isAbsolute(file) ? path_1.default.relative("./", file) : file;
-        const outPath = path_1.default.join(".cache/", filePath).replace(".ts", ".js");
+        const outPath = path_1.default.join(".cache/", filePath).replace(".tsx", ".js");
         const sourceCode = fs_1.default.readFileSync(filePath, "utf-8");
         yield (0, utility_1.mkdirp)(outPath);
         if (path_1.default.extname(filePath).includes("tsx")) {
