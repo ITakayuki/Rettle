@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eraseExports = exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
+exports.eraseExports = exports.translateTs2Js = exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
 const esbuild_1 = __importDefault(require("esbuild"));
 const Log_1 = require("./Log");
 const path_1 = __importDefault(require("path"));
@@ -123,13 +123,17 @@ const watchScript = ({ outDir }) => {
     });
 };
 exports.watchScript = watchScript;
-const eraseExports = (code) => {
-    const jsCode = typescript_1.default.transpileModule(code, {
+const translateTs2Js = (code) => {
+    return typescript_1.default.transpileModule(code, {
         compilerOptions: {
             target: 99,
             "jsx": 1
         }
     }).outputText;
+};
+exports.translateTs2Js = translateTs2Js;
+const eraseExports = (code) => {
+    const jsCode = (0, exports.translateTs2Js)(code);
     console.log(jsCode);
     //@ts-ignore
     const ast = acorn.Parser.extend((0, acorn_jsx_1.default)({})).parse(jsCode, {

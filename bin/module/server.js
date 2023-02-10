@@ -84,7 +84,8 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
             fs_1.default.writeFileSync(outPath, code, "utf-8");
         }
         else {
-            fs_1.default.writeFileSync(outPath, sourceCode, "utf-8");
+            const code = (0, AppScriptBuilder_2.translateTs2Js)(sourceCode);
+            fs_1.default.writeFileSync(outPath, code, "utf-8");
         }
         resolve(null);
     }))));

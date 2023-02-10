@@ -111,13 +111,17 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
   })
 }
 
-export const eraseExports = (code:string) => {
-  const jsCode = ts.transpileModule(code, {
+export const translateTs2Js = (code:string) => {
+  return ts.transpileModule(code, {
     compilerOptions: {
       target: 99,
       "jsx": 1
     }
   }).outputText;
+}
+
+export const eraseExports = (code:string) => {
+  const jsCode = translateTs2Js(code);
   console.log(jsCode)
   //@ts-ignore
   const ast = acorn.Parser.extend(jsx({

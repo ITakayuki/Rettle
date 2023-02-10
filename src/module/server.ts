@@ -4,7 +4,7 @@ import {createCacheAppFile, watchScript, buildScript, createTsConfigFile} from "
 import {config} from "../utils/config";
 import * as path from "path";
 import glob from "glob";
-import {eraseExports} from "../utils/AppScriptBuilder";
+import {eraseExports, translateTs2Js} from "../utils/AppScriptBuilder";
 import fs from "fs";
 import {mkdirp} from "../utils/utility";
 
@@ -47,7 +47,8 @@ export const server = async() => {
         const code = eraseExports(sourceCode);
         fs.writeFileSync(outPath, code, "utf-8");
       } else {
-        fs.writeFileSync(outPath, sourceCode, "utf-8");
+        const code = translateTs2Js(sourceCode);
+        fs.writeFileSync(outPath, code, "utf-8");
       }
       resolve(null);
     })
