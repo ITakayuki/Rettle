@@ -10,6 +10,8 @@ import glob from "glob";
 import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
 import jsx from "acorn-jsx";
+import ts from "typescript";
+
 
 interface BuildScriptInterface {
   outDir: string;
@@ -110,9 +112,18 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
 }
 
 export const eraseExports = (code:string) => {
+  const jsCode = ts.transpileModule(code, {
+    compilerOptions: {
+      target: 99,
+      "jsx": 1
+    }
+  }).outputText;
+  console.log(jsCode)
+  //@ts-ignore
+  const ast = acorn.Parser.extend(jsx({
 
-  const ast = acorn.Parser.extend(jsx()).parse(code, {
-    ecmaVersion: 2023,
+  })).parse(jsCode, {
+    ecmaVersion: 2019,
     sourceType: "module"
   })
   //@ts-ignore
@@ -133,18 +144,20 @@ export const eraseExports = (code:string) => {
         objects[key] = text;
       }
       const exportName = exportNodes[0].declaration.name;
-      const exportLine = code.slice(exportNodes[0].start, exportNodes[0].end)
-      const result = code.replace(objects[exportName], objects[exportName].split("\n").map(item => {
-        return "//"+item
-      }).join("\n")).replace(exportLine, "//"+exportLine);
+      const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end)
+      console.log(exportNodes[0])
+      const result = jsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+        return "//" + item
+      }).join("\n")).replace(exportLine, "//" + exportLine);
       return result;
-    };
+    }
+    ;
   } else {
     // export default ()=>
     const exportName = exportNodes[0]
     const {start, end} = exportName;
-    const exportStr = code.slice(start, end);
-    const result = code.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n"))
+    const exportStr = jsCode.slice(start, end);
+    const result = jsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n"))
     return result;
   }
   return ""

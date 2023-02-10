@@ -40,7 +40,7 @@ export const server = async() => {
     nodir: true
   });
   await Promise.all(srcFiles.map(file => new Promise(async(resolve) => {
-      const outPath = path.join(".cache/", file);
+      const outPath = path.join(".cache/", file).replace(".ts", ".js");
       const sourceCode = fs.readFileSync(file, "utf-8");
       await mkdirp(outPath);
       if (path.extname(file).includes("tsx")) {
