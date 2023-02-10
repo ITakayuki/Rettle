@@ -123,7 +123,7 @@ export const translateTs2Js = (code:string) => {
 }
 
 export const eraseExports = async(code:string) => {
-  const res = await minify(code, {
+  const res = await minify(translateTs2Js(code), {
     toplevel: false,
     mangle: false,
     format: {
