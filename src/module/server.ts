@@ -10,7 +10,7 @@ const watchSources = () => {
     change: async(filename) => {
       console.log(color.blue(`【Change File】-> ${filename}`));
       await outputFormatFiles(filename);
-      // await createCacheAppFile()
+      await createCacheAppFile()
     },
     add: (filename, watcher) => {
       console.log(color.blue(`【Add File】-> ${filename}`));
