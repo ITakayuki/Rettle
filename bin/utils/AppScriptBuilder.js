@@ -135,7 +135,7 @@ const translateTs2Js = (code) => {
 };
 exports.translateTs2Js = translateTs2Js;
 const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield (0, terser_1.minify)(code, {
+    const res = yield (0, terser_1.minify)((0, exports.translateTs2Js)(code), {
         toplevel: false,
         mangle: false,
         format: {
