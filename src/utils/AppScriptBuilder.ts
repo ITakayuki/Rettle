@@ -11,7 +11,7 @@ import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
 import jsx from "acorn-jsx";
 import ts from "typescript";
-import madge from "madge";
+import { minify } from "terser";
 
 
 interface BuildScriptInterface {
@@ -122,8 +122,18 @@ export const translateTs2Js = (code:string) => {
   }).outputText;
 }
 
-export const eraseExports = (code:string) => {
-  const jsCode = translateTs2Js(code);
+export const eraseExports = async(code:string) => {
+  const res = await minify(code, {
+    toplevel: false,
+    mangle: false,
+    format: {
+      beautify: true
+    },
+    compress: {
+      defaults: false
+    }
+  });
+  const jsCode = res.code!;
   //@ts-ignore
   const ast = acorn.Parser.extend(jsx()).parse(jsCode, {
     ecmaVersion: 2019,
@@ -135,7 +145,7 @@ export const eraseExports = (code:string) => {
   const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
   //@ts-ignore
   const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
-  const importReact = importNodes ? jsCode.slice(importNodes.start, importNodes.end) : null;
+  const importReact = importNodes.length !== 0 ? jsCode.slice(importNodes.start, importNodes.end) : null;
   const objects: Record<string, string> = {};
   if (exportNodes[0].declaration.name) {
     // export default **
@@ -178,7 +188,7 @@ export const outputFormatFiles = (file:string) => {
     const sourceCode = fs.readFileSync(filePath, "utf-8");
     await mkdirp(outPath);
     if (path.extname(filePath).includes("tsx")) {
-      const code = eraseExports(sourceCode);
+      const code = await eraseExports(sourceCode);
       fs.writeFileSync(outPath, code, "utf-8");
     } else {
       const code = translateTs2Js(sourceCode);

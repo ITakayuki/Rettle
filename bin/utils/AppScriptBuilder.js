@@ -49,6 +49,7 @@ const utility_1 = require("./utility");
 const acorn = __importStar(require("acorn"));
 const acorn_jsx_1 = __importDefault(require("acorn-jsx"));
 const typescript_1 = __importDefault(require("typescript"));
+const terser_1 = require("terser");
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -133,8 +134,18 @@ const translateTs2Js = (code) => {
     }).outputText;
 };
 exports.translateTs2Js = translateTs2Js;
-const eraseExports = (code) => {
-    const jsCode = (0, exports.translateTs2Js)(code);
+const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield (0, terser_1.minify)(code, {
+        toplevel: false,
+        mangle: false,
+        format: {
+            beautify: true
+        },
+        compress: {
+            defaults: false
+        }
+    });
+    const jsCode = res.code;
     //@ts-ignore
     const ast = acorn.Parser.extend((0, acorn_jsx_1.default)()).parse(jsCode, {
         ecmaVersion: 2019,
@@ -146,7 +157,7 @@ const eraseExports = (code) => {
     const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
     //@ts-ignore
     const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
-    const importReact = importNodes ? jsCode.slice(importNodes.start, importNodes.end) : null;
+    const importReact = importNodes.length !== 0 ? jsCode.slice(importNodes.start, importNodes.end) : null;
     const objects = {};
     if (exportNodes[0].declaration.name) {
         // export default **
@@ -181,7 +192,7 @@ const eraseExports = (code) => {
         return result;
     }
     return "";
-};
+});
 exports.eraseExports = eraseExports;
 const outputFormatFiles = (file) => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
@@ -191,7 +202,7 @@ const outputFormatFiles = (file) => {
         const sourceCode = fs_1.default.readFileSync(filePath, "utf-8");
         yield (0, utility_1.mkdirp)(outPath);
         if (path_1.default.extname(filePath).includes("tsx")) {
-            const code = (0, exports.eraseExports)(sourceCode);
+            const code = yield (0, exports.eraseExports)(sourceCode);
             fs_1.default.writeFileSync(outPath, code, "utf-8");
         }
         else {
