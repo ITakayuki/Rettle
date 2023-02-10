@@ -44,7 +44,7 @@ export const createCacheAppFile = () => {
       });
       const files = await getDependencies(endpoint, ignore);
       const appResolvePath = createFileName(endpoint)
-      const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.tsx`)
+      const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
       const appImports = [];
       const scriptRunner = [];
       for (const file of files) {
@@ -66,7 +66,7 @@ export const buildScript = ({outDir}: BuildScriptInterface) => {
     esBuild.build({
       bundle: true,
       // all cache scripts
-      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.jsx"), {
+      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
         nodir: true
       }),
       outdir: outDir,
@@ -94,7 +94,7 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
           if (error) console.error("watch build failed:", error);
         },
       },
-      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.jsx"), {
+      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
         nodir: true
       }),
       outdir: outDir,
@@ -155,7 +155,6 @@ export const eraseExports = async(code:string) => {
       const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
         return "//" + item
       }).join("\n")).replace(exportLine, "export default () => {}");
-      console.log("result: ", result)
       return translateTs2Js(result);
     };
   } else {
@@ -165,7 +164,6 @@ export const eraseExports = async(code:string) => {
     const exportStr = jsCode.slice(start, end);
     const removeReactJsCode = importReact ? jsCode.replace(importReact, "//"+importReact) : jsCode;
     const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
-    console.log("result: ", result)
     const temp = await minify(result, {
       toplevel: false,
       mangle: false,

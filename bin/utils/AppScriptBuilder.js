@@ -75,7 +75,7 @@ const createCacheAppFile = () => {
             });
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appResolvePath = createFileName(endpoint);
-            const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.tsx`);
+            const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.js`);
             const appImports = [];
             const scriptRunner = [];
             for (const file of files) {
@@ -96,7 +96,7 @@ const buildScript = ({ outDir }) => {
     return new Promise(resolve => {
         esbuild_1.default.build(Object.assign({ bundle: true, 
             // all cache scripts
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.jsx"), {
+            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
                 nodir: true
             }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
@@ -114,7 +114,7 @@ const watchScript = ({ outDir }) => {
                     if (error)
                         console.error("watch build failed:", error);
                 },
-            }, entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.jsx"), {
+            }, entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
                 nodir: true
             }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
@@ -168,7 +168,6 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
                 return "//" + item;
             }).join("\n")).replace(exportLine, "export default () => {}");
-            console.log("result: ", result);
             return (0, exports.translateTs2Js)(result);
         }
         ;
@@ -180,7 +179,6 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
         const exportStr = jsCode.slice(start, end);
         const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
         const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
-        console.log("result: ", result);
         const temp = yield (0, terser_1.minify)(result, {
             toplevel: false,
             mangle: false,
