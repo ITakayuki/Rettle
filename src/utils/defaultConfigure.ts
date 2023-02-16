@@ -10,19 +10,14 @@ const config:RettleConfigInterface = {
   css: "/assets/style/app.css",
   js: "/assets/script/app.js",
   static: "/",
-  header: {
-    meta: [{
-      name: "generator",
-      content: `Rettle ${version}`
-    }]
-  },
   template: templateHtml,
   endpoints: ["./src/views"],
   staticPath: "/static",
   encode: "UTF-8",
   esbuild: {
     minify: true,
-  }
+  },
+  version: true
 }
 
 export const defaultConfig = config;

@@ -33,6 +33,7 @@ export interface RettleConfigInterface {
     alias?: Record<string, string>;
     build?: BuildOptionsInterface;
     esbuild: esbuildInterface;
+    version: boolean;
 }
 export declare const getIgnores: (endpoint: string) => any;
 export declare const config: any;

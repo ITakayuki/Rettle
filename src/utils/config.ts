@@ -36,7 +36,8 @@ export interface  RettleConfigInterface {
   encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
   alias?: Record<string, string>;
   build?: BuildOptionsInterface;
-  esbuild: esbuildInterface
+  esbuild: esbuildInterface,
+  version: boolean
 }
 
 const sortStringsBySlashCount = (strings: Array<string>) => {

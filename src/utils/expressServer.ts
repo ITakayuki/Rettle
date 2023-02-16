@@ -4,6 +4,7 @@ import * as path from "path";
 import {config, getIgnores} from "./config";
 import glob from "glob";
 import {color} from "./Log";
+import {version} from "./variable";
 
 export const wakeupExpressServer = () => {
   const app = express();
@@ -27,10 +28,15 @@ export const wakeupExpressServer = () => {
       app.get(path.join("/", relativePath), async(req, res) => {
         const {html, css, ids} = await transformReact2HTMLCSS(item);
         const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
+        const versionMeta = config.version ? [`<meta name="generator" content="Rettle ${version}"`] : [""];
+        const headerMeta = config.header?.meta ? createHeaderTags("meta", config.header?.meta) : [""];
+        const headerLink = config.header?.link ? createHeaderTags("link", config.header?.link) : [""];
+        const headerScript = config.header?.script ? createHeaderTags("script", config.header?.script) : [""];
         const headers = [
-          ...createHeaderTags("meta", config.header?.meta),
-          ...createHeaderTags("link", config.header?.link),
-          ...createHeaderTags("script", config.header?.script)
+          ...versionMeta,
+          ...headerMeta,
+          ...headerLink,
+          ...headerScript,
         ];
         const script = path.join(key, config.js)
         const result = config.template({
