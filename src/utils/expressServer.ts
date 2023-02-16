@@ -8,14 +8,15 @@ import {color} from "./Log";
 export const wakeupExpressServer = () => {
   const app = express();
 
-  const entryPaths = config.endpoints.map((endpoint: any) => {
+  const entryPaths = {} as {[index: string]: string[]};
+  config.endpoints.map((endpoint: any) => {
     const ignore = getIgnores(endpoint);
     const files = glob.sync(path.join(endpoint, "/**/*"), {
       ignore,
       nodir: true
     })
-    return {[endpoint]: files};
-  }) as {[index: string]: string[]}
+    entryPaths[endpoint] =  files;
+  });
 
   const viewPath = path.resolve("./src/views/")
 
