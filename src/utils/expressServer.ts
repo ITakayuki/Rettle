@@ -9,7 +9,7 @@ export const wakeupExpressServer = () => {
   const app = express();
 
   const entryPaths = config.endpoints.map(async (endpoint: any) => {
-    const ignore = await getIgnores(endpoint);
+    const ignore = getIgnores(endpoint);
     const files = glob.sync(path.join(endpoint, "/**/*"), {
       ignore,
       nodir: true
@@ -19,6 +19,7 @@ export const wakeupExpressServer = () => {
 
   const viewPath = path.resolve("./src/views/")
 
+  console.log("entryPaths: ", entryPaths);
   Object.keys(entryPaths).map(key => {
     const item = entryPaths[key];
     item.forEach(item => {

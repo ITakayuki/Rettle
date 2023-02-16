@@ -45,7 +45,7 @@ const Log_1 = require("./Log");
 const wakeupExpressServer = () => {
     const app = (0, express_1.default)();
     const entryPaths = config_1.config.endpoints.map((endpoint) => __awaiter(void 0, void 0, void 0, function* () {
-        const ignore = yield (0, config_1.getIgnores)(endpoint);
+        const ignore = (0, config_1.getIgnores)(endpoint);
         const files = glob_1.default.sync(path.join(endpoint, "/**/*"), {
             ignore,
             nodir: true
@@ -53,6 +53,7 @@ const wakeupExpressServer = () => {
         return { [endpoint]: files };
     }));
     const viewPath = path.resolve("./src/views/");
+    console.log("entryPaths: ", entryPaths);
     Object.keys(entryPaths).map(key => {
         const item = entryPaths[key];
         item.forEach(item => {
