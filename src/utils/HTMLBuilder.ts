@@ -36,8 +36,9 @@ export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: 
 
 export const createHeaderTags = (tagName:string, contents: Array<Record<string, string>>) => {
   return contents.map(item => {
-    return `<${tagName} ${Object.keys(item).map(key => {
-      `${key} = "${item[key]}"`
-    }).join(" ")} ${tagName === "script" ? "></script>" : ">"}`
+    const content = Object.keys(item).map(key => {
+      return `${key}="${item[key]}"`
+    })
+    return `<${tagName} ${content.join(" ")} ${tagName === "script" ? "></script>" : ">"}`
   })
 }

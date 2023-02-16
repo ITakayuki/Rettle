@@ -72,9 +72,10 @@ const transformReact2HTMLCSS = (path) => {
 exports.transformReact2HTMLCSS = transformReact2HTMLCSS;
 const createHeaderTags = (tagName, contents) => {
     return contents.map(item => {
-        return `<${tagName} ${Object.keys(item).map(key => {
-            `${key} = "${item[key]}"`;
-        }).join(" ")} ${tagName === "script" ? "></script>" : ">"}`;
+        const content = Object.keys(item).map(key => {
+            return `${key}="${item[key]}"`;
+        });
+        return `<${tagName} ${content.join(" ")} ${tagName === "script" ? "></script>" : ">"}`;
     });
 };
 exports.createHeaderTags = createHeaderTags;
