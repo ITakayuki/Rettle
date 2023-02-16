@@ -10,7 +10,7 @@ export interface templateHTMLInterface extends Pick<RettleConfigInterface, "head
 
 export const templateHtml = (options: templateHTMLInterface) => {
   return `
-<doctype html>
+<!DOCTYPE html>
 <html>
 <head>
 ${options.headers.join("\n")}

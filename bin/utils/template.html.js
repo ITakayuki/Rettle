@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.templateHtml = void 0;
 const templateHtml = (options) => {
     return `
-<doctype html>
+<!DOCTYPE html>
 <html>
 <head>
 ${options.headers.join("\n")}
