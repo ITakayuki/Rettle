@@ -9,7 +9,7 @@ const config:RettleConfigInterface = {
   outDir: "./htdocs",
   css: "/assets/style/app.css",
   js: "/assets/script/app.js",
-  static: "/",
+  static: "/static",
   template: templateHtml,
   endpoints: ["./src/views"],
   staticPath: "/static",

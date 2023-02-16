@@ -8,7 +8,7 @@ const config = {
     outDir: "./htdocs",
     css: "/assets/style/app.css",
     js: "/assets/script/app.js",
-    static: "/",
+    static: "/static",
     template: template_html_1.templateHtml,
     endpoints: ["./src/views"],
     staticPath: "/static",

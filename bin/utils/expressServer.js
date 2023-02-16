@@ -59,7 +59,7 @@ const wakeupExpressServer = () => {
         const item = entryPaths[key];
         item.forEach(item => {
             const relativePath = path.relative(viewPath, item).replace(path.extname(item), "").replace("index", "");
-            app.get(path.join("/", relativePath), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            app.get(path.join(config_1.config.pathPrefix, relativePath), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 var _a, _b, _c, _d, _e, _f;
                 const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
                 const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`;
@@ -85,6 +85,7 @@ const wakeupExpressServer = () => {
             }));
         });
     });
+    app.use(express_1.default.static(path.join(config_1.config.pathPrefix, config_1.config.static)));
     app.listen(config_1.config.port, () => {
         console.log(Log_1.color.blue("Listening http://localhost:" + config_1.config.port));
     });
