@@ -74,7 +74,7 @@ const createHeaderTags = (tagName, contents) => {
     return contents.map(item => {
         return `<${tagName} ${Object.keys(item).map(key => {
             `${key} = "${item[key]}"`;
-        }).join(" ")} ${tagName === "script" ? "/" : ""}>`;
+        }).join(" ")} ${tagName === "script" ? "></script>" : ">"}`;
     });
 };
 exports.createHeaderTags = createHeaderTags;
