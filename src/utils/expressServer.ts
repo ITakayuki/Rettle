@@ -8,7 +8,7 @@ import {color} from "./Log";
 export const wakeupExpressServer = () => {
   const app = express();
 
-  const entryPaths = config.endpoints.map(async (endpoint: any) => {
+  const entryPaths = config.endpoints.map((endpoint: any) => {
     const ignore = getIgnores(endpoint);
     const files = glob.sync(path.join(endpoint, "/**/*"), {
       ignore,
