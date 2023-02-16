@@ -2,7 +2,10 @@ import ReactDom from "react-dom/server";
 import * as esBuild from "esbuild";
 import BabelPlugin from "@itkyk/esbuild-plugin-babel";
 import vm from "vm";
-import {dependencies} from "../../package.json";
+import fs from "fs";
+import * as path from "path";
+
+const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf-8"));
 
 export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: Array<string>, css: string}> => {
   return  new Promise(async(resolve) => {

@@ -1,3 +1,4 @@
+import { templateHTMLInterface } from "./template.html";
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: () => void;
@@ -23,14 +24,16 @@ export interface RettleConfigInterface {
     staticPath: string;
     envs?: Array<Record<string, string>>;
     header?: {
-        meta: Array<Record<string, string>>;
-        link: Array<Record<string, string>>;
-        script: Array<Record<string, string>>;
+        meta?: Array<Record<string, string>>;
+        link?: Array<Record<string, string>>;
+        script?: Array<Record<string, string>>;
     };
+    template: (options: templateHTMLInterface) => string;
     encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
     alias?: Record<string, string>;
     build?: BuildOptionsInterface;
     esbuild: esbuildInterface;
 }
+export declare const getIgnores: (endpoint: string) => any;
 export declare const config: any;
 export {};

@@ -1,6 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.config = void 0;
+exports.config = exports.getIgnores = void 0;
+const sortStringsBySlashCount = (strings) => {
+    const slashCountMap = new Map();
+    // 各文字列の/の数をカウントする
+    for (const string of strings) {
+        const count = (string.match(/\//g) || []).length;
+        slashCountMap.set(string, count);
+    }
+    // /の数でソートする
+    const sorted = strings.sort((a, b) => {
+        return slashCountMap.get(b) - slashCountMap.get(a);
+    });
+    return sorted;
+};
 const getConfigure = () => {
     const path = require("path");
     const fs = require("fs");
@@ -28,6 +41,14 @@ const getConfigure = () => {
     const config = deepmerge(defaultConfig, inputConfig(), {
         isMergeableObject: isPlainObject
     });
+    config.endpoints = sortStringsBySlashCount(config.endpoints);
     return config;
 };
+const getIgnores = (endpoint) => {
+    const ignore = exports.config.endpoints.filter((x, i, self) => {
+        return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""));
+    });
+    return ignore;
+};
+exports.getIgnores = getIgnores;
 exports.config = getConfigure();

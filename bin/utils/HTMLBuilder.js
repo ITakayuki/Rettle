@@ -39,7 +39,9 @@ exports.createHeaderTags = exports.transformReact2HTMLCSS = void 0;
 const esBuild = __importStar(require("esbuild"));
 const esbuild_plugin_babel_1 = __importDefault(require("@itkyk/esbuild-plugin-babel"));
 const vm_1 = __importDefault(require("vm"));
-const package_json_1 = require("../../package.json");
+const fs_1 = __importDefault(require("fs"));
+const path = __importStar(require("path"));
+const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield esBuild.build({
@@ -47,7 +49,7 @@ const transformReact2HTMLCSS = (path) => {
             entryPoints: [path],
             platform: "node",
             write: false,
-            external: Object.keys(package_json_1.dependencies),
+            external: Object.keys(dependencies),
             plugins: [
                 (0, esbuild_plugin_babel_1.default)({
                     filter: /.ts?x/,

@@ -1,15 +1,17 @@
 "use strict";
-exports.templateHtml = (html) => {
-    const { version } = require("./variable");
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.templateHtml = void 0;
+const templateHtml = (options) => {
     return `
 <doctype html>
 <head>
-<meta name="generator" content="Rettle ${version}">
-<link rel="stylesheet" href="/style.css">
+${options.headers}
+${options.style}
 </head>
 <body>
-${html}
-<script src="/bundle.js"></script>
+${options.html}
+<script src="${options.script}"></script>
 </body>
   `;
 };
+exports.templateHtml = templateHtml;

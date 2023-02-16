@@ -39,6 +39,7 @@ exports.server = void 0;
 const watcher_1 = require("./watcher");
 const Log_1 = require("../utils/Log");
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
+const expressServer_1 = require("../utils/expressServer");
 const config_1 = require("../utils/config");
 const path = __importStar(require("path"));
 const glob_1 = __importDefault(require("glob"));
@@ -84,5 +85,6 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, AppScriptBuilder_1.buildScript)(buildSetupOptions);
     yield (0, AppScriptBuilder_1.watchScript)(buildSetupOptions);
     /* wake up html and css server */
+    (0, expressServer_1.wakeupExpressServer)();
 });
 exports.server = server;

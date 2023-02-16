@@ -68,9 +68,7 @@ const createCacheAppFile = () => {
         const jsFileName = path_1.default.basename(config_1.config.js).replace(".js", "");
         const jsBaseDir = path_1.default.dirname(config_1.config.js);
         for (const endpoint of config_1.config.endpoints) {
-            const ignore = config_1.config.endpoints.filter((x, i, self) => {
-                return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""));
-            });
+            const ignore = (0, config_1.getIgnores)(endpoint);
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appResolvePath = createFileName(endpoint);
             const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.js`);
