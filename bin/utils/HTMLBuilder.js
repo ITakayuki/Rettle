@@ -43,6 +43,7 @@ const fs_1 = __importDefault(require("fs"));
 const path = __importStar(require("path"));
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
+    console.log("load file: ", path);
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield esBuild.build({
             bundle: true,
