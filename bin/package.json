@@ -1,0 +1,63 @@
+{
+    "name": "rettle-test",
+    "version": "0.0.7",
+    "main": "./bin/rettle.js",
+    "scripts": {
+        "start": "tsc",
+        "watch": "tsc -w",
+        "test": "ts-node src/index.ts -d",
+        "test:node": "node ./bin/index.js -d",
+        "version": "node ./commands/index.js"
+    },
+    "typesVersions": {
+        "*": [
+            "./rettle.d.ts"
+        ]
+    },
+    "bin": {
+        "rettle": "./bin/index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@types/commander": "^2.12.2",
+        "@types/express": "^4.17.14",
+        "@types/glob": "^8.0.0",
+        "@types/madge": "^5.0.0",
+        "@types/node": "^18.11.9",
+        "@types/react-dom": "^18.0.11",
+        "@types/rechoir": "^0.6.1",
+        "@types/webpack": "^5.28.0",
+        "cross-env": "^7.0.3",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.8.4"
+    },
+    "dependencies": {
+        "@babel/preset-env": "^7.20.2",
+        "@babel/preset-react": "^7.18.6",
+        "@babel/preset-typescript": "^7.18.6",
+        "@emotion/babel-plugin": "^11.10.5",
+        "@emotion/cache": "^11.10.5",
+        "@emotion/react": "^11.10.5",
+        "@emotion/server": "^11.10.0",
+        "@itkyk/esbuild-plugin-babel": "^0.0.21",
+        "@types/react": "^18.0.25",
+        "acorn": "^8.8.2",
+        "acorn-jsx": "^5.3.2",
+        "chokidar": "^3.5.3",
+        "commander": "^9.4.1",
+        "crypto": "^1.0.1",
+        "deepmerge": "^4.2.2",
+        "esbuild": "^0.15.18",
+        "express": "^4.18.2",
+        "glob": "^8.0.3",
+        "interpret": "^3.1.1",
+        "is-plain-object": "^5.0.0",
+        "madge": "^6.0.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "rechoir": "^0.8.0"
+    }
+}

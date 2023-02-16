@@ -5,7 +5,7 @@ import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
 import {getDependencies} from "./Dependencies";
-import {config} from "./config";
+import {config, getIgnores} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
@@ -37,10 +37,8 @@ export const createCacheAppFile = () => {
     const jsFileName = path.basename(config.js).replace(".js", "")
     const jsBaseDir = path.dirname(config.js);
     for (const endpoint of config.endpoints) {
-      const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => {
-        return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
-      });
-      const files = await getDependencies(endpoint, ignore);
+      const ignore = getIgnores(endpoint);
+      const files = await getDependencies(endpoint,ignore);
       const appResolvePath = createFileName(endpoint)
       const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
       const appImports = [];

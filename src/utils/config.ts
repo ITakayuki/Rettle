@@ -1,3 +1,5 @@
+import {templateHTMLInterface} from "./template.html";
+import {getDependencies} from "./Dependencies";
 interface BuildOptionsInterface {
   copyStatic?: ()=>void;
   buildScript?: () => void;
@@ -26,14 +28,32 @@ export interface  RettleConfigInterface {
   staticPath: string;
   envs?: Array<Record<string, string>>;
   header?: {
-    meta: Array<Record<string, string>>;
-    link: Array<Record<string,string>>;
-    script: Array<Record<string, string>>;
+    meta?: Array<Record<string, string>>;
+    link?: Array<Record<string,string>>;
+    script?: Array<Record<string, string>>;
   },
+  template: (options: templateHTMLInterface) => string;
   encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
   alias?: Record<string, string>;
   build?: BuildOptionsInterface;
   esbuild: esbuildInterface
+}
+
+const sortStringsBySlashCount = (strings: Array<string>) => {
+  const slashCountMap = new Map();
+
+  // 各文字列の/の数をカウントする
+  for (const string of strings) {
+    const count = (string.match(/\//g) || []).length;
+    slashCountMap.set(string, count);
+  }
+
+  // /の数でソートする
+  const sorted = strings.sort((a, b) => {
+    return slashCountMap.get(b) - slashCountMap.get(a);
+  });
+
+  return sorted;
 }
 
 const getConfigure = () => {
@@ -61,7 +81,15 @@ const getConfigure = () => {
   const config = deepmerge(defaultConfig, inputConfig(), {
     isMergeableObject: isPlainObject
   })
+  config.endpoints = sortStringsBySlashCount(config.endpoints);
   return config;
+}
+
+export const getIgnores = (endpoint: string) => {
+  const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => {
+    return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
+  });
+  return ignore;
 }
 
 export const config = getConfigure();

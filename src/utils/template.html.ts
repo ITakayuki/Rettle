@@ -1,14 +1,23 @@
-exports.templateHtml = (html:string) => {
-  const {version} = require("./variable");
+import {RettleConfigInterface} from "./config";
+
+export interface templateHTMLInterface extends Pick<RettleConfigInterface, "header"> {
+  html:string;
+  headers: Array<string>;
+  script: string;
+  style?: string;
+}
+
+
+export const templateHtml = (options: templateHTMLInterface) => {
   return `
 <doctype html>
 <head>
-<meta name="generator" content="Rettle ${version}">
-<link rel="stylesheet" href="/style.css">
+${options.headers}
+${options.style}
 </head>
 <body>
-${html}
-<script src="/bundle.js"></script>
+${options.html}
+<script src="${options.script}"></script>
 </body>
   `
 }

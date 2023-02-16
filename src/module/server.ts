@@ -1,6 +1,7 @@
 import {watchFiles} from "./watcher";
 import {color} from "../utils/Log";
 import {createCacheAppFile, watchScript, buildScript, createTsConfigFile, outputFormatFiles} from "../utils/AppScriptBuilder";
+import {wakeupExpressServer} from "../utils/expressServer";
 import {config} from "../utils/config";
 import * as path from "path";
 import glob from "glob";
@@ -49,4 +50,5 @@ export const server = async() => {
   await buildScript(buildSetupOptions);
   await watchScript(buildSetupOptions)
   /* wake up html and css server */
+  wakeupExpressServer();
 }
