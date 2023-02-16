@@ -82,7 +82,6 @@ const getConfigure = () => {
     isMergeableObject: isPlainObject
   })
   config.endpoints = sortStringsBySlashCount(config.endpoints);
-  console.log(JSON.stringify(config, null, 2))
   return config;
 }
 
