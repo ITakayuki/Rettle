@@ -25,7 +25,7 @@ export const wakeupExpressServer = () => {
     const item = entryPaths[key];
     item.forEach(item => {
       const relativePath = path.relative(viewPath, item).replace(path.extname(item), "").replace("index", "");
-      app.get(path.join(config.pathPrefix, relativePath), async(req, res) => {
+      app.get(path.join("/", config.pathPrefix, relativePath), async(req, res) => {
         const {html, css, ids} = await transformReact2HTMLCSS(item);
         const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
         const versionMeta = config.version ? [`<meta name="generator" content="Rettle ${version}">`] : [""];
@@ -54,6 +54,6 @@ export const wakeupExpressServer = () => {
   app.use(express.static(path.join(config.pathPrefix, config.static)));
 
   app.listen(config.port, () => {
-    console.log(color.blue("Listening http://localhost:"+config.port));
+    console.log(color.blue(`Listening http://${path.join("localhost", config.pathPrefix)}:${config.port}`));
   })
 }
