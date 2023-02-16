@@ -28,7 +28,7 @@ export const wakeupExpressServer = () => {
       app.get(path.join("/", relativePath), async(req, res) => {
         const {html, css, ids} = await transformReact2HTMLCSS(item);
         const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
-        const versionMeta = config.version ? [`<meta name="generator" content="Rettle ${version}"`] : [""];
+        const versionMeta = config.version ? [`<meta name="generator" content="Rettle ${version}">`] : [""];
         const headerMeta = config.header?.meta ? createHeaderTags("meta", config.header?.meta) : [""];
         const headerLink = config.header?.link ? createHeaderTags("link", config.header?.link) : [""];
         const headerScript = config.header?.script ? createHeaderTags("script", config.header?.script) : [""];
