@@ -62,9 +62,7 @@ const watchSources = () => {
             console.log(Log_1.color.blue(`【Unlink Dir】-> ${filename}`));
             watcher.unwatch(filename);
         },
-        ready: () => {
-            console.log(Log_1.color.blue('Ready to Watching'));
-        }
+        ready: () => { }
     });
 };
 const server = () => __awaiter(void 0, void 0, void 0, function* () {

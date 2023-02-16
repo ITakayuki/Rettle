@@ -37,7 +37,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.outputFormatFiles = exports.eraseExports = exports.translateTs2Js = exports.watchScript = exports.buildScript = exports.createCacheAppFile = exports.createTsConfigFile = void 0;
 const esbuild_1 = __importDefault(require("esbuild"));
-const Log_1 = require("./Log");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -97,7 +96,6 @@ const buildScript = ({ outDir }) => {
             }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
             } }, config_1.config.esbuild)).then(() => {
-            console.log(Log_1.color.blue("Built Script."));
             resolve(null);
         });
     });
@@ -115,7 +113,6 @@ const watchScript = ({ outDir }) => {
             }), outdir: outDir, sourcemap: process.env.NODE_ENV === "develop", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(process.env),
             } }, config_1.config.esbuild)).then(() => {
-            console.log(Log_1.color.blue("Watch App File."));
             resolve(null);
         });
     });

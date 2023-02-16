@@ -25,9 +25,7 @@ const watchSources = () => {
       console.log(color.blue(`【Unlink Dir】-> ${filename}`));
       watcher.unwatch(filename);
     },
-    ready: () => {
-      console.log(color.blue('Ready to Watching'));
-    }
+    ready: () => {}
   })
 }
 

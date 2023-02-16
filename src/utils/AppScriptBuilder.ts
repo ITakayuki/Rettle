@@ -75,7 +75,6 @@ export const buildScript = ({outDir}: BuildScriptInterface) => {
       },
       ...config.esbuild
     }).then(() => {
-      console.log(color.blue("Built Script."));
       resolve(null);
     })
   })
@@ -103,7 +102,6 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
       },
       ...config.esbuild
     }).then(() => {
-      console.log(color.blue("Watch App File."));
       resolve(null);
     })
   })

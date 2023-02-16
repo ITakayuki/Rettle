@@ -20,7 +20,6 @@ export const wakeupExpressServer = () => {
 
   const viewPath = path.resolve("./src/views/")
 
-  console.log("entryPaths: ", entryPaths);
   Object.keys(entryPaths).map(key => {
     const item = entryPaths[key];
     item.forEach(item => {
@@ -41,7 +40,6 @@ export const wakeupExpressServer = () => {
           script
         })
         res.setHeader("Content-Type", "text/html")
-        console.log(result)
         res.send(result);
       })
     })

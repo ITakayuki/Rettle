@@ -7,7 +7,6 @@ import * as path from "path";
 const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf-8"));
 
 export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: Array<string>, css: string}> => {
-  console.log("load file: ", path)
   return  new Promise(async(resolve) => {
     const res = await esBuild.build({
       bundle: true,

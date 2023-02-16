@@ -54,7 +54,6 @@ const wakeupExpressServer = () => {
         entryPaths[endpoint] = files;
     });
     const viewPath = path.resolve("./src/views/");
-    console.log("entryPaths: ", entryPaths);
     Object.keys(entryPaths).map(key => {
         const item = entryPaths[key];
         item.forEach(item => {
@@ -76,7 +75,6 @@ const wakeupExpressServer = () => {
                     script
                 });
                 res.setHeader("Content-Type", "text/html");
-                console.log(result);
                 res.send(result);
             }));
         });
