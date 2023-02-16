@@ -75,6 +75,7 @@ const wakeupExpressServer = () => {
                     headers,
                     script
                 });
+                res.setHeader("Content-Type", "text/html");
                 res.send(result);
             }));
         });
