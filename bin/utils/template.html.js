@@ -5,7 +5,7 @@ const templateHtml = (options) => {
     return `
 <doctype html>
 <head>
-${options.headers}
+${options.headers.join("")}
 ${options.style}
 </head>
 <body>
