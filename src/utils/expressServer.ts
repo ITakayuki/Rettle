@@ -51,7 +51,7 @@ export const wakeupExpressServer = () => {
     })
   })
 
-  app.use(express.static(path.resolve(path.join("./", config.static)), {maxAge: "30d"}));
+  app.use(path.join("/", config.pathPrefix), express.static(path.resolve(path.join("./", config.static)), {maxAge: "30d"}));
 
   app.listen(config.port, () => {
     console.log(color.blue(`Listening http://${path.join("localhost", config.pathPrefix)}:${config.port}`));
