@@ -38,6 +38,6 @@ export const createHeaderTags = (tagName:string, contents: Array<Record<string, 
   return contents.map(item => {
     return `<${tagName} ${Object.keys(item).map(key => {
       `${key} = "${item[key]}"`
-    }).join(" ")} >`
+    }).join(" ")} ${tagName === "script" ? "/" : ""}>`
   })
 }
