@@ -11,13 +11,15 @@ export interface templateHTMLInterface extends Pick<RettleConfigInterface, "head
 export const templateHtml = (options: templateHTMLInterface) => {
   return `
 <doctype html>
+<html>
 <head>
-${options.headers.join("")}
+${options.headers.join("\n")}
 ${options.style}
 </head>
 <body>
 ${options.html}
 <script src="${options.script}"></script>
 </body>
+</html>
   `
 }
