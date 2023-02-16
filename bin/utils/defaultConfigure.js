@@ -25,3 +25,4 @@ const config = {
     }
 };
 exports.defaultConfig = config;
+//# sourceMappingURL=defaultConfigure.js.map

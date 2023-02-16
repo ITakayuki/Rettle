@@ -15,3 +15,4 @@ ${options.html}
   `;
 };
 exports.templateHtml = templateHtml;
+//# sourceMappingURL=template.html.js.map

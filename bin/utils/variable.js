@@ -2,3 +2,4 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.version = void 0;
 exports.version = "0.0.6beta.09";
+//# sourceMappingURL=variable.js.map

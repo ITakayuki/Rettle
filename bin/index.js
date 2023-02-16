@@ -15,3 +15,4 @@ if (opts.build) {
 else {
     (0, server_1.server)();
 }
+//# sourceMappingURL=index.js.map

@@ -52,3 +52,4 @@ const getIgnores = (endpoint) => {
 };
 exports.getIgnores = getIgnores;
 exports.config = getConfigure();
+//# sourceMappingURL=config.js.map

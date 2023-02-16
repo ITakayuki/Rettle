@@ -18,3 +18,4 @@ const createRettle = (cache, element) => {
     return extractCritical(server_1.default.renderToString(element));
 };
 exports.createRettle = createRettle;
+//# sourceMappingURL=rettle.js.map

@@ -62,3 +62,4 @@ const watchFiles = (args) => {
     });
 };
 exports.watchFiles = watchFiles;
+//# sourceMappingURL=watcher.js.map
