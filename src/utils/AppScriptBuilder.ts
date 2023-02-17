@@ -154,8 +154,7 @@ export const eraseExports = async(code:string) => {
           return "//" + item
         }).join("\n")).replace(exportLine, "export default () => {}");
         return translateTs2Js(result);
-      }
-      ;
+      };
     } else {
       // export default ()=>
       let replaceDefaultRettle = "";
@@ -213,18 +212,22 @@ export const eraseExports = async(code:string) => {
 }
 
 export const outputFormatFiles = (file:string) => {
-  return new Promise(async(resolve) => {
-    const filePath = path.isAbsolute(file) ? path.relative("./", file): file;
-    const outPath = path.join(".cache/", filePath).replace(".tsx", ".js");
-    const sourceCode = fs.readFileSync(filePath, "utf-8");
-    await mkdirp(outPath);
-    if (path.extname(filePath).includes("tsx")) {
-      const code = await eraseExports(sourceCode);
-      fs.writeFileSync(outPath, code, "utf-8");
-    } else {
-      const code = translateTs2Js(sourceCode);
-      fs.writeFileSync(outPath, code, "utf-8");
+  return new Promise(async(resolve, reject) => {
+    try {
+      const filePath = path.isAbsolute(file) ? path.relative("./", file) : file;
+      const outPath = path.join(".cache/", filePath).replace(".tsx", ".js");
+      const sourceCode = fs.readFileSync(filePath, "utf-8");
+      await mkdirp(outPath);
+      if (path.extname(filePath).includes("tsx")) {
+        const code = await eraseExports(sourceCode);
+        fs.writeFileSync(outPath, code, "utf-8");
+      } else {
+        const code = translateTs2Js(sourceCode);
+        fs.writeFileSync(outPath, code, "utf-8");
+      }
+      resolve(null)
+    } catch (e) {
+      reject(e);
     }
-    resolve(null)
   })
 }

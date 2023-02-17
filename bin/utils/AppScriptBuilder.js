@@ -232,20 +232,25 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.eraseExports = eraseExports;
 const outputFormatFiles = (file) => {
-    return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-        const filePath = path_1.default.isAbsolute(file) ? path_1.default.relative("./", file) : file;
-        const outPath = path_1.default.join(".cache/", filePath).replace(".tsx", ".js");
-        const sourceCode = fs_1.default.readFileSync(filePath, "utf-8");
-        yield (0, utility_1.mkdirp)(outPath);
-        if (path_1.default.extname(filePath).includes("tsx")) {
-            const code = yield (0, exports.eraseExports)(sourceCode);
-            fs_1.default.writeFileSync(outPath, code, "utf-8");
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const filePath = path_1.default.isAbsolute(file) ? path_1.default.relative("./", file) : file;
+            const outPath = path_1.default.join(".cache/", filePath).replace(".tsx", ".js");
+            const sourceCode = fs_1.default.readFileSync(filePath, "utf-8");
+            yield (0, utility_1.mkdirp)(outPath);
+            if (path_1.default.extname(filePath).includes("tsx")) {
+                const code = yield (0, exports.eraseExports)(sourceCode);
+                fs_1.default.writeFileSync(outPath, code, "utf-8");
+            }
+            else {
+                const code = (0, exports.translateTs2Js)(sourceCode);
+                fs_1.default.writeFileSync(outPath, code, "utf-8");
+            }
+            resolve(null);
         }
-        else {
-            const code = (0, exports.translateTs2Js)(sourceCode);
-            fs_1.default.writeFileSync(outPath, code, "utf-8");
+        catch (e) {
+            reject(e);
         }
-        resolve(null);
     }));
 };
 exports.outputFormatFiles = outputFormatFiles;

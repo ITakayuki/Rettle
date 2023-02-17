@@ -9,9 +9,13 @@ import glob from "glob";
 const watchSources = () => {
   watchFiles({
     change: async(filename) => {
-      console.log(color.blue(`【Change File】-> ${filename}`));
-      await outputFormatFiles(filename);
-      await createCacheAppFile()
+      try {
+        console.log(color.blue(`【Change File】-> ${filename}`));
+        await outputFormatFiles(filename);
+        await createCacheAppFile()
+      } catch (e) {
+        console.error(e);
+      }
     },
     add: (filename, watcher) => {
       console.log(color.blue(`【Add File】-> ${filename}`));
@@ -37,9 +41,13 @@ export const server = async() => {
   const srcFiles = glob.sync("./src/**/*{ts,js,tsx,jsx,json}", {
     nodir: true
   });
-  await Promise.all(srcFiles.map(file => new Promise(async(resolve) => {
+  await Promise.all(srcFiles.map(file => new Promise(async(resolve, reject) => {
+    try {
       await outputFormatFiles(file)
       resolve(null);
+    } catch (e) {
+      reject(e)
+    }
     })
   ));
   await createTsConfigFile();
