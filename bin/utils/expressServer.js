@@ -43,6 +43,7 @@ const config_1 = require("./config");
 const glob_1 = __importDefault(require("glob"));
 const Log_1 = require("./Log");
 const variable_1 = require("./variable");
+const errorTemplate_html_1 = __importDefault(require("./errorTemplate.html"));
 const wakeupExpressServer = () => {
     const app = (0, express_1.default)();
     const entryPaths = {};
@@ -61,27 +62,32 @@ const wakeupExpressServer = () => {
             const relativePath = path.relative(viewPath, item).replace(path.extname(item), "").replace("index", "");
             app.get(path.join("/", config_1.config.pathPrefix, relativePath), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 var _a, _b, _c, _d, _e, _f;
-                const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
-                const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`;
-                const versionMeta = config_1.config.version ? [`<meta name="generator" content="Rettle ${variable_1.version}">`] : [""];
-                const headerMeta = ((_a = config_1.config.header) === null || _a === void 0 ? void 0 : _a.meta) ? (0, HTMLBuilder_1.createHeaderTags)("meta", (_b = config_1.config.header) === null || _b === void 0 ? void 0 : _b.meta) : [""];
-                const headerLink = ((_c = config_1.config.header) === null || _c === void 0 ? void 0 : _c.link) ? (0, HTMLBuilder_1.createHeaderTags)("link", (_d = config_1.config.header) === null || _d === void 0 ? void 0 : _d.link) : [""];
-                const headerScript = ((_e = config_1.config.header) === null || _e === void 0 ? void 0 : _e.script) ? (0, HTMLBuilder_1.createHeaderTags)("script", (_f = config_1.config.header) === null || _f === void 0 ? void 0 : _f.script) : [""];
-                const headers = [
-                    ...versionMeta,
-                    ...headerMeta,
-                    ...headerLink,
-                    ...headerScript,
-                ];
-                const script = path.join(key.replace("src/views/", path.join(config_1.config.pathPrefix)), config_1.config.js);
-                const result = config_1.config.template({
-                    html,
-                    style,
-                    headers,
-                    script
-                });
-                res.setHeader("Content-Type", "text/html");
-                res.send(result);
+                try {
+                    const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
+                    const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`;
+                    const versionMeta = config_1.config.version ? [`<meta name="generator" content="Rettle ${variable_1.version}">`] : [""];
+                    const headerMeta = ((_a = config_1.config.header) === null || _a === void 0 ? void 0 : _a.meta) ? (0, HTMLBuilder_1.createHeaderTags)("meta", (_b = config_1.config.header) === null || _b === void 0 ? void 0 : _b.meta) : [""];
+                    const headerLink = ((_c = config_1.config.header) === null || _c === void 0 ? void 0 : _c.link) ? (0, HTMLBuilder_1.createHeaderTags)("link", (_d = config_1.config.header) === null || _d === void 0 ? void 0 : _d.link) : [""];
+                    const headerScript = ((_e = config_1.config.header) === null || _e === void 0 ? void 0 : _e.script) ? (0, HTMLBuilder_1.createHeaderTags)("script", (_f = config_1.config.header) === null || _f === void 0 ? void 0 : _f.script) : [""];
+                    const headers = [
+                        ...versionMeta,
+                        ...headerMeta,
+                        ...headerLink,
+                        ...headerScript,
+                    ];
+                    const script = path.join(key.replace("src/views/", path.join(config_1.config.pathPrefix)), config_1.config.js);
+                    const result = config_1.config.template({
+                        html,
+                        style,
+                        headers,
+                        script
+                    });
+                    res.setHeader("Content-Type", "text/html");
+                    res.send(result);
+                }
+                catch (e) {
+                    res.send((0, errorTemplate_html_1.default)("Build Error", JSON.stringify(e, null, 2)));
+                }
             }));
         });
     });

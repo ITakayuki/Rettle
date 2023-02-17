@@ -5,7 +5,7 @@ import {config, getIgnores} from "./config";
 import glob from "glob";
 import {color} from "./Log";
 import {version} from "./variable";
-import * as process from "process";
+import errorTemplateHtml from "./errorTemplate.html";
 
 export const wakeupExpressServer = () => {
   const app = express();
@@ -27,27 +27,31 @@ export const wakeupExpressServer = () => {
     item.forEach(item => {
       const relativePath = path.relative(viewPath, item).replace(path.extname(item), "").replace("index", "");
       app.get(path.join("/", config.pathPrefix, relativePath), async(req, res) => {
-        const {html, css, ids} = await transformReact2HTMLCSS(item);
-        const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
-        const versionMeta = config.version ? [`<meta name="generator" content="Rettle ${version}">`] : [""];
-        const headerMeta = config.header?.meta ? createHeaderTags("meta", config.header?.meta) : [""];
-        const headerLink = config.header?.link ? createHeaderTags("link", config.header?.link) : [""];
-        const headerScript = config.header?.script ? createHeaderTags("script", config.header?.script) : [""];
-        const headers = [
-          ...versionMeta,
-          ...headerMeta,
-          ...headerLink,
-          ...headerScript,
-        ];
-        const script = path.join(key.replace("src/views/", path.join(config.pathPrefix)), config.js)
-        const result = config.template({
-          html,
-          style,
-          headers,
-          script
-        })
-        res.setHeader("Content-Type", "text/html")
-        res.send(result);
+        try {
+          const {html, css, ids} = await transformReact2HTMLCSS(item);
+          const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
+          const versionMeta = config.version ? [`<meta name="generator" content="Rettle ${version}">`] : [""];
+          const headerMeta = config.header?.meta ? createHeaderTags("meta", config.header?.meta) : [""];
+          const headerLink = config.header?.link ? createHeaderTags("link", config.header?.link) : [""];
+          const headerScript = config.header?.script ? createHeaderTags("script", config.header?.script) : [""];
+          const headers = [
+            ...versionMeta,
+            ...headerMeta,
+            ...headerLink,
+            ...headerScript,
+          ];
+          const script = path.join(key.replace("src/views/", path.join(config.pathPrefix)), config.js)
+          const result = config.template({
+            html,
+            style,
+            headers,
+            script
+          })
+          res.setHeader("Content-Type", "text/html")
+          res.send(result);
+        } catch (e) {
+          res.send(errorTemplateHtml("Build Error", JSON.stringify(e, null, 2)))
+        }
       })
     })
   })

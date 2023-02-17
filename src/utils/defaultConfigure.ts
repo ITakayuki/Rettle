@@ -1,5 +1,4 @@
 import {RettleConfigInterface} from "./config";
-import {version} from "./variable";
 import {templateHtml} from "./template.html";
 
 
