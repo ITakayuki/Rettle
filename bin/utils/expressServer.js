@@ -43,7 +43,7 @@ const config_1 = require("./config");
 const glob_1 = __importDefault(require("glob"));
 const Log_1 = require("./Log");
 const variable_1 = require("./variable");
-const errorTemplate_html_1 = __importDefault(require("./errorTemplate.html"));
+const errorTemplate_html_1 = __importStar(require("./errorTemplate.html"));
 const wakeupExpressServer = () => {
     const app = (0, express_1.default)();
     const entryPaths = {};
@@ -86,7 +86,9 @@ const wakeupExpressServer = () => {
                     res.send(result);
                 }
                 catch (e) {
-                    res.send((0, errorTemplate_html_1.default)("Build Error", JSON.stringify(e, null, 2)));
+                    const errorType = String(e);
+                    const stack = e.stack.split("\n").map((item, i) => i === 0 ? item + "<br/>" : "").join("");
+                    res.send((0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`)));
                 }
             }));
         });
