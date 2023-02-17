@@ -74,7 +74,7 @@ const wakeupExpressServer = () => {
                     ...headerLink,
                     ...headerScript,
                 ];
-                const scriptRoot = process.env.RETTLE_BUILD_MODE === "server" ? ".cache/temporary/" : path.join(config_1.config.outDir, config_1.config.pathPrefix);
+                const scriptRoot = process.env.RETTLE_BUILD_MODE === "server" ? path.join(".cache/temporary/", config_1.config.pathPrefix) : path.join(config_1.config.outDir, config_1.config.pathPrefix);
                 const script = path.join(key.replace("src/views/", scriptRoot), config_1.config.js);
                 const result = config_1.config.template({
                     html,
@@ -89,7 +89,7 @@ const wakeupExpressServer = () => {
     });
     app.use(path.join("/", config_1.config.pathPrefix), express_1.default.static(path.resolve(path.join("./", config_1.config.static)), { maxAge: "30d" }));
     app.listen(config_1.config.port, () => {
-        console.log(Log_1.color.blue(`Listening http://${path.join("localhost", config_1.config.pathPrefix)}:${config_1.config.port}`));
+        console.log(Log_1.color.blue(`Listening http://${path.join(`localhost:${config_1.config.port}`, config_1.config.pathPrefix)}`));
     });
 };
 exports.wakeupExpressServer = wakeupExpressServer;
