@@ -143,6 +143,8 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
         const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
         const importReact = importNodes.length !== 0 ? jsCode.slice(importNodes.start, importNodes.end) : null;
         const objects = {};
+        if ("declaration" in exportNodes[0] === false)
+            throw new Error("Cannot Found export");
         if (exportNodes[0].declaration.name) {
             // export default **
             for (const node of functionNodes) {
