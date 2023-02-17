@@ -6,7 +6,7 @@ exports.default = (title, contents) => {
 <!DOCTYPE html>
 <html>
 <head>
-<title>${title} | Rettle</title>
+${title !== "" ? `<title>${title} | Rettle</title>` : ""}
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
 body {
