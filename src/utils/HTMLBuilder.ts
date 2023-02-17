@@ -8,8 +8,8 @@ const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json")
 
 export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: Array<string>, css: string}> => {
   return  new Promise(async(resolve, reject) => {
-    try {
-      const res = await esBuild.build({
+    let res:esBuild.BuildResult & {outputFiles: esBuild.OutputFile[]};
+    esBuild.build({
         bundle: true,
         entryPoints: [path],
         platform: "node",
@@ -26,19 +26,23 @@ export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: 
             }
           })
         ]
-      })
-      const code = res.outputFiles![0].text;
-      const context = {exports, module, process, require, __filename, __dirname};
-      vm.runInNewContext(code, context);
-      const result = context.module.exports.default as {html:string, ids: Array<string>, css: string};
-      if ("html" in result && "css" in result && "ids" in result) {
-        resolve(result);
-      } else {
-        throw new Error(`${path}: The value of export default is different.`);
+      }).then(res => {
+      try {
+        const code = res.outputFiles![0].text;
+        const context = {exports, module, process, require, __filename, __dirname};
+        vm.runInNewContext(code, context);
+        const result = context.module.exports.default as {html:string, ids: Array<string>, css: string};
+        if ("html" in result && "css" in result && "ids" in result) {
+          resolve(result);
+        } else {
+          reject(new Error(`${path}: The value of export default is different.`));
+        }
+      } catch (e) {
+        reject(e);
       }
-    } catch (e) {
-      reject(e);
-    }
+    }).catch(e => {
+      reject(e)
+    })
   })
 }
 

@@ -44,39 +44,43 @@ const path = __importStar(require("path"));
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            const res = yield esBuild.build({
-                bundle: true,
-                entryPoints: [path],
-                platform: "node",
-                write: false,
-                external: Object.keys(dependencies),
-                plugins: [
-                    (0, esbuild_plugin_babel_1.default)({
-                        filter: /.ts?x/,
-                        babel: {
-                            presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
-                                        "runtime": "automatic", "importSource": "@emotion/react"
-                                    }]],
-                            plugins: ["@emotion/babel-plugin"]
-                        }
-                    })
-                ]
-            });
-            const code = res.outputFiles[0].text;
-            const context = { exports, module, process, require, __filename, __dirname };
-            vm_1.default.runInNewContext(code, context);
-            const result = context.module.exports.default;
-            if ("html" in result && "css" in result && "ids" in result) {
-                resolve(result);
+        let res;
+        esBuild.build({
+            bundle: true,
+            entryPoints: [path],
+            platform: "node",
+            write: false,
+            external: Object.keys(dependencies),
+            plugins: [
+                (0, esbuild_plugin_babel_1.default)({
+                    filter: /.ts?x/,
+                    babel: {
+                        presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
+                                    "runtime": "automatic", "importSource": "@emotion/react"
+                                }]],
+                        plugins: ["@emotion/babel-plugin"]
+                    }
+                })
+            ]
+        }).then(res => {
+            try {
+                const code = res.outputFiles[0].text;
+                const context = { exports, module, process, require, __filename, __dirname };
+                vm_1.default.runInNewContext(code, context);
+                const result = context.module.exports.default;
+                if ("html" in result && "css" in result && "ids" in result) {
+                    resolve(result);
+                }
+                else {
+                    reject(new Error(`${path}: The value of export default is different.`));
+                }
             }
-            else {
-                throw new Error(`${path}: The value of export default is different.`);
+            catch (e) {
+                reject(e);
             }
-        }
-        catch (e) {
+        }).catch(e => {
             reject(e);
-        }
+        });
     }));
 };
 exports.transformReact2HTMLCSS = transformReact2HTMLCSS;
