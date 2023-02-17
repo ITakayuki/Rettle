@@ -1,13 +1,14 @@
 import glob from "glob";
 import madge from "madge";
 import fs from "fs";
+import * as path from "path";
 
 const checkScript = (filePath: string) => {
   return fs.readFileSync(filePath, "utf-8").includes("export const script")
 }
 
 export const getDependencies = async(targetDir: string, ignore: Array<string>) => {
-  const targets = glob.sync(targetDir, {
+  const targets = glob.sync(path.join(targetDir, "/**/*"), {
     ignore: ignore,
     nodir: true
   });
