@@ -56,5 +56,5 @@ ${contents}
 
 
 export const errorTemplate = (value: string) => {
-  return `<div class="error"></div>`
+  return `<div class="error">${value}</div>`
 }
