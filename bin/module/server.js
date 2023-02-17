@@ -46,9 +46,14 @@ const glob_1 = __importDefault(require("glob"));
 const watchSources = () => {
     (0, watcher_1.watchFiles)({
         change: (filename) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log(Log_1.color.blue(`【Change File】-> ${filename}`));
-            yield (0, AppScriptBuilder_1.outputFormatFiles)(filename);
-            yield (0, AppScriptBuilder_1.createCacheAppFile)();
+            try {
+                console.log(Log_1.color.blue(`【Change File】-> ${filename}`));
+                yield (0, AppScriptBuilder_1.outputFormatFiles)(filename);
+                yield (0, AppScriptBuilder_1.createCacheAppFile)();
+            }
+            catch (e) {
+                console.error(e);
+            }
         }),
         add: (filename, watcher) => {
             console.log(Log_1.color.blue(`【Add File】-> ${filename}`));
@@ -73,9 +78,14 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
     const srcFiles = glob_1.default.sync("./src/**/*{ts,js,tsx,jsx,json}", {
         nodir: true
     });
-    yield Promise.all(srcFiles.map(file => new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, AppScriptBuilder_1.outputFormatFiles)(file);
-        resolve(null);
+    yield Promise.all(srcFiles.map(file => new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            yield (0, AppScriptBuilder_1.outputFormatFiles)(file);
+            resolve(null);
+        }
+        catch (e) {
+            reject(e);
+        }
     }))));
     yield (0, AppScriptBuilder_1.createTsConfigFile)();
     yield (0, AppScriptBuilder_1.createCacheAppFile)();
