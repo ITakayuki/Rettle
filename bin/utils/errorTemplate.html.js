@@ -84,16 +84,6 @@ margin-left: auto;
 text-align: center;
 }
 </style>
-${title === "" ? `<script>
-var title = document.querySelector(".title");
-var dom = document.createElement("title");
-if (title) {
-  dom.innerText = title + " | Rettle"
-} else {
-  dom.innerText = "Error | Rettle"
-}
-document.head.appendChild(dom);
-</script>` : ""}
 </head>
 <body>
 <div>
@@ -102,6 +92,16 @@ ${title !== "" ? `<h1 class="title">${title}</h1>` : ""}
 ${contents}
 </div>
 </div>
+${title === "" ? `<script>
+var title = document.querySelector(".title");
+var dom = document.createElement("title");
+if (title) {
+  dom.innerText = title.innerText + " | Rettle"
+} else {
+  dom.innerText = "Error | Rettle"
+}
+document.head.appendChild(dom);
+</script>` : ""}
 </body>
 </html>
   `;
