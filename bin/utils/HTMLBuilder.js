@@ -43,29 +43,34 @@ const fs_1 = __importDefault(require("fs"));
 const path = __importStar(require("path"));
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
-    return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield esBuild.build({
-            bundle: true,
-            entryPoints: [path],
-            platform: "node",
-            write: false,
-            external: Object.keys(dependencies),
-            plugins: [
-                (0, esbuild_plugin_babel_1.default)({
-                    filter: /.ts?x/,
-                    babel: {
-                        presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
-                                    "runtime": "automatic", "importSource": "@emotion/react"
-                                }]],
-                        plugins: ["@emotion/babel-plugin"]
-                    }
-                })
-            ]
-        });
-        const code = res.outputFiles[0].text;
-        const context = { exports, module, process, require, __filename, __dirname };
-        vm_1.default.runInNewContext(code, context);
-        resolve(context.module.exports.default);
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const res = yield esBuild.build({
+                bundle: true,
+                entryPoints: [path],
+                platform: "node",
+                write: false,
+                external: Object.keys(dependencies),
+                plugins: [
+                    (0, esbuild_plugin_babel_1.default)({
+                        filter: /.ts?x/,
+                        babel: {
+                            presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
+                                        "runtime": "automatic", "importSource": "@emotion/react"
+                                    }]],
+                            plugins: ["@emotion/babel-plugin"]
+                        }
+                    })
+                ]
+            });
+            const code = res.outputFiles[0].text;
+            const context = { exports, module, process, require, __filename, __dirname };
+            vm_1.default.runInNewContext(code, context);
+            resolve(context.module.exports.default);
+        }
+        catch (e) {
+            reject(e);
+        }
     }));
 };
 exports.transformReact2HTMLCSS = transformReact2HTMLCSS;

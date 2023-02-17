@@ -7,7 +7,8 @@ import * as path from "path";
 const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf-8"));
 
 export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: Array<string>, css: string}> => {
-  return  new Promise(async(resolve) => {
+  return  new Promise(async(resolve, reject) => {
+    try {
     const res = await esBuild.build({
       bundle: true,
       entryPoints: [path],
@@ -29,7 +30,10 @@ export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: 
     const code = res.outputFiles![0].text;
     const context = {exports, module, process, require, __filename, __dirname};
     vm.runInNewContext(code, context);
-    resolve(context.module.exports.default as {html:string, ids: Array<string>, css: string})
+    resolve(context.module.exports.default as {html:string, ids: Array<string>, css: string});
+    } catch (e) {
+      reject(e);
+    }
   })
 }
 
