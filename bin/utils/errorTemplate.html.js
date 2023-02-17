@@ -21,9 +21,10 @@ color: white;
 .error {
   padding: 20px;
   border-radius: 10px;
-  backgrouund-color: black;
+  background-color: black;
   color: white;
-  font-size: 24px;
+  font-size: 15px;
+  line-height: 1;
 }
 .color-red {
 color: red;

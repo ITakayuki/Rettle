@@ -87,7 +87,7 @@ const wakeupExpressServer = () => {
                 }
                 catch (e) {
                     const errorType = String(e);
-                    const stack = e.stack.split("\n").map((item, i) => i === 0 ? item + "<br/>" : "").join("");
+                    const stack = e.stack.split("\n").map((item, i) => i !== 0 ? item + "<br/>" : "").join("");
                     res.send((0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`)));
                 }
             }));
