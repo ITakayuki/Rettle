@@ -43,7 +43,6 @@ const config_1 = require("./config");
 const glob_1 = __importDefault(require("glob"));
 const Log_1 = require("./Log");
 const variable_1 = require("./variable");
-const process = __importStar(require("process"));
 const wakeupExpressServer = () => {
     const app = (0, express_1.default)();
     const entryPaths = {};
@@ -74,8 +73,7 @@ const wakeupExpressServer = () => {
                     ...headerLink,
                     ...headerScript,
                 ];
-                const scriptRoot = process.env.RETTLE_BUILD_MODE === "server" ? path.join(".cache/temporary/", config_1.config.pathPrefix) : path.join(config_1.config.outDir, config_1.config.pathPrefix);
-                const script = path.join(key.replace("src/views/", scriptRoot), config_1.config.js);
+                const script = path.join(key.replace("src/views/", path.join(config_1.config.pathPrefix)), config_1.config.js);
                 const result = config_1.config.template({
                     html,
                     style,
@@ -88,6 +86,7 @@ const wakeupExpressServer = () => {
         });
     });
     app.use(path.join("/", config_1.config.pathPrefix), express_1.default.static(path.resolve(path.join("./", config_1.config.static)), { maxAge: "30d" }));
+    app.use(path.join("/", config_1.config.pathPrefix), express_1.default.static(path.resolve(path.join("./", ".cache/temporary/")), { maxAge: "30d" }));
     app.listen(config_1.config.port, () => {
         console.log(Log_1.color.blue(`Listening http://${path.join(`localhost:${config_1.config.port}`, config_1.config.pathPrefix)}`));
     });
