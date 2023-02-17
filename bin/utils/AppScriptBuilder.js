@@ -167,10 +167,53 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
     }
     else {
         // export default ()=>
+        let replaceDefaultRettle = "";
+        let name = "";
+        let cacheName = "";
+        if (exportNodes[0]) {
+            if (exportNodes[0].declaration) {
+                if (exportNodes[0].declaration.arguments) {
+                    if (exportNodes[0].declaration.arguments[1]) {
+                        if (exportNodes[0].declaration.arguments[1].callee) {
+                            if (exportNodes[0].declaration.arguments[1].callee.name) {
+                                name = exportNodes[0].declaration.arguments[1].callee.name;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (name) {
+            for (const node of functionNodes) {
+                const { start, end } = node;
+                const text = jsCode.slice(start, end);
+                // console.log(node.declarations[0].init.callee.name)
+                if (node.declarations[0].init.callee) {
+                    let cache = node.declarations[0].init.callee.property ? node.declarations[0].init.callee.property.name : node.declarations[0].init.callee.name;
+                    if (cache === "createCache") {
+                        cacheName = node.declarations[0].id.name;
+                    }
+                }
+                if (node.type === "FunctionDeclaration") {
+                    const key = node.id.name;
+                    objects[key] = text;
+                }
+                else if (node.type === "VariableDeclaration") {
+                    const key = node.declarations[0].id.name;
+                    objects[key] = text;
+                }
+            }
+            replaceDefaultRettle = jsCode.replace(objects[name], objects[name].split("\n").map(item => {
+                return "//" + item;
+            }).join("\n")).replace(objects[cacheName], "//" + objects[cacheName]);
+        }
+        else {
+            replaceDefaultRettle = jsCode;
+        }
         const exportName = exportNodes[0];
         const { start, end } = exportName;
         const exportStr = jsCode.slice(start, end);
-        const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
+        const removeReactJsCode = importReact ? replaceDefaultRettle.replace(importReact, "//" + importReact) : replaceDefaultRettle;
         const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
         return (0, exports.translateTs2Js)(result);
     }
