@@ -9,7 +9,7 @@ export default (title: string,contents: string) => {
 body {
 margin: 0;
 padding: 20px;
-color: #333333;
+background-color: #333333;
 color: white;
 }
 .title {
