@@ -87,11 +87,31 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
             reject(e);
         }
     }))));
-    yield (0, AppScriptBuilder_1.createTsConfigFile)();
-    yield (0, AppScriptBuilder_1.createCacheAppFile)();
+    try {
+        yield (0, AppScriptBuilder_1.createTsConfigFile)();
+    }
+    catch (e) {
+        throw e;
+    }
+    try {
+        yield (0, AppScriptBuilder_1.createCacheAppFile)();
+    }
+    catch (e) {
+        throw e;
+    }
     watchSources();
-    yield (0, AppScriptBuilder_1.buildScript)(buildSetupOptions);
-    yield (0, AppScriptBuilder_1.watchScript)(buildSetupOptions);
+    try {
+        yield (0, AppScriptBuilder_1.buildScript)(buildSetupOptions);
+    }
+    catch (e) {
+        throw e;
+    }
+    try {
+        yield (0, AppScriptBuilder_1.watchScript)(buildSetupOptions);
+    }
+    catch (e) {
+        throw e;
+    }
     /* wake up html and css server */
     (0, expressServer_1.wakeupExpressServer)();
 });

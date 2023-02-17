@@ -50,11 +50,27 @@ export const server = async() => {
     }
     })
   ));
-  await createTsConfigFile();
-  await createCacheAppFile();
+  try {
+    await createTsConfigFile();
+  } catch (e) {
+    throw e
+  }
+  try {
+    await createCacheAppFile();
+  }catch (e) {
+    throw e
+  }
   watchSources();
-  await buildScript(buildSetupOptions);
-  await watchScript(buildSetupOptions)
+  try {
+    await buildScript(buildSetupOptions);
+  } catch (e) {
+    throw e
+  }
+  try {
+    await watchScript(buildSetupOptions)
+  } catch (e) {
+    throw e
+  }
   /* wake up html and css server */
   wakeupExpressServer();
 }
