@@ -95,6 +95,11 @@ const wakeupExpressServer = () => {
     });
     app.use(path.join("/", config_1.config.pathPrefix), express_1.default.static(path.resolve(path.join("./", config_1.config.static)), { maxAge: "30d" }));
     app.use(path.join("/"), express_1.default.static(path.resolve(path.join("./", ".cache/temporary/")), { maxAge: "30d" }));
+    // 404
+    app.use((req, res) => {
+        const html = `<div><h1 class="title text-center">404 Page Not Found</h1><div class="wd-200 rettle-logo margin-center"></div></div>`;
+        res.status(404).send((0, errorTemplate_html_1.default)("", html));
+    });
     app.listen(config_1.config.port, () => {
         console.log(Log_1.color.blue(`Listening http://${path.join(`localhost:${config_1.config.port}`, config_1.config.pathPrefix)}`));
     });
