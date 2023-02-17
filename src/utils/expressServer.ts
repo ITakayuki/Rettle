@@ -63,7 +63,7 @@ export const wakeupExpressServer = () => {
 
   // 404
   app.use((req, res) => {
-    const html = `<div><h1 class="title text-center">404 Page Not Found</h1><div class="wd-200 rettle-logo margin-center"></div></div>`
+    const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`
     res.status(404).send(errorTemplateHtml("", html))
   })
 

@@ -97,7 +97,7 @@ const wakeupExpressServer = () => {
     app.use(path.join("/"), express_1.default.static(path.resolve(path.join("./", ".cache/temporary/")), { maxAge: "30d" }));
     // 404
     app.use((req, res) => {
-        const html = `<div><h1 class="title text-center">404 Page Not Found</h1><div class="wd-200 rettle-logo margin-center"></div></div>`;
+        const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;
         res.status(404).send((0, errorTemplate_html_1.default)("", html));
     });
     app.listen(config_1.config.port, () => {
