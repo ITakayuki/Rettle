@@ -128,72 +128,26 @@ const translateTs2Js = (code) => {
 };
 exports.translateTs2Js = translateTs2Js;
 const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
-    const jsCode = (0, exports.translateTs2Js)(code);
-    //@ts-ignore
-    const ast = acorn.Parser.extend((0, acorn_jsx_1.default)()).parse(jsCode, {
-        ecmaVersion: 2019,
-        sourceType: "module"
-    });
-    // @ts-ignore
-    const importNodes = ast.body.filter(item => item.type === "ImportDeclaration" && (item.source.value === "react" || item.source.raw === "react"));
-    //@ts-ignore
-    const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
-    //@ts-ignore
-    const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
-    const importReact = importNodes.length !== 0 ? jsCode.slice(importNodes.start, importNodes.end) : null;
-    const objects = {};
-    if (exportNodes[0].declaration.name) {
-        // export default **
-        for (const node of functionNodes) {
-            const { start, end } = node;
-            const text = jsCode.slice(start, end);
-            if (node.type === "FunctionDeclaration") {
-                const key = node.id.name;
-                objects[key] = text;
-            }
-            else if (node.type === "VariableDeclaration") {
-                const key = node.declarations[0].id.name;
-                objects[key] = text;
-            }
-            const exportName = exportNodes[0].declaration.name;
-            const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
-            const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
-            const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
-                return "//" + item;
-            }).join("\n")).replace(exportLine, "export default () => {}");
-            return (0, exports.translateTs2Js)(result);
-        }
-        ;
-    }
-    else {
-        // export default ()=>
-        let replaceDefaultRettle = "";
-        let name = "";
-        let cacheName = "";
-        if (exportNodes[0]) {
-            if (exportNodes[0].declaration) {
-                if (exportNodes[0].declaration.arguments) {
-                    if (exportNodes[0].declaration.arguments[1]) {
-                        if (exportNodes[0].declaration.arguments[1].callee) {
-                            if (exportNodes[0].declaration.arguments[1].callee.name) {
-                                name = exportNodes[0].declaration.arguments[1].callee.name;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (name) {
+    try {
+        const jsCode = (0, exports.translateTs2Js)(code);
+        //@ts-ignore
+        const ast = acorn.Parser.extend((0, acorn_jsx_1.default)()).parse(jsCode, {
+            ecmaVersion: 2019,
+            sourceType: "module"
+        });
+        // @ts-ignore
+        const importNodes = ast.body.filter(item => item.type === "ImportDeclaration" && (item.source.value === "react" || item.source.raw === "react"));
+        //@ts-ignore
+        const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
+        //@ts-ignore
+        const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
+        const importReact = importNodes.length !== 0 ? jsCode.slice(importNodes.start, importNodes.end) : null;
+        const objects = {};
+        if (exportNodes[0].declaration.name) {
+            // export default **
             for (const node of functionNodes) {
                 const { start, end } = node;
                 const text = jsCode.slice(start, end);
-                // console.log(node.declarations[0].init.callee.name)
-                if (node.declarations[0].init.callee) {
-                    let cache = node.declarations[0].init.callee.property ? node.declarations[0].init.callee.property.name : node.declarations[0].init.callee.name;
-                    if (cache === "createCache") {
-                        cacheName = node.declarations[0].id.name;
-                    }
-                }
                 if (node.type === "FunctionDeclaration") {
                     const key = node.id.name;
                     objects[key] = text;
@@ -202,22 +156,73 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                     const key = node.declarations[0].id.name;
                     objects[key] = text;
                 }
+                const exportName = exportNodes[0].declaration.name;
+                const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
+                const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
+                const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+                    return "//" + item;
+                }).join("\n")).replace(exportLine, "export default () => {}");
+                return (0, exports.translateTs2Js)(result);
             }
-            replaceDefaultRettle = jsCode.replace(objects[name], objects[name].split("\n").map(item => {
-                return "//" + item;
-            }).join("\n")).replace(objects[cacheName], "//" + objects[cacheName]);
+            ;
         }
         else {
-            replaceDefaultRettle = jsCode;
+            // export default ()=>
+            let replaceDefaultRettle = "";
+            let name = "";
+            let cacheName = "";
+            if (exportNodes[0]) {
+                if (exportNodes[0].declaration) {
+                    if (exportNodes[0].declaration.arguments) {
+                        if (exportNodes[0].declaration.arguments[1]) {
+                            if (exportNodes[0].declaration.arguments[1].callee) {
+                                if (exportNodes[0].declaration.arguments[1].callee.name) {
+                                    name = exportNodes[0].declaration.arguments[1].callee.name;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (name) {
+                for (const node of functionNodes) {
+                    const { start, end } = node;
+                    const text = jsCode.slice(start, end);
+                    // console.log(node.declarations[0].init.callee.name)
+                    if (node.declarations[0].init.callee) {
+                        let cache = node.declarations[0].init.callee.property ? node.declarations[0].init.callee.property.name : node.declarations[0].init.callee.name;
+                        if (cache === "createCache") {
+                            cacheName = node.declarations[0].id.name;
+                        }
+                    }
+                    if (node.type === "FunctionDeclaration") {
+                        const key = node.id.name;
+                        objects[key] = text;
+                    }
+                    else if (node.type === "VariableDeclaration") {
+                        const key = node.declarations[0].id.name;
+                        objects[key] = text;
+                    }
+                }
+                replaceDefaultRettle = jsCode.replace(objects[name], objects[name].split("\n").map(item => {
+                    return "//" + item;
+                }).join("\n")).replace(objects[cacheName], "//" + objects[cacheName]);
+            }
+            else {
+                replaceDefaultRettle = jsCode;
+            }
+            const exportName = exportNodes[0];
+            const { start, end } = exportName;
+            const exportStr = jsCode.slice(start, end);
+            const removeReactJsCode = importReact ? replaceDefaultRettle.replace(importReact, "//" + importReact) : replaceDefaultRettle;
+            const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
+            return (0, exports.translateTs2Js)(result);
         }
-        const exportName = exportNodes[0];
-        const { start, end } = exportName;
-        const exportStr = jsCode.slice(start, end);
-        const removeReactJsCode = importReact ? replaceDefaultRettle.replace(importReact, "//" + importReact) : replaceDefaultRettle;
-        const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
-        return (0, exports.translateTs2Js)(result);
+        return "";
     }
-    return "";
+    catch (e) {
+        throw e;
+    }
 });
 exports.eraseExports = eraseExports;
 const outputFormatFiles = (file) => {

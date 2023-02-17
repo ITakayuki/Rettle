@@ -9,28 +9,33 @@ const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json")
 export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: Array<string>, css: string}> => {
   return  new Promise(async(resolve, reject) => {
     try {
-    const res = await esBuild.build({
-      bundle: true,
-      entryPoints: [path],
-      platform: "node",
-      write: false,
-      external: Object.keys(dependencies),
-      plugins: [
-        BabelPlugin({
-          filter: /.ts?x/,
-          babel: {
-            presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
-              "runtime": "automatic", "importSource": "@emotion/react"
-            }]],
-            plugins: ["@emotion/babel-plugin"]
-          }
-        })
-      ]
-    })
-    const code = res.outputFiles![0].text;
-    const context = {exports, module, process, require, __filename, __dirname};
-    vm.runInNewContext(code, context);
-    resolve(context.module.exports.default as {html:string, ids: Array<string>, css: string});
+      const res = await esBuild.build({
+        bundle: true,
+        entryPoints: [path],
+        platform: "node",
+        write: false,
+        external: Object.keys(dependencies),
+        plugins: [
+          BabelPlugin({
+            filter: /.ts?x/,
+            babel: {
+              presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
+                "runtime": "automatic", "importSource": "@emotion/react"
+              }]],
+              plugins: ["@emotion/babel-plugin"]
+            }
+          })
+        ]
+      })
+      const code = res.outputFiles![0].text;
+      const context = {exports, module, process, require, __filename, __dirname};
+      vm.runInNewContext(code, context);
+      const result = context.module.exports.default as {html:string, ids: Array<string>, css: string};
+      if ("html" in result && "css" in result && "ids" in result) {
+        resolve(result);
+      } else {
+        throw new Error(`${path}: The value of export default is different.`);
+      }
     } catch (e) {
       reject(e);
     }

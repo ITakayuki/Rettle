@@ -66,7 +66,13 @@ const transformReact2HTMLCSS = (path) => {
             const code = res.outputFiles[0].text;
             const context = { exports, module, process, require, __filename, __dirname };
             vm_1.default.runInNewContext(code, context);
-            resolve(context.module.exports.default);
+            const result = context.module.exports.default;
+            if ("html" in result && "css" in result && "ids" in result) {
+                resolve(result);
+            }
+            else {
+                throw new Error(`${path}: The value of export default is different.`);
+            }
         }
         catch (e) {
             reject(e);
