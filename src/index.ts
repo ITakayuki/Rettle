@@ -20,6 +20,8 @@ const opts = program.opts() as OptsInterface;
 
 if (opts.build) {
   console.log("build!!!???")
+  process.env.RETTLE_BUILD_MODE = "build";
 } else {
+  process.env.RETTLE_BUILD_MODE = "server";
   server();
 }

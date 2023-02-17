@@ -32,7 +32,7 @@ const watchSources = () => {
 export const server = async() => {
   /* build app.js files */
   const buildSetupOptions = {
-    outDir: path.join(config.outDir, config.pathPrefix)
+    outDir: path.join(".cache/temporary", config.pathPrefix)
   }
   const srcFiles = glob.sync("./src/**/*{ts,js,tsx,jsx,json}", {
     nodir: true

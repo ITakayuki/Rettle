@@ -68,7 +68,7 @@ const watchSources = () => {
 const server = () => __awaiter(void 0, void 0, void 0, function* () {
     /* build app.js files */
     const buildSetupOptions = {
-        outDir: path.join(config_1.config.outDir, config_1.config.pathPrefix)
+        outDir: path.join(".cache/temporary", config_1.config.pathPrefix)
     };
     const srcFiles = glob_1.default.sync("./src/**/*{ts,js,tsx,jsx,json}", {
         nodir: true

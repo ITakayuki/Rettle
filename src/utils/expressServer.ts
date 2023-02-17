@@ -5,6 +5,7 @@ import {config, getIgnores} from "./config";
 import glob from "glob";
 import {color} from "./Log";
 import {version} from "./variable";
+import * as process from "process";
 
 export const wakeupExpressServer = () => {
   const app = express();
@@ -38,7 +39,8 @@ export const wakeupExpressServer = () => {
           ...headerLink,
           ...headerScript,
         ];
-        const script = path.join(key, config.js)
+        const scriptRoot = process.env.RETTLE_BUILD_MODE === "server" ? ".cache/temporary/" : path.join(config.outDir, config.pathPrefix);
+        const script = path.join(key.replace("src/views/", scriptRoot), config.js)
         const result = config.template({
           html,
           style,

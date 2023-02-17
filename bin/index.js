@@ -11,8 +11,10 @@ program.parse();
 const opts = program.opts();
 if (opts.build) {
     console.log("build!!!???");
+    process.env.RETTLE_BUILD_MODE = "build";
 }
 else {
+    process.env.RETTLE_BUILD_MODE = "server";
     (0, server_1.server)();
 }
 //# sourceMappingURL=index.js.map

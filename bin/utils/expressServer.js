@@ -43,6 +43,7 @@ const config_1 = require("./config");
 const glob_1 = __importDefault(require("glob"));
 const Log_1 = require("./Log");
 const variable_1 = require("./variable");
+const process = __importStar(require("process"));
 const wakeupExpressServer = () => {
     const app = (0, express_1.default)();
     const entryPaths = {};
@@ -73,7 +74,8 @@ const wakeupExpressServer = () => {
                     ...headerLink,
                     ...headerScript,
                 ];
-                const script = path.join(key, config_1.config.js);
+                const scriptRoot = process.env.RETTLE_BUILD_MODE === "server" ? ".cache/temporary/" : path.join(config_1.config.outDir, config_1.config.pathPrefix);
+                const script = path.join(key.replace("src/views/", scriptRoot), config_1.config.js);
                 const result = config_1.config.template({
                     html,
                     style,
