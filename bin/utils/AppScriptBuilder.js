@@ -145,6 +145,8 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
         const objects = {};
         if (!exportNodes)
             throw new Error("Cannot Found export");
+        if (!exportNodes[0])
+            throw new Error("Cannot Found export");
         if ("declaration" in exportNodes[0] === false)
             throw new Error("Cannot Found export");
         if (exportNodes[0].declaration.name) {
