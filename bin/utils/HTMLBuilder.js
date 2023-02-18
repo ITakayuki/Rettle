@@ -37,10 +37,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createHeaderTags = exports.transformReact2HTMLCSS = void 0;
 const esBuild = __importStar(require("esbuild"));
-const esbuild_plugin_babel_1 = __importDefault(require("@itkyk/esbuild-plugin-babel"));
 const vm_1 = __importDefault(require("vm"));
 const fs_1 = __importDefault(require("fs"));
 const path = __importStar(require("path"));
+const config_1 = require("./config");
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,17 +51,7 @@ const transformReact2HTMLCSS = (path) => {
             platform: "node",
             write: false,
             external: Object.keys(dependencies),
-            plugins: [
-                (0, esbuild_plugin_babel_1.default)({
-                    filter: /.ts?x/,
-                    babel: {
-                        presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
-                                    "runtime": "automatic", "importSource": "@emotion/react"
-                                }]],
-                        plugins: ["@emotion/babel-plugin"]
-                    }
-                })
-            ]
+            plugins: config_1.config.esbuild.plugins,
         }).then(res => {
             try {
                 const code = res.outputFiles[0].text;

@@ -1,4 +1,5 @@
 import { templateHTMLInterface } from "./template.html";
+import * as esBuild from "esbuild";
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: () => void;
@@ -12,6 +13,7 @@ interface esbuildInterface {
     tsconfigRow?: string;
     loader?: Record<string, string>;
     charset?: string;
+    plugins: esBuild.Plugin[];
 }
 export interface RettleConfigInterface {
     pathPrefix: string;

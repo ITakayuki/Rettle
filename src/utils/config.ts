@@ -1,5 +1,5 @@
 import {templateHTMLInterface} from "./template.html";
-import {getDependencies} from "./Dependencies";
+import * as esBuild from "esbuild";
 interface BuildOptionsInterface {
   copyStatic?: ()=>void;
   buildScript?: () => void;
@@ -14,7 +14,7 @@ interface esbuildInterface {
   tsconfigRow?: string;
   loader?: Record<string, string>;
   charset?: string;
-
+  plugins: esBuild.Plugin[]
 }
 
 export interface  RettleConfigInterface {
@@ -37,7 +37,8 @@ export interface  RettleConfigInterface {
   alias?: Record<string, string>;
   build?: BuildOptionsInterface;
   esbuild: esbuildInterface,
-  version: boolean
+  version: boolean,
+
 }
 
 const sortStringsBySlashCount = (strings: Array<string>) => {

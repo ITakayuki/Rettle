@@ -3,6 +3,7 @@ import BabelPlugin from "@itkyk/esbuild-plugin-babel";
 import vm from "vm";
 import fs from "fs";
 import * as path from "path";
+import {config} from "./config";
 
 const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf-8"));
 
@@ -15,17 +16,7 @@ export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: 
         platform: "node",
         write: false,
         external: Object.keys(dependencies),
-        plugins: [
-          BabelPlugin({
-            filter: /.ts?x/,
-            babel: {
-              presets: ["@babel/preset-env", "@babel/preset-typescript", ["@babel/preset-react", {
-                "runtime": "automatic", "importSource": "@emotion/react"
-              }]],
-              plugins: ["@emotion/babel-plugin"]
-            }
-          })
-        ]
+        plugins: config.esbuild.plugins,
       }).then(res => {
       try {
         const code = res.outputFiles![0].text;

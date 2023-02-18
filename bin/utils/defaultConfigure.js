@@ -15,6 +15,7 @@ const config = {
     encode: "UTF-8",
     esbuild: {
         minify: true,
+        plugins: []
     },
     version: true
 };

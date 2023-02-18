@@ -15,6 +15,7 @@ const config:RettleConfigInterface = {
   encode: "UTF-8",
   esbuild: {
     minify: true,
+    plugins: []
   },
   version: true
 }
