@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createComponent = void 0;
+exports.getRef = exports.getRefs = exports.createComponent = void 0;
 const events = [
     // Other Events
     `scroll`,
@@ -56,4 +56,23 @@ const createComponent = (hash, args) => {
     ComponentInit(hash, args);
 };
 exports.createComponent = createComponent;
+const getRefs = (hash) => {
+    const targets = document.querySelectorAll(`[data-ref-${hash}]`);
+    const result = {};
+    for (const target of targets) {
+        const tag = target.getAttribute(`data-ref-${hash}`);
+        if (tag === null)
+            return console.error(`Cannot found ref value.`, target);
+        result[tag] = target;
+    }
+    return result;
+};
+exports.getRefs = getRefs;
+const getRef = (hash, key) => {
+    const targets = (0, exports.getRefs)(hash);
+    if (!targets.hasOwnProperty(key))
+        console.error(`Cannot found ref ${key}.`);
+    return targets[key];
+};
+exports.getRef = getRef;
 //# sourceMappingURL=rettle-core.js.map

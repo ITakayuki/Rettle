@@ -72,7 +72,7 @@ const createCacheAppFile = () => {
             const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
             const appResolvePath = createFileName(endpoint);
             const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.js`);
-            const appImports = [`import {createComponent} from "rettle/bin/rettle-core";`];
+            const appImports = [`import {createComponent} from "rettle/core";`];
             const scriptRunner = [];
             for (const file of files) {
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));

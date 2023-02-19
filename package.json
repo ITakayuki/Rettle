@@ -17,6 +17,14 @@
   "bin": {
     "rettle": "./bin/index.js"
   },
+  "exports": {
+    ".": {
+      "default": "./bin/rettle.js"
+    },
+    "./core": {
+      "default": "./bin/rettle-core.js"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
