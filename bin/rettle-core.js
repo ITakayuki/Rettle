@@ -39,6 +39,8 @@ const ComponentInit = (hash, args) => {
         if (targets) {
             for (const target of targets) {
                 const labelName = target.getAttribute(selector);
+                if (!args)
+                    return console.error(`Cannot found property ${labelName}`);
                 if (labelName === null)
                     return console.error(`Cannot found property ${selector} of ${target}`);
                 if (!args.hasOwnProperty(labelName))

@@ -44,10 +44,11 @@ export const createCacheAppFile = () => {
       const appImports = [`import {createComponent} from "rettle/bin/rettle-core";`];
       const scriptRunner = [];
       for (const file of files) {
+        const hash = createHash(path.resolve(file));
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
-          `createComponent("${createHash(path.resolve(file))}",${hashName}());`
+          `createComponent("${hash}",${hashName}(${hash}));`
         ].join("\n"));
       }
       await mkdirp(appFilePath);
