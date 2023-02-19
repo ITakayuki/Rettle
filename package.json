@@ -1,5 +1,5 @@
 {
-  "name": "rettle-test",
+  "name": "rettle",
   "version": "0.0.7",
   "main": "./bin/rettle.js",
   "scripts": {
