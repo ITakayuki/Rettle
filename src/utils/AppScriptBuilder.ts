@@ -1,5 +1,4 @@
 import esBuild from "esbuild";
-import {color} from "./Log";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
@@ -11,6 +10,7 @@ import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
 import jsx from "acorn-jsx";
 import ts from "typescript";
+import {createHash} from "./utility";
 
 
 interface BuildScriptInterface {
@@ -41,13 +41,13 @@ export const createCacheAppFile = () => {
       const files = await getDependencies(endpoint,ignore);
       const appResolvePath = createFileName(endpoint)
       const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
-      const appImports = [];
+      const appImports = [`import {createComponent} from "rettle";`];
       const scriptRunner = [];
       for (const file of files) {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
-          `${hashName}();`
+          `createComponent(${createHash(file)},${hashName}());`
         ].join("\n"));
       }
       await mkdirp(appFilePath);

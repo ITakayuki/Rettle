@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mkdirp = void 0;
+exports.createHash = exports.mkdirp = void 0;
 const path = __importStar(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const mkdirp = (filePath) => {
@@ -45,4 +45,17 @@ const mkdirp = (filePath) => {
     });
 };
 exports.mkdirp = mkdirp;
+const djb2Hash = (str) => {
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    }
+    return hash;
+};
+const createHash = (str) => {
+    const hash = djb2Hash(str);
+    const fullStr = ('0000000' + (hash & 0xFFFFFF).toString(16));
+    return fullStr.substring(fullStr.length - 8, fullStr.length);
+};
+exports.createHash = createHash;
 //# sourceMappingURL=utility.js.map
