@@ -8,8 +8,9 @@
         "skipLibCheck": true,
         "allowJs": true,
         "jsx": "preserve",
+        "baseUrl": "./",
         "paths": {
-            "rettle/core": ["rettle/bin/rettle-core"]
+            "rettle/core": ["node_modules/rettle/bin/rettle-core"]
         }
     }
 }
