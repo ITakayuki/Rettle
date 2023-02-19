@@ -7,6 +7,9 @@
     "strict": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "paths": {
+      "rettle/core": ["rettle/bin/rettle-core"]
+    }
   }
 }

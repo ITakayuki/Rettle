@@ -9,20 +9,19 @@
     "test:node": "node ./bin/index.js -d",
     "version": "node ./commands/index.js"
   },
-  "typesVersions": {
-    "*": [
-      "./rettle.d.ts"
-    ]
-  },
   "bin": {
     "rettle": "./bin/index.js"
   },
   "exports": {
     ".": {
-      "default": "./bin/rettle.js"
+      "import":"./bin/rettle.js",
+      "require": "./bin/rettle.js",
+      "types": "./bin/rettle.d.ts"
     },
     "./core": {
-      "default": "./bin/rettle-core.js"
+      "types": "./bin/rettle-core.d.ts",
+      "import": "./bin/rettle-core.js",
+      "require": "./bin/rettle-core.js"
     }
   },
   "keywords": [],
