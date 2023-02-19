@@ -34,8 +34,8 @@ const events = [
 ];
 const ComponentInit = (hash, args) => {
     for (const event of events) {
-        const selector = `[data-${event}-${hash}]`;
-        const targets = document.querySelectorAll(selector);
+        const selector = `data-${event}-${hash}`;
+        const targets = document.querySelectorAll(`[${selector}]`);
         if (targets) {
             for (const target of targets) {
                 const labelName = target.getAttribute(selector);
