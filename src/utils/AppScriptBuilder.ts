@@ -47,7 +47,7 @@ export const createCacheAppFile = () => {
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         scriptRunner.push([
-          `createComponent(${createHash(file)},${hashName}());`
+          `createComponent("${createHash(file)}",${hashName}());`
         ].join("\n"));
       }
       await mkdirp(appFilePath);
