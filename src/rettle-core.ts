@@ -69,3 +69,19 @@ export const getRef = <T>(hash:string, key: string):T => {
   if (!targets.hasOwnProperty(key)) console.error(`Cannot found ref ${key}.`)
   return targets[key] as T
 }
+type watcherFunctionType<T> = (arg: T) => T;
+
+export const watcher = <T,>(value: T, callback: () => void): [{value: T}, (arg:  ((val: T) => T) | T) => void ] => {
+  const temp = {
+    value: value
+  }
+  return [temp, (setter: T | watcherFunctionType<T> ) => {
+    if (typeof setter !== "function") {
+      temp.value = setter;
+    } else if (typeof setter === "function") {
+      const call = setter as watcherFunctionType<T>
+      temp.value = call(temp.value);
+    }
+    callback();
+  }]
+}

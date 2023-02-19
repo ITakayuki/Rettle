@@ -1,5 +1,6 @@
 import {templateHTMLInterface} from "./template.html";
 import * as esBuild from "esbuild";
+import * as path from "path";
 interface BuildOptionsInterface {
   copyStatic?: ()=>void;
   buildScript?: () => void;
@@ -87,10 +88,12 @@ const getConfigure = () => {
 }
 
 export const getIgnores = (endpoint: string) => {
-  const ignore = config.endpoints.filter((x: string, i: number , self:string[]) => {
+  const ignores = config.endpoints.filter((x: string, i: number , self:string[]) => {
     return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
+  }) as string[];
+  return ignores.map(item => {
+    return item.includes("/**/*") ? item : path.join(item, "/**/*")
   });
-  return ignore;
 }
 
 export const config = getConfigure();

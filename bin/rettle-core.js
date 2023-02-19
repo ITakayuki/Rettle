@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRef = exports.getRefs = exports.createComponent = void 0;
+exports.watcher = exports.getRef = exports.getRefs = exports.createComponent = void 0;
 const events = [
     // Other Events
     `scroll`,
@@ -75,4 +75,20 @@ const getRef = (hash, key) => {
     return targets[key];
 };
 exports.getRef = getRef;
+const watcher = (value, callback) => {
+    const temp = {
+        value: value
+    };
+    return [temp, (setter) => {
+            if (typeof setter !== "function") {
+                temp.value = setter;
+            }
+            else if (typeof setter === "function") {
+                const call = setter;
+                temp.value = call(temp.value);
+            }
+            callback();
+        }];
+};
+exports.watcher = watcher;
 //# sourceMappingURL=rettle-core.js.map
