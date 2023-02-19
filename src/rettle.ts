@@ -52,11 +52,11 @@ const ComponentInit = (hash:string, args: Record<string, any>) => {
     if (targets) {
       for (const target of targets) {
         const labelName = target.getAttribute(selector);
-        if (labelName === null) throw new Error(`Cannot found property ${selector} of ${target}`);
+        if (labelName === null) return console.error(`Cannot found property ${selector} of ${target}`);
         if (labelName in args) {
           target.addEventListener(event, args[labelName]);
         } else {
-          throw new Error(`Cannot found property ${labelName}`);
+          console.error(`Cannot found property ${labelName}`);
         }
       }
     }
@@ -64,9 +64,5 @@ const ComponentInit = (hash:string, args: Record<string, any>) => {
 }
 
 export const createComponent = (hash: string, args: Record<string, any>) => {
-  try {
-    ComponentInit(hash, args);
-  } catch (e) {
-    console.error(e);
-  }
+  ComponentInit(hash, args);
 }

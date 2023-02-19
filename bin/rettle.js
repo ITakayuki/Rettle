@@ -57,24 +57,19 @@ const ComponentInit = (hash, args) => {
             for (const target of targets) {
                 const labelName = target.getAttribute(selector);
                 if (labelName === null)
-                    throw new Error(`Cannot found property ${selector} of ${target}`);
+                    return console.error(`Cannot found property ${selector} of ${target}`);
                 if (labelName in args) {
                     target.addEventListener(event, args[labelName]);
                 }
                 else {
-                    throw new Error(`Cannot found property ${labelName}`);
+                    console.error(`Cannot found property ${labelName}`);
                 }
             }
         }
     }
 };
 const createComponent = (hash, args) => {
-    try {
-        ComponentInit(hash, args);
-    }
-    catch (e) {
-        console.error(e);
-    }
+    ComponentInit(hash, args);
 };
 exports.createComponent = createComponent;
 //# sourceMappingURL=rettle.js.map
