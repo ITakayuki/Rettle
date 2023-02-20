@@ -1,6 +1,7 @@
 import path from "path";
 import {config} from "../utils/config";
 import glob from "glob";
+import fs from "fs";
 import {
   buildScript,
   createCacheAppFile,
@@ -61,6 +62,7 @@ export const build = async() => {
         const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
         console.log("html path: ", htmlOutputPath, item)
         await mkdirp(htmlOutputPath);
+        fs.writeFileSync(htmlOutputPath, markup, "utf-8");
       }))
     })
   })

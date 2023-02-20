@@ -16,6 +16,7 @@ exports.build = void 0;
 const path_1 = __importDefault(require("path"));
 const config_1 = require("../utils/config");
 const glob_1 = __importDefault(require("glob"));
+const fs_1 = __importDefault(require("fs"));
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const utility_1 = require("../utils/utility");
 const HTMLBuilder_1 = require("../utils/HTMLBuilder");
@@ -73,6 +74,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 const htmlOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
                 console.log("html path: ", htmlOutputPath, item);
                 yield (0, utility_1.mkdirp)(htmlOutputPath);
+                fs_1.default.writeFileSync(htmlOutputPath, markup, "utf-8");
             })));
         });
     });
