@@ -57,7 +57,7 @@ export const build = async() => {
           headers,
           script
         })
-        const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace(path.resolve("src/views"), ""));
+        const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace(path.resolve("src/views/"), ""));
         console.log("html path: ", htmlOutputPath)
         await mkdirp(htmlOutputPath);
       }))
