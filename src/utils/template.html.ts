@@ -14,7 +14,7 @@ export const templateHtml = (options: templateHTMLInterface) => {
 <html>
 <head>
 ${options.headers.join("\n")}
-${options.style}
+${options.style ? options.style : ""}
 </head>
 <body>
 ${options.html}

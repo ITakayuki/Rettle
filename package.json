@@ -6,8 +6,7 @@
     "start": "tsc",
     "watch": "tsc -w",
     "test": "ts-node src/index.ts -d",
-    "test:node": "node ./bin/index.js -d",
-    "version": "node ./commands/index.js"
+    "test:node": "node ./bin/index.js -d"
   },
   "bin": {
     "rettle": "./bin/index.js"

@@ -1,1 +1,2 @@
-export declare const version = "0.0.6beta.09";
+declare const version: any;
+export { version };
