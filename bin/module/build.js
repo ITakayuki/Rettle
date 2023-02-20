@@ -64,7 +64,8 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             promises.push(new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
                 const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
                 const headers = (0, HTMLBuilder_1.createHeaders)();
-                const script = path_1.default.join("/", key.replace("src/views/", config_1.config.pathPrefix), "/", config_1.config.js);
+                const root = key.replace("src/views", config_1.config.pathPrefix);
+                const script = path_1.default.join("/", root, config_1.config.js);
                 const markup = config_1.config.template({
                     html,
                     headers,
