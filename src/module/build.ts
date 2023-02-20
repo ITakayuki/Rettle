@@ -60,10 +60,12 @@ export const build = async() => {
           script
         })
         const exName = path.extname(item);
+        const cssOutputPath = path.join(config.outDir, root, config.css);
         const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
-        console.log("html path: ", htmlOutputPath, item)
         await mkdirp(htmlOutputPath);
         fs.writeFileSync(htmlOutputPath, markup, "utf-8");
+        fs.writeFileSync(cssOutputPath, css, "utf-8");
+
       }))
     })
   })

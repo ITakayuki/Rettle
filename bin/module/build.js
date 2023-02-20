@@ -72,10 +72,11 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                     script
                 });
                 const exName = path_1.default.extname(item);
+                const cssOutputPath = path_1.default.join(config_1.config.outDir, root, config_1.config.css);
                 const htmlOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
-                console.log("html path: ", htmlOutputPath, item);
                 yield (0, utility_1.mkdirp)(htmlOutputPath);
                 fs_1.default.writeFileSync(htmlOutputPath, markup, "utf-8");
+                fs_1.default.writeFileSync(cssOutputPath, css, "utf-8");
             })));
         });
     });
