@@ -53,7 +53,8 @@ export const build = async() => {
         const {html, css, ids} = await transformReact2HTMLCSS(item);
         const headers = createHeaders();
         const root = key.replace("src/views", config.pathPrefix);
-        const script = path.join("/",root,config.js)
+        const script = path.join("/",root,config.js);
+        headers.push(`<link rel="stylesheet" href="${path.join("/", root, config.css)}">`)
         const markup = config.template({
           html,
           headers,
@@ -63,6 +64,7 @@ export const build = async() => {
         const cssOutputPath = path.join(config.outDir, root, config.css);
         const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
         await mkdirp(htmlOutputPath);
+        await mkdirp(cssOutputPath);
         fs.writeFileSync(htmlOutputPath, markup, "utf-8");
         fs.writeFileSync(cssOutputPath, css, "utf-8");
 

@@ -66,6 +66,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 const headers = (0, HTMLBuilder_1.createHeaders)();
                 const root = key.replace("src/views", config_1.config.pathPrefix);
                 const script = path_1.default.join("/", root, config_1.config.js);
+                headers.push(`<link rel="stylesheet" href="${path_1.default.join("/", root, config_1.config.css)}">`);
                 const markup = config_1.config.template({
                     html,
                     headers,
@@ -75,6 +76,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 const cssOutputPath = path_1.default.join(config_1.config.outDir, root, config_1.config.css);
                 const htmlOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
                 yield (0, utility_1.mkdirp)(htmlOutputPath);
+                yield (0, utility_1.mkdirp)(cssOutputPath);
                 fs_1.default.writeFileSync(htmlOutputPath, markup, "utf-8");
                 fs_1.default.writeFileSync(cssOutputPath, css, "utf-8");
             })));
