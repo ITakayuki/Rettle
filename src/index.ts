@@ -6,12 +6,10 @@ import {server} from "./module/server";
 const program = new Command();
 
 interface OptsInterface {
-  develop: boolean,
   build: boolean
 }
 
 program
-  .option("-d, --develop", "lunch develop mode", true)
   .option("-b, --build", "lunch build mode.", false)
 
 program.parse();

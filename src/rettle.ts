@@ -3,8 +3,8 @@ import {default as emotionCreateCache, EmotionCache} from "@emotion/cache";
 import ReactDom from "react-dom/server";
 import createEmotionServer from "@emotion/server/create-instance";
 
-export const defineOption = (option: Partial<RettleConfigInterface>) => {
-  return option;
+export const defineOption = (options: () => Partial<RettleConfigInterface>) => {
+  return options;
 }
 
 export const createCache = (key: string) => emotionCreateCache({key});

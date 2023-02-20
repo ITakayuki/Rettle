@@ -4,3 +4,4 @@ export declare const transformReact2HTMLCSS: (path: string) => Promise<{
     css: string;
 }>;
 export declare const createHeaderTags: (tagName: string, contents: Array<Record<string, string>>) => string[];
+export declare const createHeaders: () => string[];

@@ -26,9 +26,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createHash = exports.mkdirp = void 0;
+exports.getEntryPaths = exports.createHash = exports.mkdirp = void 0;
 const path = __importStar(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const config_1 = require("./config");
+const glob_1 = __importDefault(require("glob"));
 const mkdirp = (filePath) => {
     return new Promise(resolve => {
         const dirPath = path.extname(filePath) !== "" ? path.dirname(filePath) : filePath;
@@ -58,4 +60,17 @@ const createHash = (str) => {
     return fullStr.substring(fullStr.length - 8, fullStr.length);
 };
 exports.createHash = createHash;
+const getEntryPaths = () => {
+    const entryPaths = {};
+    config_1.config.endpoints.map((endpoint) => {
+        const ignore = (0, config_1.getIgnores)(endpoint);
+        const files = glob_1.default.sync(path.join(endpoint, "/**/*"), {
+            ignore,
+            nodir: true
+        });
+        entryPaths[endpoint] = files;
+    });
+    return entryPaths;
+};
+exports.getEntryPaths = getEntryPaths;
 //# sourceMappingURL=utility.js.map

@@ -7,8 +7,8 @@ exports.createRettle = exports.createCache = exports.defineOption = void 0;
 const cache_1 = __importDefault(require("@emotion/cache"));
 const server_1 = __importDefault(require("react-dom/server"));
 const create_instance_1 = __importDefault(require("@emotion/server/create-instance"));
-const defineOption = (option) => {
-    return option;
+const defineOption = (options) => {
+    return options;
 };
 exports.defineOption = defineOption;
 const createCache = (key) => (0, cache_1.default)({ key });

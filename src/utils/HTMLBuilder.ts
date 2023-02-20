@@ -4,6 +4,7 @@ import vm from "vm";
 import fs from "fs";
 import * as path from "path";
 import {config} from "./config";
+import {version} from "./variable";
 
 const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf-8"));
 
@@ -44,4 +45,17 @@ export const createHeaderTags = (tagName:string, contents: Array<Record<string, 
     })
     return `<${tagName} ${content.join(" ")} ${tagName === "script" ? "></script>" : ">"}`
   })
+}
+
+export const createHeaders = () => {
+  const versionMeta = config.version ? [`<meta name="generator" content="Rettle ${version}">`] : [""];
+  const headerMeta = config.header?.meta ? createHeaderTags("meta", config.header?.meta) : [""];
+  const headerLink = config.header?.link ? createHeaderTags("link", config.header?.link) : [""];
+  const headerScript = config.header?.script ? createHeaderTags("script", config.header?.script) : [""];
+  return [
+    ...versionMeta,
+    ...headerMeta,
+    ...headerLink,
+    ...headerScript,
+  ];
 }

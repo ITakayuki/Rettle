@@ -35,12 +35,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createHeaderTags = exports.transformReact2HTMLCSS = void 0;
+exports.createHeaders = exports.createHeaderTags = exports.transformReact2HTMLCSS = void 0;
 const esBuild = __importStar(require("esbuild"));
 const vm_1 = __importDefault(require("vm"));
 const fs_1 = __importDefault(require("fs"));
 const path = __importStar(require("path"));
 const config_1 = require("./config");
+const variable_1 = require("./variable");
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,4 +84,18 @@ const createHeaderTags = (tagName, contents) => {
     });
 };
 exports.createHeaderTags = createHeaderTags;
+const createHeaders = () => {
+    var _a, _b, _c, _d, _e, _f;
+    const versionMeta = config_1.config.version ? [`<meta name="generator" content="Rettle ${variable_1.version}">`] : [""];
+    const headerMeta = ((_a = config_1.config.header) === null || _a === void 0 ? void 0 : _a.meta) ? (0, exports.createHeaderTags)("meta", (_b = config_1.config.header) === null || _b === void 0 ? void 0 : _b.meta) : [""];
+    const headerLink = ((_c = config_1.config.header) === null || _c === void 0 ? void 0 : _c.link) ? (0, exports.createHeaderTags)("link", (_d = config_1.config.header) === null || _d === void 0 ? void 0 : _d.link) : [""];
+    const headerScript = ((_e = config_1.config.header) === null || _e === void 0 ? void 0 : _e.script) ? (0, exports.createHeaderTags)("script", (_f = config_1.config.header) === null || _f === void 0 ? void 0 : _f.script) : [""];
+    return [
+        ...versionMeta,
+        ...headerMeta,
+        ...headerLink,
+        ...headerScript,
+    ];
+};
+exports.createHeaders = createHeaders;
 //# sourceMappingURL=HTMLBuilder.js.map
