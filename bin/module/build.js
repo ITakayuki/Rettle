@@ -69,7 +69,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                     headers,
                     script
                 });
-                const htmlOutputPath = path_1.default.join("./", item.replace(path_1.default.resolve("./src/views"), ""));
+                const htmlOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, item.replace(path_1.default.resolve("src/views"), ""));
                 console.log("html path: ", htmlOutputPath);
                 yield (0, utility_1.mkdirp)(htmlOutputPath);
             })));
