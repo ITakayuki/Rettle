@@ -2,6 +2,7 @@
 "use strict";
 import {Command} from "commander";
 import {server} from "./module/server";
+import {build} from "./module/build";
 
 const program = new Command();
 
@@ -19,6 +20,7 @@ const opts = program.opts() as OptsInterface;
 if (opts.build) {
   console.log("build!!!???")
   process.env.RETTLE_BUILD_MODE = "build";
+  build();
 } else {
   process.env.RETTLE_BUILD_MODE = "server";
   server();
