@@ -52,7 +52,7 @@ export const build = async() => {
       promises.push(new Promise(async (resolve, reject) => {
         const {html, css, ids} = await transformReact2HTMLCSS(item);
         const headers = createHeaders();
-        const script = path.join(key.replace("src/views/", path.join(config.pathPrefix)), config.js)
+        const script = path.join("/",key.replace("src/views/", config.pathPrefix), "/",config.js)
         const markup = config.template({
           html,
           headers,

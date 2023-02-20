@@ -24,7 +24,7 @@ export const wakeupExpressServer = () => {
           const {html, css, ids} = await transformReact2HTMLCSS(item);
           const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
           const headers = createHeaders();
-          const script = path.join(key.replace("src/views/", path.join(config.pathPrefix)), config.js)
+          const script = path.join("/", key.replace("src/views/", path.join(config.pathPrefix)), config.js)
           const result = config.template({
             html,
             style,

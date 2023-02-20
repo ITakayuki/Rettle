@@ -56,7 +56,7 @@ const wakeupExpressServer = () => {
                     const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
                     const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`;
                     const headers = (0, HTMLBuilder_1.createHeaders)();
-                    const script = path.join(key.replace("src/views/", path.join(config_1.config.pathPrefix)), config_1.config.js);
+                    const script = path.join("/", key.replace("src/views/", path.join(config_1.config.pathPrefix)), config_1.config.js);
                     const result = config_1.config.template({
                         html,
                         style,
