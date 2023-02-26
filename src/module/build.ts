@@ -47,31 +47,31 @@ export const build = async() => {
   }
   // Create HTML FILES
   const entryPaths = getEntryPaths();
-  Object.keys(entryPaths).forEach((key) => {
+  Object.keys(entryPaths).map(async(key) => {
     const items = entryPaths[key];
     let styles = ``;
-    items.forEach( async(item) => {
-        const {html, css, ids} = await transformReact2HTMLCSS(item);
-        const headers = createHeaders();
-        const root = key.replace("src/views", config.pathPrefix);
-        const script = path.join("/",root,config.js);
-        headers.push(`<link rel="stylesheet" href="${path.join("/", root, config.css)}">`)
-        const markup = config.template({
-          html,
-          headers,
-          script
-        })
-        styles = styles + css;
-        const exName = path.extname(item);
-        const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
-        await mkdirp(htmlOutputPath);
-        const minifyHtml = await minify(markup, {
-          collapseInlineTagWhitespace: true,
-          collapseWhitespace: true,
-          preserveLineBreaks: true,
-        });
-        fs.writeFileSync(htmlOutputPath,minifyHtml , "utf-8");
-    })
+    await Promise.all(items.map(async(item) => {
+      const {html, css, ids} = await transformReact2HTMLCSS(item);
+      const headers = createHeaders();
+      const root = key.replace("src/views", config.pathPrefix);
+      const script = path.join("/",root,config.js);
+      headers.push(`<link rel="stylesheet" href="${path.join("/", root, config.css)}">`)
+      const markup = config.template({
+        html,
+        headers,
+        script
+      })
+      styles = styles + css;
+      const exName = path.extname(item);
+      const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
+      await mkdirp(htmlOutputPath);
+      const minifyHtml = await minify(markup, {
+        collapseInlineTagWhitespace: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: true,
+      });
+      fs.writeFileSync(htmlOutputPath,minifyHtml , "utf-8");
+    }));
     const root = key.replace("./src/views", "");
     const cssOutputPath = path.join(config.outDir, config.pathPrefix, root, config.css);
     purgeCSS(styles, {}, async(std, error) => {

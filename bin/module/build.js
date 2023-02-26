@@ -59,10 +59,10 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     // Create HTML FILES
     const entryPaths = (0, utility_1.getEntryPaths)();
-    Object.keys(entryPaths).forEach((key) => {
+    Object.keys(entryPaths).map((key) => __awaiter(void 0, void 0, void 0, function* () {
         const items = entryPaths[key];
         let styles = ``;
-        items.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
+        yield Promise.all(items.map((item) => __awaiter(void 0, void 0, void 0, function* () {
             const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
             const headers = (0, HTMLBuilder_1.createHeaders)();
             const root = key.replace("src/views", config_1.config.pathPrefix);
@@ -83,7 +83,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 preserveLineBreaks: true,
             });
             fs_1.default.writeFileSync(htmlOutputPath, minifyHtml, "utf-8");
-        }));
+        })));
         const root = key.replace("./src/views", "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);
         (0, css_purge_1.purgeCSS)(styles, {}, (std, error) => __awaiter(void 0, void 0, void 0, function* () {
@@ -92,7 +92,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             yield (0, utility_1.mkdirp)(cssOutputPath);
             fs_1.default.writeFileSync(cssOutputPath, std, "utf-8");
         }));
-    });
+    }));
 });
 exports.build = build;
 //# sourceMappingURL=build.js.map
