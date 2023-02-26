@@ -11,6 +11,7 @@ import {
 import {getEntryPaths, mkdirp} from "../utils/utility";
 import {transformReact2HTMLCSS, createHeaders} from "../utils/HTMLBuilder";
 import {minify} from "html-minifier-terser";
+import {purgeCSS} from "css-purge";
 
 export const build = async() => {
   /* build app.js files */
@@ -46,11 +47,10 @@ export const build = async() => {
   }
   // Create HTML FILES
   const entryPaths = getEntryPaths();
-  let promises = [];
   Object.keys(entryPaths).forEach((key) => {
     const items = entryPaths[key];
-    items.forEach(item => {
-      const promise = new Promise(async (resolve, reject) => {
+    let styles = ``;
+    items.forEach( async(item) => {
         const {html, css, ids} = await transformReact2HTMLCSS(item);
         const headers = createHeaders();
         const root = key.replace("src/views", config.pathPrefix);
@@ -61,21 +61,23 @@ export const build = async() => {
           headers,
           script
         })
+        styles = styles + css;
         const exName = path.extname(item);
-        const cssOutputPath = path.join(config.outDir, root, config.css);
         const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
         await mkdirp(htmlOutputPath);
-        await mkdirp(cssOutputPath);
         const minifyHtml = await minify(markup, {
           collapseInlineTagWhitespace: true,
           collapseWhitespace: true,
           preserveLineBreaks: true,
         });
         fs.writeFileSync(htmlOutputPath,minifyHtml , "utf-8");
-        fs.writeFileSync(cssOutputPath, css, "utf-8");
-        resolve(null);
-      })
     })
-
+    const root = key.replace("./src/views", "");
+    const cssOutputPath = path.join(config.outDir, config.pathPrefix, root, config.css);
+    purgeCSS(styles, {}, async(std, error) => {
+      if (error) return console.log(`Cannot Purge style in ${key}`);
+      await mkdirp(cssOutputPath);
+      fs.writeFileSync(cssOutputPath, std, "utf-8");
+    })
   })
 }
