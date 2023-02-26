@@ -20,6 +20,7 @@ const fs_1 = __importDefault(require("fs"));
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const utility_1 = require("../utils/utility");
 const HTMLBuilder_1 = require("../utils/HTMLBuilder");
+const html_minifier_terser_1 = require("html-minifier-terser");
 const build = () => __awaiter(void 0, void 0, void 0, function* () {
     /* build app.js files */
     const buildSetupOptions = {
@@ -58,10 +59,10 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
     // Create HTML FILES
     const entryPaths = (0, utility_1.getEntryPaths)();
     let promises = [];
-    Object.keys(entryPaths).forEach(key => {
+    Object.keys(entryPaths).forEach((key) => {
         const items = entryPaths[key];
         items.forEach(item => {
-            promises.push(new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+            const promise = new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
                 const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
                 const headers = (0, HTMLBuilder_1.createHeaders)();
                 const root = key.replace("src/views", config_1.config.pathPrefix);
@@ -77,9 +78,15 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 const htmlOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
                 yield (0, utility_1.mkdirp)(htmlOutputPath);
                 yield (0, utility_1.mkdirp)(cssOutputPath);
-                fs_1.default.writeFileSync(htmlOutputPath, markup, "utf-8");
+                const minifyHtml = yield (0, html_minifier_terser_1.minify)(markup, {
+                    collapseInlineTagWhitespace: true,
+                    collapseWhitespace: true,
+                    preserveLineBreaks: true,
+                });
+                fs_1.default.writeFileSync(htmlOutputPath, minifyHtml, "utf-8");
                 fs_1.default.writeFileSync(cssOutputPath, css, "utf-8");
-            })));
+                resolve(null);
+            }));
         });
     });
 });
