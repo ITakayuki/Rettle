@@ -10,6 +10,7 @@ import {
 } from "../utils/AppScriptBuilder";
 import {getEntryPaths, mkdirp} from "../utils/utility";
 import {transformReact2HTMLCSS, createHeaders} from "../utils/HTMLBuilder";
+import {minify} from "html-minifier-terser";
 
 export const build = async() => {
   /* build app.js files */
@@ -46,10 +47,10 @@ export const build = async() => {
   // Create HTML FILES
   const entryPaths = getEntryPaths();
   let promises = [];
-  Object.keys(entryPaths).forEach(key => {
+  Object.keys(entryPaths).forEach((key) => {
     const items = entryPaths[key];
     items.forEach(item => {
-      promises.push(new Promise(async (resolve, reject) => {
+      const promise = new Promise(async (resolve, reject) => {
         const {html, css, ids} = await transformReact2HTMLCSS(item);
         const headers = createHeaders();
         const root = key.replace("src/views", config.pathPrefix);
@@ -65,10 +66,16 @@ export const build = async() => {
         const htmlOutputPath = path.join(config.outDir, config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
         await mkdirp(htmlOutputPath);
         await mkdirp(cssOutputPath);
-        fs.writeFileSync(htmlOutputPath, markup, "utf-8");
+        const minifyHtml = await minify(markup, {
+          collapseInlineTagWhitespace: true,
+          collapseWhitespace: true,
+          preserveLineBreaks: true,
+        });
+        fs.writeFileSync(htmlOutputPath,minifyHtml , "utf-8");
         fs.writeFileSync(cssOutputPath, css, "utf-8");
-
-      }))
+        resolve(null);
+      })
     })
+
   })
 }
