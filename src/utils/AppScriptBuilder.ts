@@ -33,14 +33,14 @@ const createFileName = (filePath:string) => {
   return relativePath
 }
 
-const createComponentDep = async(filepath: string, context: {}) => {
+const createComponentDep = async(filepath: string) => {
   let results = {};
   const tempObj = await getMadgeLeaves(filepath, {
     baseDir: "./"
   })
   let obj = tempObj.filter(item => item !== filepath);
   for (const dep of obj) {
-    results = deepmerge(results, createComponentDep(dep, results));
+    results = deepmerge(results, createComponentDep(dep), {isMergeableObject: isPlainObject});
   }
   return results;
 }
@@ -74,7 +74,7 @@ export const createCacheAppFile = () => {
         const hashName = crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         if (file.includes("src/views")) {
-          const resu = await createComponentDep(file, {});
+          const resu = await createComponentDep(file);
           console.log(resu)
           scriptRunner.push([
             `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
@@ -212,7 +212,6 @@ export const eraseExports = async(code:string) => {
         for (const node of functionNodes) {
           const {start, end} = node;
           const text = jsCode.slice(start, end);
-          // console.log(node.declarations[0].init.callee.name)
           if (node.declarations[0].init.callee) {
             let cache = node.declarations[0].init.callee.property ? node.declarations[0].init.callee.property.name : node.declarations[0].init.callee.name;
             if (cache === "createCache") {
