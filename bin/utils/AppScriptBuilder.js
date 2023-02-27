@@ -73,10 +73,15 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
     let obj = tempObj[filepath];
     for (const dep of obj) {
         const temp = yield createComponentDep(dep);
-        results = (0, deepmerge_1.default)(results, { [(0, utility_2.getFilesName)(dep)]: temp }, { isMergeableObject: is_plain_object_1.isPlainObject });
+        results = (0, deepmerge_1.default)(results, { [(0, utility_2.getFilesName)(dep)]: Object.keys(temp).map(item => {
+                return { [item]: `createComponent("hash", Script_${createScriptHash(dep)})` };
+            }) }, { isMergeableObject: is_plain_object_1.isPlainObject });
     }
     return results;
 });
+const createScriptHash = (str) => {
+    return crypto_1.default.createHash("md5").update(str).digest("hex");
+};
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const jsFileName = path_1.default.basename(config_1.config.js).replace(".js", "");
@@ -96,7 +101,7 @@ const createCacheAppFile = () => {
                 const depResult = obj.filter(item => item !== file);
                 const args = [];
                 for (const dep of depResult) {
-                    const depName = `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}",  Script_${crypto_1.default.createHash("md5").update(dep).digest("hex")}(""))`;
+                    const depName = `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}",  Script_${createScriptHash(dep)}(""))`;
                     if ((0, Dependencies_1.checkScript)(dep)) {
                         args.push(`${(0, utility_2.getFilesName)(dep)}: ${depName}`);
                     }

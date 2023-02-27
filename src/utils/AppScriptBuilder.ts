@@ -34,16 +34,22 @@ const createFileName = (filePath:string) => {
 }
 
 const createComponentDep = async(filepath: string) => {
-  let results = {};
+  let results = {} as {[x in string]: any};
   const tempObj = await getMadgeObject(filepath, {
     baseDir: "./"
   })
   let obj = tempObj[filepath]
   for (const dep of obj) {
     const temp = await createComponentDep(dep);
-    results = deepmerge(results, {[getFilesName(dep)]: temp}, {isMergeableObject: isPlainObject});
+    results = deepmerge(results, {[getFilesName(dep)]: Object.keys(temp).map(item => {
+        return {[item]: `createComponent("hash", Script_${createScriptHash(dep)})`}
+      })}, {isMergeableObject: isPlainObject});
   }
   return results;
+}
+
+const createScriptHash = (str: string) => {
+  return crypto.createHash("md5").update(str).digest("hex")
 }
 
 export const createCacheAppFile = () => {
@@ -65,7 +71,7 @@ export const createCacheAppFile = () => {
         const depResult = obj.filter(item => item !== file);
         const args = [];
         for (const dep of depResult) {
-          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${crypto.createHash("md5").update(dep).digest("hex")}(""))`;
+          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${createScriptHash(dep)}(""))`;
           if (checkScript(dep)) {
             args.push(`${getFilesName(dep)}: ${depName}`)
           }
