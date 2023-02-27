@@ -94,7 +94,7 @@ interface RettleComponent {
   children: JSX.Element | React.ReactNode;
   css?: SerializedStyles;
   className?: string;
-  href: string;
+  href?: string;
   alt?: string;
 }
 export const Component =  new Proxy({}, {
