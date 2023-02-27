@@ -72,7 +72,8 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
     });
     let obj = tempObj.filter(item => item !== filepath);
     for (const dep of obj) {
-        results = (0, deepmerge_1.default)(results, { [(0, utility_2.getFilesName)(dep)]: createComponentDep(dep) }, { isMergeableObject: is_plain_object_1.isPlainObject });
+        const temp = yield createComponentDep(dep);
+        results = (0, deepmerge_1.default)(results, { [(0, utility_2.getFilesName)(dep)]: temp }, { isMergeableObject: is_plain_object_1.isPlainObject });
     }
     return results;
 });
