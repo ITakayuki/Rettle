@@ -23,8 +23,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProps = exports.Component = exports.watcher = exports.getRef = exports.getRefs = exports.createComponent = void 0;
+exports.getProps = exports.Component = exports.watcher = exports.getRef = exports.getRefs = exports.createComponent = exports.createHash = void 0;
 const React = __importStar(require("react"));
+const djb2Hash = (str) => {
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    }
+    return hash;
+};
+const createHash = (str) => {
+    const hash = djb2Hash(str);
+    const fullStr = ('0000000' + (hash & 0xFFFFFF).toString(16));
+    return fullStr.substring(fullStr.length - 8, fullStr.length);
+};
+exports.createHash = createHash;
 const globalValues = {
     props: {}
 };
@@ -129,7 +142,7 @@ exports.Component = new Proxy({}, {
                 href: props.href,
                 alt: props.alt
             };
-            return React.createElement(key, Object.assign(prop, { "rettle-component-location": "locate" }), props.children);
+            return React.createElement(key, Object.assign(prop, { "rettle-component": (0, exports.createHash)(props.children.toString()) }), props.children);
         };
     }
 });

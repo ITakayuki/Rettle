@@ -1,6 +1,18 @@
 import * as React from "react";
 import {SerializedStyles} from "@emotion/react";
 type htmlTagTypes = 'a' | 'abbr' | 'acronym' | 'address' | 'applet' | 'area' | 'article' | 'aside' | 'audio' | 'b' | 'base' | 'basefont' | 'bdi' | 'bdo' | 'bgsound'| 'big'| 'blink'| 'blockquote'| 'body'| 'br'| 'button'| 'canvas'| 'caption'| 'center'| 'cite'| 'code'| 'col'| 'colgroup'| 'command'| 'content'| 'data'| 'datalist'| 'dd'| 'del'| 'details'| 'dfn'| 'dialog'| 'dir'| 'div'| 'dl'| 'dt'| 'element'| 'em'| 'embed'| 'fieldset'| 'figcaption'| 'figure'| 'font'| 'footer'| 'form'| 'frame'| 'frameset'| 'h1'| 'h2'| 'h3'| 'h4'| 'h5'| 'h6'| 'head'| 'header'| 'hgroup'| 'hr'| 'html'| 'i'| 'iframe'| 'image'| 'img'| 'input'| 'ins'| 'isindex'| 'kbd'| 'keygen'| 'label'| 'legend'| 'li'| 'link'| 'listing'| 'main'| 'map'| 'mark'| 'marquee'| 'math'| 'menu'| 'menuitem'| 'meta'| 'meter'| 'multicol'| 'nav'| 'nextid'| 'nobr'| 'noembed'| 'noframes'| 'noscript'| 'object'| 'ol'| 'optgroup'| 'option'| 'output'| 'p'| 'param'| 'picture'| 'plaintext'| 'pre'| 'progress'| 'q'| 'rb'| 'rbc'| 'rp'| 'rt'| 'rtc'| 'ruby'| 's'| 'samp'| 'script'| 'section'| 'select'| 'shadow'| 'slot'| 'small'| 'source'| 'spacer'| 'span'| 'strike'| 'strong'| 'style'| 'sub'| 'summary'| 'sup'| 'svg'| 'table'| 'tbody'| 'td'| 'template'| 'textarea'| 'tfoot'| 'th'| 'thead'| 'time'| 'title'| 'tr'| 'track'| 'tt'| 'u'| 'ul'| 'var'| 'video'| 'wbr'| 'xmp' | string
+const djb2Hash = (str:string) => {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+  }
+  return hash;
+}
+export const createHash = (str:string) => {
+  const hash = djb2Hash(str);
+  const fullStr = ('0000000' + (hash & 0xFFFFFF).toString(16));
+  return fullStr.substring(fullStr.length - 8, fullStr.length)
+}
 
 interface globalValueInterface {
   props: {[index in string]: Record<string, any>}
@@ -116,7 +128,7 @@ export const Component =  new Proxy({}, {
           href: props.href,
           alt: props.alt
         }
-        return React.createElement(key, Object.assign(prop, {"rettle-component-location": "locate"}), props.children);
+        return React.createElement(key, Object.assign(prop, {"rettle-component": createHash(props.children!.toString())}), props.children);
       }
     }
 }) as { [key in htmlTagTypes]: (props?: RettleComponent) => React.ReactElement };

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { SerializedStyles } from "@emotion/react";
+export declare const createHash: (str: string) => string;
 export declare const createComponent: (hash: string, args: Record<string, any>) => Record<string, any>;
 export declare const getRefs: (hash: string) => void | Record<string, Element | HTMLElement>;
 export declare const getRef: <T>(hash: string, key: string) => T;
