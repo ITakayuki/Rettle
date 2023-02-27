@@ -51,7 +51,7 @@ export const createCacheAppFile = () => {
         const depResult = obj.filter(item => item !== file);
         const args = [];
         for (const dep of depResult) {
-          const depName = `createComponent("${createHash(path.resolve(dep))}",  ${crypto.createHash("md5").update(dep).digest("hex")})`;
+          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${crypto.createHash("md5").update(dep).digest("hex")})`;
           if (checkScript(dep)) {
             args.push(`${getFilesName(dep)}: ${depName}`)
           }
