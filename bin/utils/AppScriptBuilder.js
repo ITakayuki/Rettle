@@ -75,13 +75,19 @@ const createCacheAppFile = () => {
             const appImports = [`import {createComponent} from "rettle/core";`];
             const scriptRunner = [];
             for (const file of files) {
-                const obj = yield (0, Dependencies_1.getMadgeCircular)(file, {
+                const obj = yield (0, Dependencies_1.getMadgeLeaves)(file, {
                     baseDir: "./"
                 });
-                console.log(`${file}: ${JSON.stringify(obj, null, 2)}`);
+                const depResult = obj.filter(item => item !== file);
+                const depsArg = {};
+                for (const dep of depResult) {
+                    const depName = "Script_" + crypto_1.default.createHash("md5").update(dep).digest("hex");
+                    depsArg[path_1.default.basename(dep)] = depName;
+                }
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
                 const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
                 appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
+                scriptRunner.push(JSON.stringify(depsArg, null, 2));
                 scriptRunner.push([
                     `createComponent("${hash}",${hashName}("${hash}"));`
                 ].join("\n"));

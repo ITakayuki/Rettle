@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {getDependencies, getMadgeCircular} from "./Dependencies";
+import {getDependencies, getMadgeLeaves} from "./Dependencies";
 import {config, getIgnores} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
@@ -44,13 +44,19 @@ export const createCacheAppFile = () => {
       const appImports = [`import {createComponent} from "rettle/core";`];
       const scriptRunner = [];
       for (const file of files) {
-        const obj = await getMadgeCircular(file, {
+        const obj = await getMadgeLeaves(file, {
           baseDir: "./"
         })
-        console.log(`${file}: ${JSON.stringify(obj, null, 2)}`);
+        const depResult = obj.filter(item => item !== file);
+        const depsArg = {} as Record<string, any>;
+        for (const dep of depResult) {
+          const depName = "Script_" + crypto.createHash("md5").update(dep).digest("hex");
+          depsArg[path.basename(dep)] = depName;
+        }
         const hash = createHash(path.resolve(file));
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
+        scriptRunner.push(JSON.stringify(depsArg, null, 2));
         scriptRunner.push([
           `createComponent("${hash}",${hashName}("${hash}"));`
         ].join("\n"));
