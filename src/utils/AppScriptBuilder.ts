@@ -82,7 +82,9 @@ export const createCacheAppFile = () => {
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         if (file.includes("src/views")) {
           const resu = await createComponentDep(file);
-          console.log(JSON.stringify(resu, null, 2))
+          Object.keys(resu).forEach(key => {
+            console.log(key + ": " + resu[key])
+          })
           scriptRunner.push([
             `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
           ].join("\n"));

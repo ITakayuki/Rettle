@@ -112,7 +112,9 @@ const createCacheAppFile = () => {
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
                 if (file.includes("src/views")) {
                     const resu = yield createComponentDep(file);
-                    console.log(JSON.stringify(resu, null, 2));
+                    Object.keys(resu).forEach(key => {
+                        console.log(key + ": " + resu[key]);
+                    });
                     scriptRunner.push([
                         `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
                     ].join("\n"));
