@@ -95,7 +95,7 @@ interface RettleComponent {
 type UnionStringArray <T extends Readonly<string[]>> = T[number];
 type HTMLElements = UnionStringArray<typeof htmlTagNames>;
 export const Component =  new Proxy({}, {
-    get: (_, key: HTMLElements): React.FC<RettleComponent> => {
-      return (props) => React.createElement(key, {"rettle-component": "[rettle-component-location]"}, props.children);
+    get: (_, key: HTMLElements) => {
+      return (props: RettleComponent) => React.createElement(key, {"rettle-component": "[rettle-component-location]"}, props.children);
     }
 }) as {[key in HTMLElements]: (props: RettleComponent) => JSX.Element | React.ReactNode};
