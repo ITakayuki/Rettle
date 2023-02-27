@@ -24,5 +24,5 @@ interface RettleMethods {
 declare const onMounted: (cb: () => void) => void;
 export declare const RettleStart: (scripts: {
     [x: string]: ({ getRefs }: RettleMethods, props: Record<string, any>) => Record<string, any>;
-}) => void;
+}) => Promise<void>;
 export {};

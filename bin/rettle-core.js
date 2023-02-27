@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RettleStart = exports.Component = exports.watcher = exports.createHash = void 0;
 const React = __importStar(require("react"));
@@ -75,24 +84,27 @@ const events = [
     `keyup`
 ];
 const ComponentInit = (frame, hash, args) => {
-    for (const event of events) {
-        const selector = `data-${event}-${hash}`;
-        const eventTargets = frame.querySelectorAll(`[${selector}]`);
-        if (eventTargets) {
-            for (const eventTarget of eventTargets) {
-                const labelName = eventTarget.getAttribute(selector);
-                if (!args)
-                    return console.error(`Cannot found property ${labelName}`);
-                if (labelName === null)
-                    return console.error(`Cannot found property ${selector} of ${eventTarget}`);
-                if (!args.hasOwnProperty(labelName))
-                    return console.error(`Cannot found property ${labelName}`);
-                if (labelName in args) {
-                    eventTarget.addEventListener(event, args[labelName]);
+    return new Promise(resolve => {
+        for (const event of events) {
+            const selector = `data-${event}-${hash}`;
+            const eventTargets = frame.querySelectorAll(`[${selector}]`);
+            if (eventTargets) {
+                for (const eventTarget of eventTargets) {
+                    const labelName = eventTarget.getAttribute(selector);
+                    if (!args)
+                        return console.error(`Cannot found property ${labelName}`);
+                    if (labelName === null)
+                        return console.error(`Cannot found property ${selector} of ${eventTarget}`);
+                    if (!args.hasOwnProperty(labelName))
+                        return console.error(`Cannot found property ${labelName}`);
+                    if (labelName in args) {
+                        eventTarget.addEventListener(event, args[labelName]);
+                    }
                 }
             }
         }
-    }
+        resolve(null);
+    });
 };
 const watcher = (value, callback) => {
     const temp = {
@@ -142,9 +154,9 @@ const onMounted = (cb) => {
         }
     }, 500);
 };
-const RettleStart = (scripts) => {
-    const frames = document.querySelectorAll("[data-rettle-fr]");
-    for (const frame of frames) {
+const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () {
+    const frames = [...document.querySelectorAll("[data-rettle-fr]")];
+    yield Promise.all(frames.map((frame) => __awaiter(void 0, void 0, void 0, function* () {
         const hash = frame.getAttribute("data-rettle-fr");
         let parents = frame;
         while (!parents.getAttribute("data-rettle-fr")) {
@@ -158,9 +170,9 @@ const RettleStart = (scripts) => {
             onMounted
         }, globalValues.scripts);
         globalValues.scripts[hash] = args;
-        ComponentInit(frame, hash, args);
-    }
+        yield ComponentInit(frame, hash, args);
+    })));
     globalValues.isLoaded = true;
-};
+});
 exports.RettleStart = RettleStart;
 //# sourceMappingURL=rettle-core.js.map
