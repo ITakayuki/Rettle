@@ -54,6 +54,7 @@ const ComponentInit = (hash:string, args: Record<string, any>) => {
 
 export const createComponent = (hash: string, args: Record<string, any>) => {
   ComponentInit(hash, args);
+  return args
 }
 
 

@@ -78,6 +78,7 @@ const ComponentInit = (hash, args) => {
 };
 const createComponent = (hash, args) => {
     ComponentInit(hash, args);
+    return args;
 };
 exports.createComponent = createComponent;
 const getRefs = (hash) => {

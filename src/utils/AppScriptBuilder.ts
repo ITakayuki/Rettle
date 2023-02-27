@@ -51,7 +51,7 @@ export const createCacheAppFile = () => {
         const depResult = obj.filter(item => item !== file);
         const args = [];
         for (const dep of depResult) {
-          const depName = "def_" + crypto.createHash("md5").update(dep).digest("hex");
+          const depName = `createComponent("${createHash(path.resolve(dep))}",  ${crypto.createHash("md5").update(dep).digest("hex")})`;
           if (checkScript(dep)) {
             args.push(`${getFilesName(dep)}: ${depName}`)
           }
@@ -60,15 +60,13 @@ export const createCacheAppFile = () => {
         const hash = createHash(path.resolve(file));
         const hashName = crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
-        defs.push(`const def_${hashName} = Script_${hashName}("${hash}", ${depsArg})`);
         scriptRunner.push([
-          `createComponent("${hash}", def_${hashName});`
+          `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
         ].join("\n"));
       }
       await mkdirp(appFilePath);
       const code = [
         appImports.join("\n"),
-        defs.join("\n"),
         scriptRunner.join("\n")
       ]
       fs.writeFileSync(appFilePath, code.join("\n"), "utf-8");
