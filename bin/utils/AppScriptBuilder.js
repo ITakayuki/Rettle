@@ -74,7 +74,7 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
     for (const dep of obj) {
         const temp = yield createComponentDep(dep);
         results = (0, deepmerge_1.default)(results, {
-            [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(dep)}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(dep)}, ${JSON.stringify(temp, null, 2)})}"))`
+            [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(dep)}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(dep)}", ${JSON.stringify(temp, null, 2)})}"))`
         }, { isMergeableObject: is_plain_object_1.isPlainObject });
     }
     return results;
@@ -112,7 +112,7 @@ const createCacheAppFile = () => {
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
                 if (file.includes("src/views")) {
                     const resu = yield createComponentDep(file);
-                    console.log(resu);
+                    console.log(JSON.stringify(resu, null, 2));
                     scriptRunner.push([
                         `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
                     ].join("\n"));

@@ -42,7 +42,7 @@ const createComponentDep = async(filepath: string) => {
   for (const dep of obj) {
     const temp = await createComponentDep(dep);
     results = deepmerge(results, {
-      [getFilesName(dep)]: `createComponent("${createHash(dep)}", Script_${createScriptHash(dep)}("${createHash(dep)}, ${JSON.stringify(temp, null, 2)})}"))`
+      [getFilesName(dep)]: `createComponent("${createHash(dep)}", Script_${createScriptHash(dep)}("${createHash(dep)}", ${JSON.stringify(temp, null, 2)})}"))`
     }, {isMergeableObject: isPlainObject});
   }
   return results;
@@ -82,7 +82,7 @@ export const createCacheAppFile = () => {
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         if (file.includes("src/views")) {
           const resu = await createComponentDep(file);
-          console.log(resu)
+          console.log(JSON.stringify(resu, null, 2))
           scriptRunner.push([
             `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
           ].join("\n"));
