@@ -16,4 +16,5 @@ interface RettleComponent {
 export declare const Component: {
     [x: string]: (props?: RettleComponent) => React.ReactElement;
 };
+export declare const getProps: (hash: string) => Record<string, any>;
 export {};
