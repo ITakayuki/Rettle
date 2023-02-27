@@ -74,10 +74,11 @@ export const build = async() => {
     }));
     const root = key.replace("./src/views", "");
     const cssOutputPath = path.join(config.outDir, config.pathPrefix, root, config.css);
-    purgeCSS(styles, {}, async(std, error) => {
+    purgeCSS(styles, {}, async(error, result) => {
       if (error) return console.log(`Cannot Purge style in ${key}`);
       await mkdirp(cssOutputPath);
-      fs.writeFileSync(cssOutputPath, std, "utf-8");
+      const style = result ? result : "";
+      fs.writeFileSync(cssOutputPath, style, "utf-8");
     })
   })
 }

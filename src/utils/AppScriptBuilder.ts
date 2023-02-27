@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {getDependencies} from "./Dependencies";
+import {getDependencies, getMadgeObject} from "./Dependencies";
 import {config, getIgnores} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
@@ -44,6 +44,10 @@ export const createCacheAppFile = () => {
       const appImports = [`import {createComponent} from "rettle/core";`];
       const scriptRunner = [];
       for (const file of files) {
+        const obj = await getMadgeObject(file, {
+          baseDir: "./"
+        })
+        console.log(`${file}: ${JSON.stringify(obj, null, 2)}`);
         const hash = createHash(path.resolve(file));
         const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)

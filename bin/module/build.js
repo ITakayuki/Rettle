@@ -86,11 +86,12 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
         })));
         const root = key.replace("./src/views", "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);
-        (0, css_purge_1.purgeCSS)(styles, {}, (std, error) => __awaiter(void 0, void 0, void 0, function* () {
+        (0, css_purge_1.purgeCSS)(styles, {}, (error, result) => __awaiter(void 0, void 0, void 0, function* () {
             if (error)
                 return console.log(`Cannot Purge style in ${key}`);
             yield (0, utility_1.mkdirp)(cssOutputPath);
-            fs_1.default.writeFileSync(cssOutputPath, std, "utf-8");
+            const style = result ? result : "";
+            fs_1.default.writeFileSync(cssOutputPath, style, "utf-8");
         }));
     }));
 });

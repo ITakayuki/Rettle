@@ -7,6 +7,11 @@ const checkScript = (filePath: string) => {
   return fs.readFileSync(filePath, "utf-8").includes("export const script")
 }
 
+export const getMadgeObject = async(target: string, config?: madge.MadgeConfig) => {
+  const res = await madge(target, config);
+  return res.obj();
+}
+
 export const getDependencies = async(targetDir: string, ignore: Array<string>) => {
   const targets = glob.sync(path.join(targetDir, "/**/*"), {
     ignore: ignore,
@@ -16,10 +21,9 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
   const madgePromises = [];
   for (const target of targets) {
     const promiseFunction = new Promise(async(resolve) => {
-        const res = await madge(target, {
+        const obj = await getMadgeObject(target, {
           baseDir: "./"
         });
-        const obj = res.obj();
         Object.keys(obj).forEach((key: string) => {
           if(checkScript(key)) {
             dependenciesFiles.push(key);
