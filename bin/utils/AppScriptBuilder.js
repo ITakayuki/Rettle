@@ -77,7 +77,9 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
             [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(dep)}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(dep)}", ${JSON.stringify(temp, null, 2)})}"))`
         }, { isMergeableObject: is_plain_object_1.isPlainObject });
     }
-    return results;
+    return Object.keys(results).map(item => {
+        return `${item}: ${results[item]}`;
+    }).join("\n");
 });
 const createScriptHash = (str) => {
     return crypto_1.default.createHash("md5").update(str).digest("hex");
@@ -112,9 +114,7 @@ const createCacheAppFile = () => {
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
                 if (file.includes("src/views")) {
                     const resu = yield createComponentDep(file);
-                    Object.keys(resu).forEach(key => {
-                        console.log(key + ": " + resu[key]);
-                    });
+                    console.log(resu);
                     scriptRunner.push([
                         `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
                     ].join("\n"));

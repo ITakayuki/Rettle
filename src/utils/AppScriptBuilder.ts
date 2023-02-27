@@ -45,7 +45,9 @@ const createComponentDep = async(filepath: string) => {
       [getFilesName(dep)]: `createComponent("${createHash(dep)}", Script_${createScriptHash(dep)}("${createHash(dep)}", ${JSON.stringify(temp, null, 2)})}"))`
     }, {isMergeableObject: isPlainObject});
   }
-  return results;
+  return Object.keys(results).map(item => {
+    return `${item}: ${results[item]}`;
+  }).join("\n");
 }
 
 const createScriptHash = (str: string) => {
@@ -82,9 +84,7 @@ export const createCacheAppFile = () => {
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         if (file.includes("src/views")) {
           const resu = await createComponentDep(file);
-          Object.keys(resu).forEach(key => {
-            console.log(key + ": " + resu[key])
-          })
+          console.log(resu)
           scriptRunner.push([
             `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
           ].join("\n"));
