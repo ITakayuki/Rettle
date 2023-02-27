@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {getDependencies, getMadgeObject} from "./Dependencies";
+import {getDependencies, getMadgeCircular} from "./Dependencies";
 import {config, getIgnores} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
@@ -44,7 +44,7 @@ export const createCacheAppFile = () => {
       const appImports = [`import {createComponent} from "rettle/core";`];
       const scriptRunner = [];
       for (const file of files) {
-        const obj = await getMadgeObject(file, {
+        const obj = await getMadgeCircular(file, {
           baseDir: "./"
         })
         console.log(`${file}: ${JSON.stringify(obj, null, 2)}`);

@@ -12,6 +12,11 @@ export const getMadgeObject = async(target: string, config?: madge.MadgeConfig) 
   return res.obj();
 }
 
+export const getMadgeCircular= async(target: string, config?: madge.MadgeConfig) => {
+  const res = await madge(target, config);
+  return res.circular();
+}
+
 export const getDependencies = async(targetDir: string, ignore: Array<string>) => {
   const targets = glob.sync(path.join(targetDir, "/**/*"), {
     ignore: ignore,

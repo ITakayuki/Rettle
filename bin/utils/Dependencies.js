@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDependencies = exports.getMadgeObject = void 0;
+exports.getDependencies = exports.getMadgeCircular = exports.getMadgeObject = void 0;
 const glob_1 = __importDefault(require("glob"));
 const madge_1 = __importDefault(require("madge"));
 const fs_1 = __importDefault(require("fs"));
@@ -48,6 +48,11 @@ const getMadgeObject = (target, config) => __awaiter(void 0, void 0, void 0, fun
     return res.obj();
 });
 exports.getMadgeObject = getMadgeObject;
+const getMadgeCircular = (target, config) => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield (0, madge_1.default)(target, config);
+    return res.circular();
+});
+exports.getMadgeCircular = getMadgeCircular;
 const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0, function* () {
     const targets = glob_1.default.sync(path.join(targetDir, "/**/*"), {
         ignore: ignore,

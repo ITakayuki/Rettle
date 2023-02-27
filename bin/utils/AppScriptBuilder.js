@@ -75,7 +75,7 @@ const createCacheAppFile = () => {
             const appImports = [`import {createComponent} from "rettle/core";`];
             const scriptRunner = [];
             for (const file of files) {
-                const obj = yield (0, Dependencies_1.getMadgeObject)(file, {
+                const obj = yield (0, Dependencies_1.getMadgeCircular)(file, {
                     baseDir: "./"
                 });
                 console.log(`${file}: ${JSON.stringify(obj, null, 2)}`);
