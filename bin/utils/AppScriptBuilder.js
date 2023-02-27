@@ -82,7 +82,7 @@ const createCacheAppFile = () => {
                 const depResult = obj.filter(item => item !== file);
                 const args = [];
                 for (const dep of depResult) {
-                    const depName = `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}",  Script_${crypto_1.default.createHash("md5").update(dep).digest("hex")})`;
+                    const depName = `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}",  Script_${crypto_1.default.createHash("md5").update(dep).digest("hex")}())`;
                     if ((0, Dependencies_1.checkScript)(dep)) {
                         args.push(`${(0, utility_2.getFilesName)(dep)}: ${depName}`);
                     }
@@ -91,9 +91,11 @@ const createCacheAppFile = () => {
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
                 const hashName = crypto_1.default.createHash("md5").update(file).digest("hex");
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
-                scriptRunner.push([
-                    `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
-                ].join("\n"));
+                if (file.includes("src/views")) {
+                    scriptRunner.push([
+                        `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
+                    ].join("\n"));
+                }
             }
             yield (0, utility_1.mkdirp)(appFilePath);
             const code = [

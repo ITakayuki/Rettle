@@ -51,7 +51,7 @@ export const createCacheAppFile = () => {
         const depResult = obj.filter(item => item !== file);
         const args = [];
         for (const dep of depResult) {
-          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${crypto.createHash("md5").update(dep).digest("hex")})`;
+          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${crypto.createHash("md5").update(dep).digest("hex")}())`;
           if (checkScript(dep)) {
             args.push(`${getFilesName(dep)}: ${depName}`)
           }
@@ -60,9 +60,11 @@ export const createCacheAppFile = () => {
         const hash = createHash(path.resolve(file));
         const hashName = crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
-        scriptRunner.push([
-          `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
-        ].join("\n"));
+        if (file.includes("src/views")) {
+          scriptRunner.push([
+            `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
+          ].join("\n"));
+        }
       }
       await mkdirp(appFilePath);
       const code = [
