@@ -72,10 +72,12 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
     });
     let obj = tempObj[filepath];
     for (const dep of obj) {
-        const temp = yield createComponentDep(dep);
-        results = (0, deepmerge_1.default)(results, {
-            [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(dep)}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(dep)}", {${temp}})),`
-        }, { isMergeableObject: is_plain_object_1.isPlainObject });
+        if ((0, Dependencies_1.checkScript)(dep)) {
+            const temp = yield createComponentDep(dep);
+            results = (0, deepmerge_1.default)(results, {
+                [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", {${temp}})),`
+            }, { isMergeableObject: is_plain_object_1.isPlainObject });
+        }
     }
     return Object.keys(results).map(item => {
         return `${item}: ${results[item]}`;
@@ -110,7 +112,7 @@ const createCacheAppFile = () => {
                 }
                 const depsArg = `{\n${args.join(",\n")}\n}`;
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
-                const hashName = crypto_1.default.createHash("md5").update(file).digest("hex");
+                const hashName = createScriptHash(file);
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
                 if (file.includes("src/views")) {
                     const resu = yield createComponentDep(file);
