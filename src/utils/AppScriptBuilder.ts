@@ -41,9 +41,7 @@ const createComponentDep = async(filepath: string) => {
   let obj = tempObj[filepath]
   for (const dep of obj) {
     const temp = await createComponentDep(dep);
-    results = deepmerge(results, {[getFilesName(dep)]: Object.keys(temp).map(item => {
-        return {[item]: `createComponent("hash", Script_${createScriptHash(dep)})`}
-      })}, {isMergeableObject: isPlainObject});
+    results = deepmerge(results, temp, {isMergeableObject: isPlainObject});
   }
   return results;
 }

@@ -73,9 +73,7 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
     let obj = tempObj[filepath];
     for (const dep of obj) {
         const temp = yield createComponentDep(dep);
-        results = (0, deepmerge_1.default)(results, { [(0, utility_2.getFilesName)(dep)]: Object.keys(temp).map(item => {
-                return { [item]: `createComponent("hash", Script_${createScriptHash(dep)})` };
-            }) }, { isMergeableObject: is_plain_object_1.isPlainObject });
+        results = (0, deepmerge_1.default)(results, temp, { isMergeableObject: is_plain_object_1.isPlainObject });
     }
     return results;
 });
