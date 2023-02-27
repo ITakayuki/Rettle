@@ -73,20 +73,24 @@ const events = [
     `keyup`
 ];
 const ComponentInit = (hash, args) => {
-    for (const event of events) {
-        const selector = `data-${event}-${hash}`;
-        const targets = document.querySelectorAll(`[${selector}]`);
-        if (targets) {
-            for (const target of targets) {
-                const labelName = target.getAttribute(selector);
-                if (!args)
-                    return console.error(`Cannot found property ${labelName}`);
-                if (labelName === null)
-                    return console.error(`Cannot found property ${selector} of ${target}`);
-                if (!args.hasOwnProperty(labelName))
-                    return console.error(`Cannot found property ${labelName}`);
-                if (labelName in args) {
-                    target.addEventListener(event, args[labelName]);
+    const componentSelector = `data-rettle-fr="${hash}"`;
+    const targets = document.querySelectorAll(`[${componentSelector}]`);
+    for (const target of targets) {
+        for (const event of events) {
+            const selector = `data-${event}-${hash}`;
+            const eventTargets = target.querySelectorAll(`[${selector}]`);
+            if (eventTargets) {
+                for (const eventTarget of eventTargets) {
+                    const labelName = eventTarget.getAttribute(selector);
+                    if (!args)
+                        return console.error(`Cannot found property ${labelName}`);
+                    if (labelName === null)
+                        return console.error(`Cannot found property ${selector} of ${eventTarget}`);
+                    if (!args.hasOwnProperty(labelName))
+                        return console.error(`Cannot found property ${labelName}`);
+                    if (labelName in args) {
+                        eventTarget.addEventListener(event, args[labelName]);
+                    }
                 }
             }
         }
@@ -142,7 +146,7 @@ exports.Component = new Proxy({}, {
                 href: props.href,
                 alt: props.alt
             };
-            return React.createElement(key, Object.assign(prop, { "rettle-frame": props.frame }), props.children);
+            return React.createElement(key, Object.assign(prop, { "data-rettle-fr": props.frame }), props.children);
         };
     }
 });
