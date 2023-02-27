@@ -1,4 +1,5 @@
 import * as React from "react";
+import {htmlTagNames} from "html-tag-names";
 const events = [
   // Other Events
   `scroll`,
@@ -90,6 +91,11 @@ export const watcher = <T,>(value: T, callback: () => void): [{value: T}, (arg: 
 interface RettleComponent {
   children: JSX.Element | React.ReactNode;
 }
-export const Component: React.FC<RettleComponent> = (props) => {
-  return React.createElement("div", {"rettle-component": "[rettle-location]"}, props.children);
-}
+
+type UnionStringArray <T extends Readonly<string[]>> = T[number];
+type HTMLElements = UnionStringArray<typeof htmlTagNames>;
+export const Component =  new Proxy({}, {
+    get: (_, key: HTMLElements): React.FC<RettleComponent> => {
+      return (props) => React.createElement(key, {"rettle-component": "[rettle-component-location]"}, props.children);
+    }
+}) as {[key in HTMLElements]: (props: RettleComponent) => JSX.Element | React.ReactNode};
