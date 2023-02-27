@@ -72,14 +72,13 @@ export const createCacheAppFile = () => {
       const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
       const appImports = [`import {RettleStart} from "rettle/core";`];
       const scriptObject = []
-      const scriptRunner = [`RettleStart()`];
+      const scriptRunner = [`RettleStart(scripts, {})`];
       const defs = [];
       for (const file of files) {
         const hash = createHash(path.resolve(file));
         const hashName = createScriptHash(file);
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
-        scriptObject.push(`${hash}: Script_${hashName}`);
-        scriptRunner.push(`RettleStart(scripts, {})`);
+        scriptObject.push(`"${hash}": Script_${hashName}`);
       }
       await mkdirp(appFilePath);
       const code = [
