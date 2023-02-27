@@ -144,7 +144,11 @@ const getRefs = (frame: Element, hash: string) => {
 const onMounted = (cb: () => void) => {
   const mountInterval = setInterval(() => {
     if (globalValues.isLoaded === true) {
-      cb();
+      try {
+        cb();
+      } catch (e) {
+        console.error(e);
+      }
       clearInterval(mountInterval)
     }
   }, 500);
@@ -167,7 +171,6 @@ export const RettleStart = async(scripts: {[index in string]: ({getRefs}: Rettle
       }, globalValues.scripts[parentHash]);
       globalValues.scripts[hash] = args;
       await ComponentInit(frame, hash, args);
-      console.log("hoge")
     }))
   globalValues.isLoaded = true;
 }
