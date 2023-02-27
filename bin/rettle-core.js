@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProps = exports.RettleStart = exports.Component = exports.watcher = exports.createHash = void 0;
+exports.RettleStart = exports.Component = exports.watcher = exports.createHash = void 0;
 const React = __importStar(require("react"));
 const djb2Hash = (str) => {
     let hash = 5381;
@@ -40,7 +40,8 @@ const createHash = (str) => {
 exports.createHash = createHash;
 const globalValues = {
     props: {},
-    scripts: {}
+    scripts: {},
+    isLoaded: false
 };
 const events = [
     // Other Events
@@ -133,6 +134,14 @@ const getRefs = (frame, hash) => {
     }
     return () => result;
 };
+const onMounted = (cb) => {
+    const mountInterval = setInterval(() => {
+        if (globalValues.isLoaded === true) {
+            cb();
+            clearInterval(mountInterval);
+        }
+    }, 500);
+};
 const RettleStart = (scripts) => {
     const frames = document.querySelectorAll("[data-rettle-fr]");
     for (const frame of frames) {
@@ -146,15 +155,12 @@ const RettleStart = (scripts) => {
             getRefs: getRefs(frame, hash),
             getRef: (key) => getRefs(frame, hash)()[key],
             watcher: exports.watcher,
-            getProps: exports.getProps
-        }, globalValues.scripts[parentHash]);
+            onMounted
+        }, globalValues.scripts);
         globalValues.scripts[hash] = args;
         ComponentInit(frame, hash, args);
     }
+    globalValues.isLoaded = true;
 };
 exports.RettleStart = RettleStart;
-const getProps = (hash) => {
-    return globalValues.props[hash];
-};
-exports.getProps = getProps;
 //# sourceMappingURL=rettle-core.js.map

@@ -16,12 +16,14 @@ export const createHash = (str:string) => {
 
 interface globalValueInterface {
   props: {[index in string]: Record<string, any>},
-  scripts: {[index in string]: Record<string, any>}
+  scripts: {[index in string]: Record<string, any>},
+  isLoaded: boolean
 }
 
 const globalValues:globalValueInterface = {
   props: {},
-  scripts: {}
+  scripts: {},
+  isLoaded: false
 }
 
 const events = [
@@ -123,7 +125,7 @@ interface RettleMethods {
   getRefs: () => Record<string, HTMLElement>;
   getRef: (key: string) => HTMLElement;
   watcher: typeof watcher,
-  getProps: typeof getProps
+  onMounted: typeof onMounted
 }
 const getRefs = (frame: Element, hash: string) => {
   const targets = frame.querySelectorAll(`[data-ref-${hash}]`);
@@ -135,6 +137,16 @@ const getRefs = (frame: Element, hash: string) => {
   }
   return () => result;
 }
+
+const onMounted = (cb: () => void) => {
+  const mountInterval = setInterval(() => {
+    if (globalValues.isLoaded === true) {
+      cb();
+      clearInterval(mountInterval)
+    }
+  }, 500);
+}
+
 export const RettleStart = (scripts: {[index in string]: ({getRefs}: RettleMethods, props: Record<string, any>) => Record<string, any>}) => {
   const frames = document.querySelectorAll("[data-rettle-fr]");
   for (const frame of frames) {
@@ -148,13 +160,10 @@ export const RettleStart = (scripts: {[index in string]: ({getRefs}: RettleMetho
       getRefs: getRefs(frame, hash),
       getRef: (key: string) => getRefs(frame, hash)()[key],
       watcher,
-      getProps
-    }, globalValues.scripts[parentHash]);
+      onMounted
+    }, globalValues.scripts);
     globalValues.scripts[hash] = args;
     ComponentInit(frame, hash, args);
   }
-}
-
-export const getProps = (hash: string) => {
-  return globalValues.props[hash];
+  globalValues.isLoaded = true;
 }

@@ -19,10 +19,10 @@ interface RettleMethods {
     getRefs: () => Record<string, HTMLElement>;
     getRef: (key: string) => HTMLElement;
     watcher: typeof watcher;
-    getProps: typeof getProps;
+    onMounted: typeof onMounted;
 }
+declare const onMounted: (cb: () => void) => void;
 export declare const RettleStart: (scripts: {
     [x: string]: ({ getRefs }: RettleMethods, props: Record<string, any>) => Record<string, any>;
 }) => void;
-export declare const getProps: (hash: string) => Record<string, any>;
 export {};
