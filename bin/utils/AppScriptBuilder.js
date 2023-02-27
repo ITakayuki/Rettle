@@ -74,11 +74,7 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
     for (const dep of obj) {
         const temp = yield createComponentDep(dep);
         results = (0, deepmerge_1.default)(results, {
-            [(0, utility_2.getFilesName)(dep)]: `createComponent(
-      "${(0, utility_2.createHash)(dep)}",
-       Script_${createScriptHash(dep)}(
-       "${(0, utility_2.createHash)(dep)}",
-        {\n${temp}\n}))`
+            [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(dep)}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(dep)}", {\n${temp}\n}))`
         }, { isMergeableObject: is_plain_object_1.isPlainObject });
     }
     return Object.keys(results).map(item => {
@@ -119,7 +115,7 @@ const createCacheAppFile = () => {
                 if (file.includes("src/views")) {
                     const resu = yield createComponentDep(file);
                     scriptRunner.push([
-                        `createComponent("${hash}", Script_${hashName}("${hash}", ${resu}));`
+                        `createComponent("${hash}", Script_${hashName}("${hash}", {${resu}}));`
                     ].join("\n"));
                 }
             }

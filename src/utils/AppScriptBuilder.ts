@@ -42,11 +42,7 @@ const createComponentDep = async(filepath: string) => {
   for (const dep of obj) {
     const temp = await createComponentDep(dep);
     results = deepmerge(results, {
-      [getFilesName(dep)]: `createComponent(
-      "${createHash(dep)}",
-       Script_${createScriptHash(dep)}(
-       "${createHash(dep)}",
-        {\n${temp}\n}))`
+      [getFilesName(dep)]: `createComponent("${createHash(dep)}", Script_${createScriptHash(dep)}("${createHash(dep)}", {\n${temp}\n}))`
     }, {isMergeableObject: isPlainObject});
   }
   return Object.keys(results).map(item => {
@@ -89,7 +85,7 @@ export const createCacheAppFile = () => {
         if (file.includes("src/views")) {
           const resu = await createComponentDep(file);
           scriptRunner.push([
-            `createComponent("${hash}", Script_${hashName}("${hash}", ${resu}));`
+            `createComponent("${hash}", Script_${hashName}("${hash}", {${resu}}));`
           ].join("\n"));
         }
       }
