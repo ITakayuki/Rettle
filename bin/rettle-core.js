@@ -39,7 +39,8 @@ const createHash = (str) => {
 };
 exports.createHash = createHash;
 const globalValues = {
-    props: {}
+    props: {},
+    scripts: {}
 };
 const events = [
     // Other Events
@@ -141,7 +142,8 @@ const RettleStart = (scripts) => {
             getRef: (key) => getRefs(frame, hash)()[key],
             watcher: exports.watcher,
             getProps: exports.getProps
-        }, {});
+        }, globalValues.scripts);
+        globalValues.scripts[hash] = args;
         ComponentInit(frame, hash, args);
     }
 };

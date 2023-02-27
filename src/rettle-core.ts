@@ -16,10 +16,12 @@ export const createHash = (str:string) => {
 
 interface globalValueInterface {
   props: {[index in string]: Record<string, any>},
+  scripts: {[index in string]: Record<string, any>}
 }
 
 const globalValues:globalValueInterface = {
-  props: {}
+  props: {},
+  scripts: {}
 }
 
 const events = [
@@ -142,7 +144,8 @@ export const RettleStart = (scripts: {[index in string]: ({getRefs}: RettleMetho
       getRef: (key: string) => getRefs(frame, hash)()[key],
       watcher,
       getProps
-    }, {});
+    }, globalValues.scripts);
+    globalValues.scripts[hash] = args;
     ComponentInit(frame, hash, args);
   }
 }
