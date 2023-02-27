@@ -15,7 +15,7 @@ export const createHash = (str:string) => {
 }
 
 interface globalValueInterface {
-  props: {[index in string]: Record<string, any>}
+  props: {[index in string]: Record<string, any>},
 }
 
 const globalValues:globalValueInterface = {
@@ -54,51 +54,26 @@ const events = [
   `keyup`
 ]
 
-const ComponentInit = (hash:string, args: Record<string, any>) => {
-  const componentSelector = `data-rettle-fr="${hash}"`;
-  const targets = document.querySelectorAll(`[${componentSelector}]`);
-  for (const target of targets) {
-    for (const event of events) {
-      const selector = `data-${event}-${hash}`;
-      const eventTargets = target.querySelectorAll(`[${selector}]`);
-      if (eventTargets) {
-        for (const eventTarget of eventTargets) {
-          const labelName = eventTarget.getAttribute(selector);
-          if (!args) return console.error(`Cannot found property ${labelName}`);
-          if (labelName === null) return console.error(`Cannot found property ${selector} of ${eventTarget}`);
-          if (!args.hasOwnProperty(labelName)) return console.error(`Cannot found property ${labelName}`);
-          if (labelName in args) {
-            eventTarget.addEventListener(event, args[labelName]);
-          }
+
+const ComponentInit = (frame:Element, hash: string, args: Record<string, any>) => {
+  for (const event of events) {
+    const selector = `data-${event}-${hash}`;
+    const eventTargets = frame.querySelectorAll(`[${selector}]`);
+    if (eventTargets) {
+      for (const eventTarget of eventTargets) {
+        const labelName = eventTarget.getAttribute(selector);
+        if (!args) return console.error(`Cannot found property ${labelName}`);
+        if (labelName === null) return console.error(`Cannot found property ${selector} of ${eventTarget}`);
+        if (!args.hasOwnProperty(labelName)) return console.error(`Cannot found property ${labelName}`);
+        if (labelName in args) {
+          eventTarget.addEventListener(event, args[labelName]);
         }
       }
     }
   }
 }
 
-export const createComponent = (hash: string, args: Record<string, any>) => {
-  ComponentInit(hash, args);
-  globalValues.props[hash] = args;
-  return args
-}
 
-
-export const getRefs = (hash: string) => {
-  const targets = document.querySelectorAll(`[data-ref-${hash}]`);
-  const result: Record<string, HTMLElement | Element> = {};
-  for (const target of targets) {
-    const tag = target.getAttribute(`data-ref-${hash}`);
-    if (tag === null) return console.error(`Cannot found ref value.`, target);
-    result[tag] = target;
-  }
-  return result;
-}
-
-export const getRef = <T>(hash:string, key: string):T => {
-  const targets =  getRefs(hash)!;
-  if (!targets.hasOwnProperty(key)) console.error(`Cannot found ref ${key}.`)
-  return targets[key] as T
-}
 type watcherFunctionType<T> = (arg: T) => T;
 
 export const watcher = <T,>(value: T, callback: () => void): [{value: T}, (arg:  ((val: T) => T) | T) => void ] => {
@@ -138,7 +113,39 @@ export const Component =  new Proxy({}, {
     }
 }) as { [key in htmlTagTypes]: (props: RettleComponent) => React.ReactElement };
 
-
+type getRefsMethodType = {
+  (key: string): Element;
+  (): Record<string, Element>;
+}
+interface RettleMethods {
+  getRefs: () => Record<string, HTMLElement>;
+  getRef: (key: string) => HTMLElement;
+  watcher: typeof watcher,
+  getProps: typeof getProps
+}
+const getRefs = (frame: Element, hash: string) => {
+  const targets = frame.querySelectorAll(`[data-ref-${hash}]`);
+  const result: Record<string, HTMLElement> = {};
+  for (const target of targets) {
+    const tag = target.getAttribute(`data-ref-${hash}`);
+    if (tag === null) console.error(`Cannot found ref value.`, target);
+    result[tag!] = target as HTMLElement;
+  }
+  return () => result;
+}
+export const RettleStart = (scripts: {[index in string]: ({getRefs}: RettleMethods, props: Record<string, any>) => Record<string, any>}) => {
+  const frames = document.querySelectorAll("[data-rettle-fr]");
+  for (const frame of frames) {
+    const hash = frame.getAttribute("data-rettle-fr")!;
+    const args = scripts[hash]({
+      getRefs: getRefs(frame, hash),
+      getRef: (key: string) => getRefs(frame, hash)()[key],
+      watcher,
+      getProps
+    }, {});
+    ComponentInit(frame, hash, args);
+  }
+}
 
 export const getProps = (hash: string) => {
   return globalValues.props[hash];

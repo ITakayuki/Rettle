@@ -70,35 +70,21 @@ export const createCacheAppFile = () => {
       const files = await getDependencies(endpoint,ignore);
       const appResolvePath = createFileName(endpoint)
       const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
-      const appImports = [`import {createComponent} from "rettle/core";`];
-      const scriptRunner = [];
+      const appImports = [`import {RettleStart} from "rettle/core";`];
+      const scriptObject = []
+      const scriptRunner = [`RettleStart()`];
       const defs = [];
       for (const file of files) {
-        const obj = await getMadgeLeaves(file, {
-          baseDir: "./"
-        })
-        const depResult = obj.filter(item => item !== file);
-        const args = [];
-        for (const dep of depResult) {
-          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${createScriptHash(dep)}(""))`;
-          if (checkScript(dep)) {
-            args.push(`${getFilesName(dep)}: ${depName}`)
-          }
-        }
-        const depsArg = `{\n${args.join(",\n")}\n}`;
         const hash = createHash(path.resolve(file));
         const hashName = createScriptHash(file);
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
-        if (file.includes("src/views")) {
-          const resu = await createComponentDep(file);
-          scriptRunner.push([
-            `createComponent("${hash}", Script_${hashName}("${hash}", {${resu}}));`
-          ].join("\n"));
-        }
+        scriptObject.push(`${hash}: Script_${hashName}`);
+        scriptRunner.push(`RettleStart(scripts, {})`);
       }
       await mkdirp(appFilePath);
       const code = [
         appImports.join("\n"),
+        `const scripts = {${scriptObject.join("\n")}};`,
         scriptRunner.join("\n")
       ]
       fs.writeFileSync(appFilePath, code.join("\n"), "utf-8");
