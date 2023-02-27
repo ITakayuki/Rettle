@@ -158,8 +158,8 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
     const frames = [...document.querySelectorAll("[data-rettle-fr]")];
     yield Promise.all(frames.map((frame) => __awaiter(void 0, void 0, void 0, function* () {
         const hash = frame.getAttribute("data-rettle-fr");
-        let parents = frame;
-        while (!parents.getAttribute("data-rettle-fr")) {
+        let parents = frame.parentNode;
+        while (!parents.getAttribute("data-rettle-fr") && document.body !== parents) {
             parents = parents.parentNode;
         }
         const parentHash = parents.getAttribute("data-rettle-fr");
@@ -168,9 +168,10 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
             getRef: (key) => getRefs(frame, hash)()[key],
             watcher: exports.watcher,
             onMounted
-        }, globalValues.scripts);
+        }, globalValues.scripts[parentHash]);
         globalValues.scripts[hash] = args;
         yield ComponentInit(frame, hash, args);
+        console.log("hoge");
     })));
     globalValues.isLoaded = true;
 });

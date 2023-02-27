@@ -154,8 +154,8 @@ export const RettleStart = async(scripts: {[index in string]: ({getRefs}: Rettle
   const frames = [...document.querySelectorAll("[data-rettle-fr]")];
     await Promise.all(frames.map(async(frame) => {
       const hash = frame.getAttribute("data-rettle-fr")!;
-      let parents = frame;
-      while (!parents.getAttribute("data-rettle-fr")) {
+      let parents = frame.parentNode! as Element;
+      while (!parents.getAttribute("data-rettle-fr") && document.body !== parents) {
         parents = parents.parentNode! as Element;
       }
       const parentHash = parents.getAttribute("data-rettle-fr")!;
@@ -164,9 +164,10 @@ export const RettleStart = async(scripts: {[index in string]: ({getRefs}: Rettle
         getRef: (key: string) => getRefs(frame, hash)()[key],
         watcher,
         onMounted
-      }, globalValues.scripts);
+      }, globalValues.scripts[parentHash]);
       globalValues.scripts[hash] = args;
       await ComponentInit(frame, hash, args);
+      console.log("hoge")
     }))
   globalValues.isLoaded = true;
 }
