@@ -1,3 +1,4 @@
+import * as React from "react";
 const events = [
   // Other Events
   `scroll`,
@@ -84,4 +85,11 @@ export const watcher = <T,>(value: T, callback: () => void): [{value: T}, (arg: 
     }
     callback();
   }]
+}
+
+interface RettleComponent {
+  children: JSX.Element | React.ReactNode;
+}
+export const Component: React.FC<RettleComponent> = (props) => {
+  return React.createElement("div", {"rettle-component": "[rettle-location]"}, props.children);
 }
