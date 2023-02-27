@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEntryPaths = exports.createHash = exports.mkdirp = void 0;
+exports.getFilesName = exports.getEntryPaths = exports.createHash = exports.mkdirp = void 0;
 const path = __importStar(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const config_1 = require("./config");
@@ -73,4 +73,14 @@ const getEntryPaths = () => {
     return entryPaths;
 };
 exports.getEntryPaths = getEntryPaths;
+const getFilesName = (filepath) => {
+    const pathArray = filepath.split("/");
+    for (let i = filepath.length - 1; i >= 0; i--) {
+        if (!pathArray[i].includes("index")) {
+            return pathArray[i].replace(path.extname(filepath), "");
+        }
+    }
+    return filepath;
+};
+exports.getFilesName = getFilesName;
 //# sourceMappingURL=utility.js.map

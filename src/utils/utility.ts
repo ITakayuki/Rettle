@@ -47,3 +47,13 @@ export const getEntryPaths = () => {
   });
   return entryPaths;
 }
+
+export const getFilesName = (filepath: string) => {
+  const pathArray = filepath.split("/");
+  for (let i = filepath.length -1; i >= 0; i --) {
+    if (!pathArray[i].includes("index")) {
+      return pathArray[i].replace(path.extname(filepath), "");
+    }
+  }
+  return filepath
+}

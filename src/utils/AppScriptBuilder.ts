@@ -3,14 +3,14 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {getDependencies, getMadgeLeaves} from "./Dependencies";
+import {getDependencies, getMadgeLeaves, checkScript} from "./Dependencies";
 import {config, getIgnores} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
 import * as acorn from 'acorn';
 import jsx from "acorn-jsx";
 import ts from "typescript";
-import {createHash} from "./utility";
+import {createHash, getFilesName} from "./utility";
 
 
 interface BuildScriptInterface {
@@ -52,7 +52,9 @@ export const createCacheAppFile = () => {
         const depsArg = {} as Record<string, any>;
         for (const dep of depResult) {
           const depName = "def_" + crypto.createHash("md5").update(dep).digest("hex");
-          depsArg[path.basename(dep)] = depName;
+          if (checkScript(dep)) {
+            depsArg[getFilesName(dep)] = depName;
+          }
         }
         const hash = createHash(path.resolve(file));
         const hashName = crypto.createHash("md5").update(file).digest("hex");

@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDependencies = exports.getMadgeLeaves = exports.getMadgeCircular = exports.getMadgeObject = void 0;
+exports.getDependencies = exports.getMadgeLeaves = exports.getMadgeCircular = exports.getMadgeObject = exports.checkScript = void 0;
 const glob_1 = __importDefault(require("glob"));
 const madge_1 = __importDefault(require("madge"));
 const fs_1 = __importDefault(require("fs"));
@@ -43,6 +43,7 @@ const path = __importStar(require("path"));
 const checkScript = (filePath) => {
     return fs_1.default.readFileSync(filePath, "utf-8").includes("export const script");
 };
+exports.checkScript = checkScript;
 const getMadgeObject = (target, config) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield (0, madge_1.default)(target, config);
     return res.obj();
@@ -71,11 +72,11 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
                 baseDir: "./"
             });
             Object.keys(obj).forEach((key) => {
-                if (checkScript(key)) {
+                if ((0, exports.checkScript)(key)) {
                     dependenciesFiles.push(key);
                 }
                 for (const targetFilePath of obj[key]) {
-                    if (checkScript(targetFilePath)) {
+                    if ((0, exports.checkScript)(targetFilePath)) {
                         dependenciesFiles.push(targetFilePath);
                     }
                 }

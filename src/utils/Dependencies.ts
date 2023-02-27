@@ -3,7 +3,7 @@ import madge from "madge";
 import fs from "fs";
 import * as path from "path";
 
-const checkScript = (filePath: string) => {
+export const checkScript = (filePath: string) => {
   return fs.readFileSync(filePath, "utf-8").includes("export const script")
 }
 

@@ -83,7 +83,9 @@ const createCacheAppFile = () => {
                 const depsArg = {};
                 for (const dep of depResult) {
                     const depName = "def_" + crypto_1.default.createHash("md5").update(dep).digest("hex");
-                    depsArg[path_1.default.basename(dep)] = depName;
+                    if ((0, Dependencies_1.checkScript)(dep)) {
+                        depsArg[(0, utility_2.getFilesName)(dep)] = depName;
+                    }
                 }
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
                 const hashName = crypto_1.default.createHash("md5").update(file).digest("hex");
