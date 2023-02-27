@@ -114,9 +114,8 @@ const createCacheAppFile = () => {
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
                 if (file.includes("src/views")) {
                     const resu = yield createComponentDep(file);
-                    console.log(resu);
                     scriptRunner.push([
-                        `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
+                        `createComponent("${hash}", Script_${hashName}("${hash}", ${resu}));`
                     ].join("\n"));
                 }
             }
