@@ -51,13 +51,13 @@ export const createCacheAppFile = () => {
         const depResult = obj.filter(item => item !== file);
         const depsArg = {} as Record<string, any>;
         for (const dep of depResult) {
-          const depName = "Script_" + crypto.createHash("md5").update(dep).digest("hex");
+          const depName = "def_" + crypto.createHash("md5").update(dep).digest("hex");
           depsArg[path.basename(dep)] = depName;
         }
         const hash = createHash(path.resolve(file));
         const hashName = crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
-        defs.push(`const def_${hashName} = Script_${hashName}("${hash}")`);
+        defs.push(`const def_${hashName} = Script_${hashName}("${hash}", ${JSON.stringify(depsArg, null, 2)})`);
         scriptRunner.push([
           `createComponent("${hash}", def_${hashName});`
         ].join("\n"));
