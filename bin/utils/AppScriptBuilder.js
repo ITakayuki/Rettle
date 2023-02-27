@@ -74,6 +74,7 @@ const createCacheAppFile = () => {
             const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.js`);
             const appImports = [`import {createComponent} from "rettle/core";`];
             const scriptRunner = [];
+            const defs = [];
             for (const file of files) {
                 const obj = yield (0, Dependencies_1.getMadgeLeaves)(file, {
                     baseDir: "./"
@@ -85,15 +86,20 @@ const createCacheAppFile = () => {
                     depsArg[path_1.default.basename(dep)] = depName;
                 }
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
-                const hashName = "Script_" + crypto_1.default.createHash("md5").update(file).digest("hex");
-                appImports.push(`import {script as ${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
-                scriptRunner.push(JSON.stringify(depsArg, null, 2));
+                const hashName = crypto_1.default.createHash("md5").update(file).digest("hex");
+                appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
+                defs.push(`const def_${hashName} = Script_${hashName}("${hash}")`);
                 scriptRunner.push([
-                    `createComponent("${hash}",${hashName}("${hash}"));`
+                    `createComponent("${hash}", def_${hashName});`
                 ].join("\n"));
             }
             yield (0, utility_1.mkdirp)(appFilePath);
-            fs_1.default.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+            const code = [
+                appImports.join("\n"),
+                defs.join("\n"),
+                scriptRunner.join("\n")
+            ];
+            fs_1.default.writeFileSync(appFilePath, code.join("\n"), "utf-8");
         }
         resolve(null);
     }));

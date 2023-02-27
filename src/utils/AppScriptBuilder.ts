@@ -43,6 +43,7 @@ export const createCacheAppFile = () => {
       const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
       const appImports = [`import {createComponent} from "rettle/core";`];
       const scriptRunner = [];
+      const defs = [];
       for (const file of files) {
         const obj = await getMadgeLeaves(file, {
           baseDir: "./"
@@ -54,15 +55,20 @@ export const createCacheAppFile = () => {
           depsArg[path.basename(dep)] = depName;
         }
         const hash = createHash(path.resolve(file));
-        const hashName = "Script_" + crypto.createHash("md5").update(file).digest("hex");
-        appImports.push(`import {script as ${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
-        scriptRunner.push(JSON.stringify(depsArg, null, 2));
+        const hashName = crypto.createHash("md5").update(file).digest("hex");
+        appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
+        defs.push(`const def_${hashName} = Script_${hashName}("${hash}")`);
         scriptRunner.push([
-          `createComponent("${hash}",${hashName}("${hash}"));`
+          `createComponent("${hash}", def_${hashName});`
         ].join("\n"));
       }
       await mkdirp(appFilePath);
-      fs.writeFileSync(appFilePath, appImports.join("\n") + "\n" + scriptRunner.join("\n"), "utf-8");
+      const code = [
+        appImports.join("\n"),
+        defs.join("\n"),
+        scriptRunner.join("\n")
+      ]
+      fs.writeFileSync(appFilePath, code.join("\n"), "utf-8");
     }
     resolve(null)
   })
