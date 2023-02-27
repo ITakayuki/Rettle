@@ -67,10 +67,10 @@ const createFileName = (filePath) => {
 };
 const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, function* () {
     let results = {};
-    const tempObj = yield (0, Dependencies_1.getMadgeLeaves)(filepath, {
+    const tempObj = yield (0, Dependencies_1.getMadgeObject)(filepath, {
         baseDir: "./"
     });
-    let obj = tempObj.filter(item => item !== filepath);
+    let obj = tempObj[filepath];
     for (const dep of obj) {
         const temp = yield createComponentDep(dep);
         results = (0, deepmerge_1.default)(results, { [(0, utility_2.getFilesName)(dep)]: temp }, { isMergeableObject: is_plain_object_1.isPlainObject });

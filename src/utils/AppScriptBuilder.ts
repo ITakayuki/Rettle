@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {getDependencies, getMadgeLeaves, checkScript} from "./Dependencies";
+import {getDependencies, getMadgeLeaves,getMadgeObject, checkScript} from "./Dependencies";
 import {config, getIgnores} from "./config";
 import glob from "glob";
 import {mkdirp} from "./utility";
@@ -35,10 +35,10 @@ const createFileName = (filePath:string) => {
 
 const createComponentDep = async(filepath: string) => {
   let results = {};
-  const tempObj = await getMadgeLeaves(filepath, {
+  const tempObj = await getMadgeObject(filepath, {
     baseDir: "./"
   })
-  let obj = tempObj.filter(item => item !== filepath);
+  let obj = tempObj[filepath]
   for (const dep of obj) {
     const temp = await createComponentDep(dep);
     results = deepmerge(results, {[getFilesName(dep)]: temp}, {isMergeableObject: isPlainObject});
