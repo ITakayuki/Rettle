@@ -78,6 +78,12 @@ const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, funct
                 [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", {${temp}})),`
             }, { isMergeableObject: is_plain_object_1.isPlainObject });
         }
+        else {
+            const temp = yield createComponentDep(dep);
+            results = (0, deepmerge_1.default)(results, {
+                [(0, utility_2.getFilesName)(dep)]: `{${temp}},`
+            }, { isMergeableObject: is_plain_object_1.isPlainObject });
+        }
     }
     return Object.keys(results).map(item => {
         return `${item}: ${results[item]}`;

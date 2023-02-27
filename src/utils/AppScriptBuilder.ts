@@ -45,6 +45,11 @@ const createComponentDep = async(filepath: string) => {
       results = deepmerge(results, {
         [getFilesName(dep)]: `createComponent("${createHash(path.resolve(dep))}", Script_${createScriptHash(dep)}("${createHash(path.resolve(dep))}", {${temp}})),`
       }, {isMergeableObject: isPlainObject});
+    } else {
+      const temp = await createComponentDep(dep);
+      results = deepmerge(results, {
+        [getFilesName(dep)]: `{${temp}},`
+      }, {isMergeableObject: isPlainObject});
     }
   }
   return Object.keys(results).map(item => {
