@@ -70,14 +70,10 @@ const createComponentDep = (filepath, context) => __awaiter(void 0, void 0, void
         baseDir: "./"
     });
     let obj = tempObj.filter(item => item !== filepath);
-    if (obj.length !== 0) {
-        return results;
+    for (const dep of obj) {
+        results = (0, deepmerge_1.default)(results, createComponentDep(dep, results));
     }
-    else {
-        for (const dep of obj) {
-            results = (0, deepmerge_1.default)(results, createComponentDep(dep, results));
-        }
-    }
+    return results;
 });
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {

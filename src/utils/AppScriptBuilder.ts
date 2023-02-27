@@ -39,13 +39,10 @@ const createComponentDep = async(filepath: string, context: {}) => {
     baseDir: "./"
   })
   let obj = tempObj.filter(item => item !== filepath);
-  if (obj.length !== 0) {
-    return results
-  } else {
-    for (const dep of obj) {
-      results = deepmerge(results, createComponentDep(dep, results));
-    }
+  for (const dep of obj) {
+    results = deepmerge(results, createComponentDep(dep, results));
   }
+  return results;
 }
 
 export const createCacheAppFile = () => {
