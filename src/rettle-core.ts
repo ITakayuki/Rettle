@@ -139,12 +139,17 @@ export const RettleStart = (scripts: {[index in string]: ({getRefs}: RettleMetho
   const frames = document.querySelectorAll("[data-rettle-fr]");
   for (const frame of frames) {
     const hash = frame.getAttribute("data-rettle-fr")!;
+    let parents = frame;
+    while (!parents.getAttribute("data-rettle-fr")) {
+      parents = parents.parentNode! as Element;
+    }
+    const parentHash = parents.getAttribute("data-rettle-fr")!;
     const args = scripts[hash]({
       getRefs: getRefs(frame, hash),
       getRef: (key: string) => getRefs(frame, hash)()[key],
       watcher,
       getProps
-    }, globalValues.scripts);
+    }, globalValues.scripts[parentHash]);
     globalValues.scripts[hash] = args;
     ComponentInit(frame, hash, args);
   }
