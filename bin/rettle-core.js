@@ -117,7 +117,15 @@ const watcher = (value, callback) => {
 exports.watcher = watcher;
 exports.Component = new Proxy({}, {
     get: (_, key) => {
-        return (props) => React.createElement(key, { "rettle-component": "[rettle-component-location]" }, props.children);
+        return (props) => {
+            const prop = {
+                css: props.css,
+                className: props.className,
+                href: props.href,
+                alt: props.alt
+            };
+            return React.createElement(key, Object.assign(prop, { "rettle-component": "[rettle-component-location]" }), props.children);
+        };
     }
 });
 //# sourceMappingURL=rettle-core.js.map
