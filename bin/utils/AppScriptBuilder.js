@@ -49,6 +49,7 @@ const acorn = __importStar(require("acorn"));
 const acorn_jsx_1 = __importDefault(require("acorn-jsx"));
 const typescript_1 = __importDefault(require("typescript"));
 const utility_2 = require("./utility");
+const deepmerge_1 = __importDefault(require("deepmerge"));
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -63,6 +64,21 @@ const createFileName = (filePath) => {
     const relativePath = path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "");
     return relativePath;
 };
+const createComponentDep = (filepath, context) => __awaiter(void 0, void 0, void 0, function* () {
+    let results = {};
+    const tempObj = yield (0, Dependencies_1.getMadgeLeaves)(filepath, {
+        baseDir: "./"
+    });
+    let obj = tempObj.filter(item => item !== filepath);
+    if (obj.length !== 0) {
+        return results;
+    }
+    else {
+        for (const dep of obj) {
+            results = (0, deepmerge_1.default)(results, createComponentDep(dep, results));
+        }
+    }
+});
 const createCacheAppFile = () => {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const jsFileName = path_1.default.basename(config_1.config.js).replace(".js", "");
@@ -82,7 +98,7 @@ const createCacheAppFile = () => {
                 const depResult = obj.filter(item => item !== file);
                 const args = [];
                 for (const dep of depResult) {
-                    const depName = `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}",  Script_${crypto_1.default.createHash("md5").update(dep).digest("hex")}())`;
+                    const depName = `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}",  Script_${crypto_1.default.createHash("md5").update(dep).digest("hex")}(""))`;
                     if ((0, Dependencies_1.checkScript)(dep)) {
                         args.push(`${(0, utility_2.getFilesName)(dep)}: ${depName}`);
                     }
@@ -92,6 +108,8 @@ const createCacheAppFile = () => {
                 const hashName = crypto_1.default.createHash("md5").update(file).digest("hex");
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
                 if (file.includes("src/views")) {
+                    const resu = yield createComponentDep(file, {});
+                    console.log(resu);
                     scriptRunner.push([
                         `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
                     ].join("\n"));

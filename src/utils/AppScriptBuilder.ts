@@ -11,7 +11,8 @@ import * as acorn from 'acorn';
 import jsx from "acorn-jsx";
 import ts from "typescript";
 import {createHash, getFilesName} from "./utility";
-
+import deepmerge from "deepmerge";
+import {isPlainObject} from "is-plain-object";
 
 interface BuildScriptInterface {
   outDir: string;
@@ -30,6 +31,21 @@ export const createTsConfigFile = () => {
 const createFileName = (filePath:string) => {
   const relativePath = path.relative(path.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "")
   return relativePath
+}
+
+const createComponentDep = async(filepath: string, context: {}) => {
+  let results = {};
+  const tempObj = await getMadgeLeaves(filepath, {
+    baseDir: "./"
+  })
+  let obj = tempObj.filter(item => item !== filepath);
+  if (obj.length !== 0) {
+    return results
+  } else {
+    for (const dep of obj) {
+      results = deepmerge(results, createComponentDep(dep, results));
+    }
+  }
 }
 
 export const createCacheAppFile = () => {
@@ -51,7 +67,7 @@ export const createCacheAppFile = () => {
         const depResult = obj.filter(item => item !== file);
         const args = [];
         for (const dep of depResult) {
-          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${crypto.createHash("md5").update(dep).digest("hex")}())`;
+          const depName = `createComponent("${createHash(path.resolve(dep))}",  Script_${crypto.createHash("md5").update(dep).digest("hex")}(""))`;
           if (checkScript(dep)) {
             args.push(`${getFilesName(dep)}: ${depName}`)
           }
@@ -61,6 +77,8 @@ export const createCacheAppFile = () => {
         const hashName = crypto.createHash("md5").update(file).digest("hex");
         appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
         if (file.includes("src/views")) {
+          const resu = await createComponentDep(file, {});
+          console.log(resu)
           scriptRunner.push([
             `createComponent("${hash}", Script_${hashName}("${hash}", ${depsArg}));`
           ].join("\n"));
