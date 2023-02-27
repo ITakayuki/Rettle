@@ -8,6 +8,7 @@ export declare const watcher: <T>(value: T, callback: () => void) => [{
     value: T;
 }, (arg: T | ((val: T) => T)) => void];
 interface RettleComponent {
+    frame: "[fr]";
     children: JSX.Element | React.ReactNode;
     css?: SerializedStyles;
     className?: string;
@@ -15,7 +16,7 @@ interface RettleComponent {
     alt?: string;
 }
 export declare const Component: {
-    [x: string]: (props?: RettleComponent) => React.ReactElement;
+    [x: string]: (props: RettleComponent) => React.ReactElement;
 };
 export declare const getProps: (hash: string) => Record<string, any>;
 export {};

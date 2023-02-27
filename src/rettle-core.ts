@@ -113,6 +113,7 @@ export const watcher = <T,>(value: T, callback: () => void): [{value: T}, (arg: 
 }
 
 interface RettleComponent {
+  frame: "[fr]";
   children: JSX.Element | React.ReactNode;
   css?: SerializedStyles;
   className?: string;
@@ -128,10 +129,10 @@ export const Component =  new Proxy({}, {
           href: props.href,
           alt: props.alt
         }
-        return React.createElement(key, Object.assign(prop, {"rettle-component": createHash(props.children!.toString())}), props.children);
+        return React.createElement(key, Object.assign(prop, {"rettle-frame": props.frame}), props.children);
       }
     }
-}) as { [key in htmlTagTypes]: (props?: RettleComponent) => React.ReactElement };
+}) as { [key in htmlTagTypes]: (props: RettleComponent) => React.ReactElement };
 
 
 

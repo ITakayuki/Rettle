@@ -142,7 +142,7 @@ exports.Component = new Proxy({}, {
                 href: props.href,
                 alt: props.alt
             };
-            return React.createElement(key, Object.assign(prop, { "rettle-component": (0, exports.createHash)(props.children.toString()) }), props.children);
+            return React.createElement(key, Object.assign(prop, { "rettle-frame": props.frame }), props.children);
         };
     }
 });
