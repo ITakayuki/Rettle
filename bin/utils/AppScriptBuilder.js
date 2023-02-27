@@ -80,17 +80,18 @@ const createCacheAppFile = () => {
                     baseDir: "./"
                 });
                 const depResult = obj.filter(item => item !== file);
-                const depsArg = {};
+                const args = [];
                 for (const dep of depResult) {
                     const depName = "def_" + crypto_1.default.createHash("md5").update(dep).digest("hex");
                     if ((0, Dependencies_1.checkScript)(dep)) {
-                        depsArg[(0, utility_2.getFilesName)(dep)] = depName;
+                        args.push(`${(0, utility_2.getFilesName)(dep)}: ${depName}`);
                     }
                 }
+                const depsArg = `{${args.join(",\n")}`;
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
                 const hashName = crypto_1.default.createHash("md5").update(file).digest("hex");
                 appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
-                defs.push(`const def_${hashName} = Script_${hashName}("${hash}", ${JSON.stringify(depsArg, null, 2)})`);
+                defs.push(`const def_${hashName} = Script_${hashName}("${hash}", ${depsArg})`);
                 scriptRunner.push([
                     `createComponent("${hash}", def_${hashName});`
                 ].join("\n"));

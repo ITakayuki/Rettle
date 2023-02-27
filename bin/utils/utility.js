@@ -75,7 +75,7 @@ const getEntryPaths = () => {
 exports.getEntryPaths = getEntryPaths;
 const getFilesName = (filepath) => {
     const pathArray = filepath.split("/");
-    for (let i = filepath.length - 1; i >= 0; i--) {
+    for (let i = pathArray.length - 1; i >= 0; i--) {
         if (!pathArray[i].includes("index")) {
             return pathArray[i].replace(path.extname(filepath), "");
         }
