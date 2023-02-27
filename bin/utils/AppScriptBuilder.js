@@ -114,7 +114,7 @@ const createCacheAppFile = () => {
             yield (0, utility_1.mkdirp)(appFilePath);
             const code = [
                 appImports.join("\n"),
-                `const scripts = {${scriptObject.join("\n")}};`,
+                `const scripts = {${scriptObject.join(",\n")}};`,
                 scriptRunner.join("\n")
             ];
             fs_1.default.writeFileSync(appFilePath, code.join("\n"), "utf-8");

@@ -83,7 +83,7 @@ export const createCacheAppFile = () => {
       await mkdirp(appFilePath);
       const code = [
         appImports.join("\n"),
-        `const scripts = {${scriptObject.join("\n")}};`,
+        `const scripts = {${scriptObject.join(",\n")}};`,
         scriptRunner.join("\n")
       ]
       fs.writeFileSync(appFilePath, code.join("\n"), "utf-8");
