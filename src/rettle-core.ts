@@ -1,5 +1,6 @@
 import * as React from "react";
-import {htmlTagNames} from "html-tag-names";
+type htmlTagTypes = 'a' | 'abbr' | 'acronym' | 'address' | 'applet' | 'area' | 'article' | 'aside' | 'audio' | 'b' | 'base' | 'basefont' | 'bdi' | 'bdo' | 'bgsound'| 'big'| 'blink'| 'blockquote'| 'body'| 'br'| 'button'| 'canvas'| 'caption'| 'center'| 'cite'| 'code'| 'col'| 'colgroup'| 'command'| 'content'| 'data'| 'datalist'| 'dd'| 'del'| 'details'| 'dfn'| 'dialog'| 'dir'| 'div'| 'dl'| 'dt'| 'element'| 'em'| 'embed'| 'fieldset'| 'figcaption'| 'figure'| 'font'| 'footer'| 'form'| 'frame'| 'frameset'| 'h1'| 'h2'| 'h3'| 'h4'| 'h5'| 'h6'| 'head'| 'header'| 'hgroup'| 'hr'| 'html'| 'i'| 'iframe'| 'image'| 'img'| 'input'| 'ins'| 'isindex'| 'kbd'| 'keygen'| 'label'| 'legend'| 'li'| 'link'| 'listing'| 'main'| 'map'| 'mark'| 'marquee'| 'math'| 'menu'| 'menuitem'| 'meta'| 'meter'| 'multicol'| 'nav'| 'nextid'| 'nobr'| 'noembed'| 'noframes'| 'noscript'| 'object'| 'ol'| 'optgroup'| 'option'| 'output'| 'p'| 'param'| 'picture'| 'plaintext'| 'pre'| 'progress'| 'q'| 'rb'| 'rbc'| 'rp'| 'rt'| 'rtc'| 'ruby'| 's'| 'samp'| 'script'| 'section'| 'select'| 'shadow'| 'slot'| 'small'| 'source'| 'spacer'| 'span'| 'strike'| 'strong'| 'style'| 'sub'| 'summary'| 'sup'| 'svg'| 'table'| 'tbody'| 'td'| 'template'| 'textarea'| 'tfoot'| 'th'| 'thead'| 'time'| 'title'| 'tr'| 'track'| 'tt'| 'u'| 'ul'| 'var'| 'video'| 'wbr'| 'xmp' | string
+
 const events = [
   // Other Events
   `scroll`,
@@ -91,11 +92,8 @@ export const watcher = <T,>(value: T, callback: () => void): [{value: T}, (arg: 
 interface RettleComponent {
   children: JSX.Element | React.ReactNode;
 }
-
-type UnionStringArray <T extends Readonly<string[]>> = T[number];
-type HTMLElements = UnionStringArray<typeof htmlTagNames>;
 export const Component =  new Proxy({}, {
-    get: (_, key: HTMLElements) => {
+    get: (_, key: htmlTagTypes) => {
       return (props: RettleComponent) => React.createElement(key, {"rettle-component": "[rettle-component-location]"}, props.children);
     }
-}) as {[key in HTMLElements]: (props: RettleComponent) => JSX.Element | React.ReactNode};
+}) as { [key in htmlTagTypes]: (props?: RettleComponent) => React.ReactElement };

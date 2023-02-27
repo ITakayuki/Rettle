@@ -9,6 +9,6 @@ interface RettleComponent {
     children: JSX.Element | React.ReactNode;
 }
 export declare const Component: {
-    [x: string]: (props: RettleComponent) => JSX.Element | React.ReactNode;
+    [x: string]: (props?: RettleComponent) => React.ReactElement;
 };
 export {};
