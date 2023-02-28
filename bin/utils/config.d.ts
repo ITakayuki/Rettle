@@ -1,5 +1,6 @@
 import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
+import { Express } from "express";
 import * as core from "express-serve-static-core";
 import * as bodyParser from "body-parser";
 import * as serveStatic from "serve-static";
@@ -10,8 +11,6 @@ interface RouterOptions {
     strict?: boolean | undefined;
 }
 interface Application extends core.Application {
-}
-interface Express extends core.Express {
 }
 interface Handler extends core.Handler {
 }
@@ -33,9 +32,9 @@ declare type e = {
 };
 interface BuildOptionsInterface {
     copyStatic?: () => void;
-    buildScript?: () => void;
-    buildCss?: () => void;
-    buildHTML?: () => void;
+    buildScript?: (outDir: string) => void;
+    buildCss?: (code: string, outDir: string) => string;
+    buildHTML?: (code: string, outDir: string) => string;
 }
 interface esbuildInterface {
     minify: boolean;
@@ -57,9 +56,9 @@ export interface RettleConfigInterface {
     staticPath: string;
     envs?: Record<string, string>;
     header?: {
-        meta?: Array<Record<string, string>>;
-        link?: Array<Record<string, string>>;
-        script?: Array<Record<string, string>>;
+        meta?: Array<object>;
+        link?: Array<object>;
+        script?: Array<object>;
     };
     template: (options: templateHTMLInterface) => string;
     encode: "UTF-8" | "Shift_JIS" | "EUC-JP";

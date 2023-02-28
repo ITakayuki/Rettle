@@ -89,7 +89,8 @@ export const build = async() => {
         collapseWhitespace: true,
         preserveLineBreaks: true,
       });
-      fs.writeFileSync(htmlOutputPath,minifyHtml , "utf-8");
+      const code = config.build?.buildHTML(minifyHtml, htmlOutputPath);
+      fs.writeFileSync(htmlOutputPath,code , "utf-8");
     }));
     const root = key.replace("./src/views", "");
     const cssOutputPath = path.join(config.outDir, config.pathPrefix, root, config.css);
@@ -97,8 +98,10 @@ export const build = async() => {
       if (error) return console.log(`Cannot Purge style in ${key}`);
       await mkdirp(cssOutputPath);
       const style = result ? result : "";
-      fs.writeFileSync(cssOutputPath, style, "utf-8");
+      const purge = config.build?.buildCss(style, cssOutputPath);
+      fs.writeFileSync(cssOutputPath, purge, "utf-8");
     })
   })
-  copyStatic();
+  await copyStatic();
+  config.build?.copyStatic();
 }

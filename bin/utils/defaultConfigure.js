@@ -41,6 +41,11 @@ const config = {
     endpoints: ["./src/views"],
     staticPath: "/static",
     encode: "UTF-8",
+    build: {
+        buildHTML: (code) => code,
+        buildCss: (code) => code,
+        copyStatic: () => { }
+    },
     esbuild: {
         minify: true,
         plugins: [
