@@ -33,8 +33,7 @@ const watchSources = () => {
   })
 }
 
-export const server = async(env: string) => {
-  process.env.RETTLE_BUILD = env;
+export const server = async() => {
   /* build app.js files */
   const buildSetupOptions = {
     outDir: path.join(".cache/temporary", config.pathPrefix)

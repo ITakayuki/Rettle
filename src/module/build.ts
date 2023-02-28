@@ -14,8 +14,7 @@ import {minify} from "html-minifier-terser";
 import {purgeCSS} from "css-purge";
 import {deleteOutputDir, copyStatic} from "../utils/directoryControl";
 
-export const build = async(env: string) => {
-  process.env.RETTLE_BUILD = env;
+export const build = async() => {
   if (fs.existsSync(config.outDir)) {
     deleteOutputDir();
   }

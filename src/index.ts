@@ -3,7 +3,6 @@
 import {Command} from "commander";
 import {server} from "./module/server";
 import {build} from "./module/build";
-import * as process from "process";
 
 const program = new Command();
 
@@ -19,7 +18,7 @@ program.parse();
 const opts = program.opts() as OptsInterface;
 
 if (opts.build) {
-  build(process.env.NODE_ENV || "build");
+  build();
 } else {
-  server(process.env.NODE_ENV || "build");
+  server();
 }

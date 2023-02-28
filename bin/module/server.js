@@ -70,8 +70,7 @@ const watchSources = () => {
         ready: () => { }
     });
 };
-const server = (env) => __awaiter(void 0, void 0, void 0, function* () {
-    process.env.RETTLE_BUILD = env;
+const server = () => __awaiter(void 0, void 0, void 0, function* () {
     /* build app.js files */
     const buildSetupOptions = {
         outDir: path.join(".cache/temporary", config_1.config.pathPrefix)

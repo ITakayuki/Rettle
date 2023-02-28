@@ -23,8 +23,7 @@ const HTMLBuilder_1 = require("../utils/HTMLBuilder");
 const html_minifier_terser_1 = require("html-minifier-terser");
 const css_purge_1 = require("css-purge");
 const directoryControl_1 = require("../utils/directoryControl");
-const build = (env) => __awaiter(void 0, void 0, void 0, function* () {
-    process.env.RETTLE_BUILD = env;
+const build = () => __awaiter(void 0, void 0, void 0, function* () {
     if (fs_1.default.existsSync(config_1.config.outDir)) {
         (0, directoryControl_1.deleteOutputDir)();
     }
