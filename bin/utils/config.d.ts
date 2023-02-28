@@ -24,7 +24,7 @@ export interface RettleConfigInterface {
     static: string;
     outDir: string;
     staticPath: string;
-    envs?: Array<Record<string, string>>;
+    envs?: Record<string, string>;
     header?: {
         meta?: Array<Record<string, string>>;
         link?: Array<Record<string, string>>;

@@ -101,7 +101,7 @@ export const buildScript = ({outDir}: BuildScriptInterface) => {
         nodir: true
       }),
       outdir: outDir,
-      sourcemap: process.env.NODE_ENV === "develop",
+      sourcemap: process.env.NODE_ENV !== "production",
       platform: "browser",
       target: "es6",
       tsconfig: ".cache/tsconfig.json",
@@ -128,7 +128,7 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
         nodir: true
       }),
       outdir: outDir,
-      sourcemap: process.env.NODE_ENV === "develop",
+      sourcemap: process.env.NODE_ENV !== "production",
       platform: "browser",
       target: "es6",
       tsconfig: ".cache/tsconfig.json",

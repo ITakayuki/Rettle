@@ -1,5 +1,6 @@
 import {RettleConfigInterface} from "./config";
 import {templateHtml} from "./template.html";
+import * as process from "process";
 
 
 const config:RettleConfigInterface = {
@@ -16,6 +17,9 @@ const config:RettleConfigInterface = {
   esbuild: {
     minify: true,
     plugins: []
+  },
+  envs: {
+    NODE_ENV: process.env.NODE_ENV as string
   },
   version: true
 }
