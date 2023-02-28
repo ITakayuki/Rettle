@@ -1,5 +1,6 @@
 import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
+import { Express } from "express";
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: () => void;
@@ -13,7 +14,7 @@ interface esbuildInterface {
     tsconfigRow?: string;
     loader?: Record<string, string>;
     charset?: string;
-    plugins: esBuild.Plugin[];
+    plugins?: esBuild.Plugin[];
 }
 export interface RettleConfigInterface {
     pathPrefix: string;
@@ -36,6 +37,7 @@ export interface RettleConfigInterface {
     build?: BuildOptionsInterface;
     esbuild: esbuildInterface;
     version: boolean;
+    server: (app: Express) => void;
 }
 export declare const getIgnores: (endpoint: string) => string[];
 export declare const config: any;

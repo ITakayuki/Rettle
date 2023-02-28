@@ -22,10 +22,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultConfig = void 0;
 const template_html_1 = require("./template.html");
 const process = __importStar(require("process"));
+const esbuild_plugin_rettle_1 = __importDefault(require("esbuild-plugin-rettle"));
 const config = {
     pathPrefix: "./",
     port: 3000,
@@ -39,12 +43,31 @@ const config = {
     encode: "UTF-8",
     esbuild: {
         minify: true,
-        plugins: []
+        plugins: [
+            (0, esbuild_plugin_rettle_1.default)({
+                filter: /./,
+                babel: {
+                    presets: [
+                        "@babel/preset-env",
+                        "@babel/preset-typescript",
+                        [
+                            "@babel/preset-react",
+                            {
+                                runtime: "automatic",
+                                importSource: "@emotion/react",
+                            },
+                        ],
+                    ],
+                    plugins: ["@emotion/babel-plugin"],
+                },
+            }),
+        ],
     },
     envs: {
         NODE_ENV: process.env.NODE_ENV
     },
-    version: true
+    version: true,
+    server: (app) => { }
 };
 exports.defaultConfig = config;
 //# sourceMappingURL=defaultConfigure.js.map

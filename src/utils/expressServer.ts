@@ -46,6 +46,8 @@ export const wakeupExpressServer = () => {
   app.use(path.join("/", config.pathPrefix), express.static(path.resolve(path.join("./", config.static)), {maxAge: "30d"}));
   app.use(path.join("/"), express.static(path.resolve(path.join("./", ".cache/temporary/")), {maxAge: "30d"}));
 
+  config.server(app);
+
   // 404
   app.use((req, res) => {
     const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`
