@@ -31,8 +31,14 @@ const fs_1 = __importDefault(require("fs"));
 const config_1 = require("./config");
 const path = __importStar(require("path"));
 const rimraf_1 = require("rimraf");
+const glob_1 = __importDefault(require("glob"));
 const copyStatic = () => {
-    fs_1.default.copyFileSync(path.resolve(path.join("./", config_1.config.static)), path.resolve(path.join("./", config_1.config.outDir, config_1.config.pathPrefix)));
+    const files = glob_1.default.sync(path.resolve(path.join("./", config_1.config.static, config_1.config.pathPrefix, "**/*")), {
+        nodir: true
+    });
+    for (const file of files) {
+        fs_1.default.copyFileSync(file, file.replace(path.join(config_1.config.static, config_1.config.pathPrefix), path.join(config_1.config.outDir, config_1.config.pathPrefix)));
+    }
 };
 exports.copyStatic = copyStatic;
 const deleteOutputDir = () => {
