@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOutputDir = exports.copyStatic = void 0;
+exports.deleteDir = exports.copyStatic = void 0;
 const fs_1 = __importDefault(require("fs"));
 const config_1 = require("./config");
 const path = __importStar(require("path"));
@@ -56,8 +56,8 @@ const copyStatic = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.copyStatic = copyStatic;
-const deleteOutputDir = () => {
-    (0, rimraf_1.rimrafSync)(path.join(config_1.config.outDir));
+const deleteDir = (root) => {
+    (0, rimraf_1.rimrafSync)(root);
 };
-exports.deleteOutputDir = deleteOutputDir;
+exports.deleteDir = deleteDir;
 //# sourceMappingURL=directoryControl.js.map

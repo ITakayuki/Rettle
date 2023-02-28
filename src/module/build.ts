@@ -12,12 +12,24 @@ import {getEntryPaths, mkdirp} from "../utils/utility";
 import {transformReact2HTMLCSS, createHeaders, createHelmet} from "../utils/HTMLBuilder";
 import {minify} from "html-minifier-terser";
 import {purgeCSS} from "css-purge";
-import {deleteOutputDir, copyStatic} from "../utils/directoryControl";
+import {deleteDir, copyStatic} from "../utils/directoryControl";
+
+const resetDir = (dirRoot: string) => {
+  return new Promise(resolve => {
+    if (fs.existsSync(config.outDir)) {
+      deleteDir(config.outDir);
+    }
+    resolve(null)
+  })
+}
 
 export const build = async() => {
-  if (fs.existsSync(config.outDir)) {
-    deleteOutputDir();
-  }
+  await Promise.all([
+    resetDir(config.outDir),
+    resetDir(".cache/src"),
+    resetDir(".cache/scripts"),
+    resetDir(".cache/temporary"),
+  ]);
   /* build app.js files */
   const buildSetupOptions = {
     outDir: path.join(config.outDir, config.pathPrefix)

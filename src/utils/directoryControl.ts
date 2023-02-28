@@ -19,6 +19,6 @@ export const copyStatic = async() => {
   }
 }
 
-export const deleteOutputDir = () => {
-  rimrafSync(path.join(config.outDir));
+export const deleteDir = (root: string) => {
+  rimrafSync(root);
 }
