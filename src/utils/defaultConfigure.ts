@@ -41,7 +41,7 @@ const config:RettleConfigInterface = {
     NODE_ENV: process.env.NODE_ENV as string
   },
   version: true,
-  server: (app) => {}
+  server: (app, express) => {}
 }
 
 export const defaultConfig = config;

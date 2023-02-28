@@ -67,7 +67,7 @@ const config = {
         NODE_ENV: process.env.NODE_ENV
     },
     version: true,
-    server: (app) => { }
+    server: (app, express) => { }
 };
 exports.defaultConfig = config;
 //# sourceMappingURL=defaultConfigure.js.map

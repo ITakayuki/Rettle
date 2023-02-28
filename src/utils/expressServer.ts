@@ -45,8 +45,7 @@ export const wakeupExpressServer = () => {
 
   app.use(path.join("/", config.pathPrefix), express.static(path.resolve(path.join("./", config.static)), {maxAge: "30d"}));
   app.use(path.join("/"), express.static(path.resolve(path.join("./", ".cache/temporary/")), {maxAge: "30d"}));
-
-  config.server(app);
+  config.server(app, express);
 
   // 404
   app.use((req, res) => {
