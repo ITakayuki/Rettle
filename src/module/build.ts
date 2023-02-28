@@ -16,8 +16,8 @@ import {deleteDir, copyStatic} from "../utils/directoryControl";
 
 const resetDir = (dirRoot: string) => {
   return new Promise(resolve => {
-    if (fs.existsSync(config.outDir)) {
-      deleteDir(config.outDir);
+    if (fs.existsSync(dirRoot)) {
+      deleteDir(dirRoot);
     }
     resolve(null)
   })
