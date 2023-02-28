@@ -125,12 +125,15 @@ exports.watcher = watcher;
 exports.Component = new Proxy({}, {
     get: (_, key) => {
         return (props) => {
-            const prop = {
-                css: props.css,
-                className: props.className,
-                href: props.href,
-                alt: props.alt
-            };
+            console.log(props);
+            const prop = Object.keys(props).reduce((objAcc, key) => {
+                // 累積オブジェクトにキーを追加して、値を代入
+                if (key !== "frame" && key !== "css" && key !== "children") {
+                    objAcc[key] = props[key];
+                }
+                // 累積オブジェクトを更新
+                return objAcc;
+            }, {});
             return React.createElement(key, Object.assign(prop, { "data-rettle-fr": props.frame }), props.children);
         };
     }
