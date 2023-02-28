@@ -51,8 +51,7 @@ const getConfigure = () => {
     const inputConfig = (() => {
         if (fs.existsSync(tsConfigPath)) {
             rechoir.prepare(extensions, './rettle-config.ts');
-            const { buildMode } = require("./variable");
-            const requireConfig = require(tsConfigPath).default({ buildMode });
+            const requireConfig = require(tsConfigPath).default({ buildMode: process.env.RETTLE_BUILD });
             return requireConfig;
         }
         else if (fs.existsSync(jsConfigPath)) {

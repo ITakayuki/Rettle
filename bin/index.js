@@ -27,7 +27,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const server_1 = require("./module/server");
 const build_1 = require("./module/build");
-const variable_1 = require("./utils/variable");
 const process = __importStar(require("process"));
 const program = new commander_1.Command();
 program
@@ -35,12 +34,9 @@ program
 program.parse();
 const opts = program.opts();
 if (opts.build) {
-    console.log("build!!!???");
-    (0, variable_1.setBuildMode)(process.env.NODE_ENV || "build");
-    (0, build_1.build)();
+    (0, build_1.build)(process.env.NODE_ENV || "build");
 }
 else {
-    (0, variable_1.setBuildMode)(process.env.NODE_ENV || "server");
-    (0, server_1.server)();
+    (0, server_1.server)(process.env.NODE_ENV || "build");
 }
 //# sourceMappingURL=index.js.map

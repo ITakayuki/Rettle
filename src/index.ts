@@ -3,7 +3,6 @@
 import {Command} from "commander";
 import {server} from "./module/server";
 import {build} from "./module/build";
-import {setBuildMode} from "./utils/variable";
 import * as process from "process";
 
 const program = new Command();
@@ -20,10 +19,7 @@ program.parse();
 const opts = program.opts() as OptsInterface;
 
 if (opts.build) {
-  console.log("build!!!???")
-  setBuildMode(process.env.NODE_ENV || "build");
-  build();
+  build(process.env.NODE_ENV || "build");
 } else {
-  setBuildMode(process.env.NODE_ENV || "server");
-  server();
+  server(process.env.NODE_ENV || "build");
 }
