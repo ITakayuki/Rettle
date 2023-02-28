@@ -55,7 +55,6 @@ const getConfigure = () => {
             return requireConfig;
         }
         else if (fs.existsSync(jsConfigPath)) {
-            const { buildMode } = require("./variable");
             return require(jsConfigPath).default({ buildMode: process.env.NODE_ENV });
         }
         else {
