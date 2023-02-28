@@ -33,11 +33,13 @@ const path = __importStar(require("path"));
 const rimraf_1 = require("rimraf");
 const glob_1 = __importDefault(require("glob"));
 const copyStatic = () => {
-    const files = glob_1.default.sync(path.resolve(path.join("./", config_1.config.static, config_1.config.pathPrefix, "**/*")), {
+    const files = glob_1.default.sync(path.resolve(path.join("./", config_1.config.static, "**/*")), {
         nodir: true
     });
     for (const file of files) {
-        fs_1.default.copyFileSync(file, file.replace(path.join(config_1.config.static, config_1.config.pathPrefix), path.join(config_1.config.outDir, config_1.config.pathPrefix)));
+        const before = path.join("/", config_1.config.static);
+        const after = path.join("/", config_1.config.outDir, config_1.config.pathPrefix);
+        fs_1.default.copyFileSync(file, file.replace(before, after));
     }
 };
 exports.copyStatic = copyStatic;

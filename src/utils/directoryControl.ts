@@ -5,11 +5,13 @@ import {rimrafSync} from "rimraf";
 import glob from "glob";
 
 export const copyStatic = () => {
-  const files = glob.sync(path.resolve(path.join("./", config.static, config.pathPrefix, "**/*")), {
+  const files = glob.sync(path.resolve(path.join("./", config.static,"**/*")), {
     nodir: true
   })
   for (const file of files) {
-    fs.copyFileSync(file, file.replace(path.join(config.static, config.pathPrefix), path.join(config.outDir, config.pathPrefix)));
+    const before = path.join("/", config.static);
+    const after = path.join("/", config.outDir, config.pathPrefix)
+    fs.copyFileSync(file, file.replace(before, after));
   }
 }
 
