@@ -5,11 +5,11 @@ import createEmotionServer from "@emotion/server/create-instance";
 import * as process from "process";
 
 interface configOptionArg {
-  buildMode: string
+  buildMode: typeof process.env;
 }
 
 export const defineOption = (options: (mode: configOptionArg) => Partial<RettleConfigInterface>) => {
-  return options({buildMode: process.env.RETTLE_BUILD_MODE as string});
+  return options;
 }
 
 export const createCache = (key: string) => emotionCreateCache({key});
