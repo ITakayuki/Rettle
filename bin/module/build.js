@@ -25,8 +25,8 @@ const css_purge_1 = require("css-purge");
 const directoryControl_1 = require("../utils/directoryControl");
 const resetDir = (dirRoot) => {
     return new Promise(resolve => {
-        if (fs_1.default.existsSync(config_1.config.outDir)) {
-            (0, directoryControl_1.deleteDir)(config_1.config.outDir);
+        if (fs_1.default.existsSync(dirRoot)) {
+            (0, directoryControl_1.deleteDir)(dirRoot);
         }
         resolve(null);
     });
