@@ -40,8 +40,8 @@ type e = {
 interface BuildOptionsInterface {
   copyStatic?: ()=> void;
   buildScript?: (outDir: string) => void;
-  buildCss?: (code: string, outDir: string) => string;
-  buildHTML?: (code: string, outDir: string) => string;
+  buildCss?: (code: string, outDir: string) => string | Buffer;
+  buildHTML?: (code: string, outDir: string) => string | Buffer;
 }
 
 interface esbuildInterface {

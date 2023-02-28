@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
 import { Express } from "express";
@@ -33,8 +34,8 @@ declare type e = {
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: (outDir: string) => void;
-    buildCss?: (code: string, outDir: string) => string;
-    buildHTML?: (code: string, outDir: string) => string;
+    buildCss?: (code: string, outDir: string) => string | Buffer;
+    buildHTML?: (code: string, outDir: string) => string | Buffer;
 }
 interface esbuildInterface {
     minify: boolean;
