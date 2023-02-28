@@ -9,7 +9,7 @@ import {
   outputFormatFiles
 } from "../utils/AppScriptBuilder";
 import {getEntryPaths, mkdirp} from "../utils/utility";
-import {transformReact2HTMLCSS, createHeaders} from "../utils/HTMLBuilder";
+import {transformReact2HTMLCSS, createHeaders, createHelmet} from "../utils/HTMLBuilder";
 import {minify} from "html-minifier-terser";
 import {purgeCSS} from "css-purge";
 
@@ -52,14 +52,17 @@ export const build = async() => {
     let styles = ``;
     await Promise.all(items.map(async(item) => {
       const {html, css, ids} = await transformReact2HTMLCSS(item);
-      const headers = createHeaders();
+      const helmet = createHelmet();
+      const headers = createHeaders().concat(helmet.headers);
       const root = key.replace("src/views", config.pathPrefix);
       const script = path.join("/",root,config.js);
       headers.push(`<link rel="stylesheet" href="${path.join("/", root, config.css)}">`)
       const markup = config.template({
         html,
         headers,
-        script
+        script,
+        helmet: helmet.attributes,
+        noScript: helmet.body
       })
       styles = styles + css;
       const exName = path.extname(item);

@@ -55,13 +55,16 @@ const wakeupExpressServer = () => {
                 try {
                     const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
                     const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`;
-                    const headers = (0, HTMLBuilder_1.createHeaders)();
+                    const helmet = (0, HTMLBuilder_1.createHelmet)();
+                    const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
                     const script = path.join("/", key.replace("src/views/", path.join(config_1.config.pathPrefix)), config_1.config.js);
                     const result = config_1.config.template({
                         html,
                         style,
                         headers,
-                        script
+                        script,
+                        helmet: helmet.attributes,
+                        noScript: helmet.body
                     });
                     res.setHeader("Content-Type", "text/html");
                     res.send(result);

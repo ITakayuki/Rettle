@@ -4,5 +4,10 @@ export interface templateHTMLInterface extends Pick<RettleConfigInterface, "head
     headers: Array<string>;
     script: string;
     style?: string;
+    helmet: {
+        html: string;
+        body: string;
+    };
+    noScript: string[];
 }
 export declare const templateHtml: (options: templateHTMLInterface) => string;

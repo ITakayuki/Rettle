@@ -149,7 +149,12 @@ const getRefs = (frame, hash) => {
 const onMounted = (cb) => {
     const mountInterval = setInterval(() => {
         if (globalValues.isLoaded === true) {
-            cb();
+            try {
+                cb();
+            }
+            catch (e) {
+                console.error(e);
+            }
             clearInterval(mountInterval);
         }
     }, 500);
@@ -171,7 +176,6 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
         }, globalValues.scripts[parentHash]);
         globalValues.scripts[hash] = args;
         yield ComponentInit(frame, hash, args);
-        console.log("hoge");
     })));
     globalValues.isLoaded = true;
 });

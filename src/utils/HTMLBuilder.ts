@@ -1,10 +1,11 @@
 import * as esBuild from "esbuild";
-import BabelPlugin from "@itkyk/esbuild-plugin-babel";
 import vm from "vm";
 import fs from "fs";
 import * as path from "path";
 import {config} from "./config";
 import {version} from "./variable";
+import Helmet, {HelmetData} from "react-helmet";
+import * as console from "console";
 
 const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf-8"));
 
@@ -58,4 +59,41 @@ export const createHeaders = () => {
     ...headerLink,
     ...headerScript,
   ];
+}
+interface RettleHelmetType {
+  headers: string[],
+  attributes: {
+    body: string;
+    html: string;
+  },
+  body: string[]
+}
+export const createHelmet = () => {
+  const helmet = Helmet.renderStatic();
+  const heads = ["title", "base", "link", "meta", "script", "style"] as const;
+  const attributes = ["bodyAttributes", "htmlAttributes"] as const;
+  const body = ["noscript"] as const;
+  const results:RettleHelmetType  = {
+    headers: [],
+    attributes: {
+      body: "",
+      html: ""
+    },
+    body: []
+  }
+  for (const opts of heads) {
+    const opt = opts as typeof heads[number];
+    if (helmet[opt]) {
+      results.headers.push(helmet[opt].toString());
+    }
+  }
+  results.attributes.body = helmet.bodyAttributes.toString() || "";
+  results.attributes.html = helmet.htmlAttributes.toString() || "";
+  for (const opts of body) {
+    const opt = opts as typeof heads[number];
+    if (helmet[opt]) {
+      results.body.push(helmet[opt].toString());
+    }
+  }
+  return results;
 }

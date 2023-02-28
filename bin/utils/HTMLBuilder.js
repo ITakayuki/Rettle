@@ -35,13 +35,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createHeaders = exports.createHeaderTags = exports.transformReact2HTMLCSS = void 0;
+exports.createHelmet = exports.createHeaders = exports.createHeaderTags = exports.transformReact2HTMLCSS = void 0;
 const esBuild = __importStar(require("esbuild"));
 const vm_1 = __importDefault(require("vm"));
 const fs_1 = __importDefault(require("fs"));
 const path = __importStar(require("path"));
 const config_1 = require("./config");
 const variable_1 = require("./variable");
+const react_helmet_1 = __importDefault(require("react-helmet"));
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
@@ -98,4 +99,34 @@ const createHeaders = () => {
     ];
 };
 exports.createHeaders = createHeaders;
+const createHelmet = () => {
+    const helmet = react_helmet_1.default.renderStatic();
+    const heads = ["title", "base", "link", "meta", "script", "style"];
+    const attributes = ["bodyAttributes", "htmlAttributes"];
+    const body = ["noscript"];
+    const results = {
+        headers: [],
+        attributes: {
+            body: "",
+            html: ""
+        },
+        body: []
+    };
+    for (const opts of heads) {
+        const opt = opts;
+        if (helmet[opt]) {
+            results.headers.push(helmet[opt].toString());
+        }
+    }
+    results.attributes.body = helmet.bodyAttributes.toString() || "";
+    results.attributes.html = helmet.htmlAttributes.toString() || "";
+    for (const opts of body) {
+        const opt = opts;
+        if (helmet[opt]) {
+            results.body.push(helmet[opt].toString());
+        }
+    }
+    return results;
+};
+exports.createHelmet = createHelmet;
 //# sourceMappingURL=HTMLBuilder.js.map

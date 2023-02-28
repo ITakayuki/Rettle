@@ -1,10 +1,8 @@
 import express from "express";
-import {transformReact2HTMLCSS, createHeaderTags, createHeaders} from "./HTMLBuilder";
+import {transformReact2HTMLCSS, createHeaders, createHelmet} from "./HTMLBuilder";
 import * as path from "path";
-import {config, getIgnores} from "./config";
-import glob from "glob";
+import {config} from "./config";
 import {color} from "./Log";
-import {version} from "./variable";
 import errorTemplateHtml, {errorTemplate} from "./errorTemplate.html";
 import {getEntryPaths} from "./utility";
 
@@ -23,13 +21,16 @@ export const wakeupExpressServer = () => {
         try {
           const {html, css, ids} = await transformReact2HTMLCSS(item);
           const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
-          const headers = createHeaders();
+          const helmet = createHelmet();
+          const headers = createHeaders().concat(helmet.headers);
           const script = path.join("/", key.replace("src/views/", path.join(config.pathPrefix)), config.js)
           const result = config.template({
             html,
             style,
             headers,
-            script
+            script,
+            helmet: helmet.attributes,
+            noScript: helmet.body
           })
           res.setHeader("Content-Type", "text/html")
           res.send(result);
