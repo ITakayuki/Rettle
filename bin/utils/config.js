@@ -25,7 +25,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = exports.getIgnores = void 0;
 const path = __importStar(require("path"));
-const variable_1 = require("./variable");
 const sortStringsBySlashCount = (strings) => {
     const slashCountMap = new Map();
     // 各文字列の/の数をカウントする
@@ -52,11 +51,13 @@ const getConfigure = () => {
     const inputConfig = (() => {
         if (fs.existsSync(tsConfigPath)) {
             rechoir.prepare(extensions, './rettle-config.ts');
-            const requireConfig = require(tsConfigPath).default({ buildMode: variable_1.buildMode });
+            const { buildMode } = require("./variable");
+            const requireConfig = require(tsConfigPath).default({ buildMode });
             return requireConfig;
         }
         else if (fs.existsSync(jsConfigPath)) {
-            return require(jsConfigPath).default({ buildMode: variable_1.buildMode });
+            const { buildMode } = require("./variable");
+            return require(jsConfigPath).default({ buildMode });
         }
         else {
             return {};
