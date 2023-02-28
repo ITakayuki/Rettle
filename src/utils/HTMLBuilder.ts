@@ -11,7 +11,6 @@ const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json")
 
 export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: Array<string>, css: string}> => {
   return  new Promise(async(resolve, reject) => {
-    let res:esBuild.BuildResult & {outputFiles: esBuild.OutputFile[]};
     esBuild.build({
         bundle: true,
         entryPoints: [path],
@@ -19,6 +18,9 @@ export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: 
         write: false,
         external: Object.keys(dependencies),
         plugins: config.esbuild.plugins,
+        define: {
+          "process.env": JSON.stringify(config.envs),
+        }
       }).then(res => {
       try {
         const code = res.outputFiles![0].text;

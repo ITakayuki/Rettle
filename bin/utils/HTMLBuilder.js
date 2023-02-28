@@ -46,7 +46,6 @@ const react_helmet_1 = __importDefault(require("react-helmet"));
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        let res;
         esBuild.build({
             bundle: true,
             entryPoints: [path],
@@ -54,6 +53,9 @@ const transformReact2HTMLCSS = (path) => {
             write: false,
             external: Object.keys(dependencies),
             plugins: config_1.config.esbuild.plugins,
+            define: {
+                "process.env": JSON.stringify(config_1.config.envs),
+            }
         }).then(res => {
             try {
                 const code = res.outputFiles[0].text;

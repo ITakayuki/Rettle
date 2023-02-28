@@ -1,5 +1,5 @@
 .idea
-commands
+builder
 node_modules
 .node-versions
 src
