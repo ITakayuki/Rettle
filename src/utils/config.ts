@@ -1,6 +1,8 @@
 import {templateHTMLInterface} from "./template.html";
 import * as esBuild from "esbuild";
 import * as path from "path";
+import {buildMode} from "./variable";
+
 interface BuildOptionsInterface {
   copyStatic?: ()=>void;
   buildScript?: () => void;
@@ -72,10 +74,10 @@ const getConfigure = () => {
   const inputConfig  = (() => {
     if (fs.existsSync(tsConfigPath)) {
       rechoir.prepare(extensions, './rettle-config.ts');
-      const requireConfig = require(tsConfigPath).default(process.env);
+      const requireConfig = require(tsConfigPath).default({buildMode});
       return requireConfig
     } else if (fs.existsSync(jsConfigPath)) {
-      return require(jsConfigPath).default(process.env);
+      return require(jsConfigPath).default({buildMode});
     } else {
       return {}
     }
