@@ -32,7 +32,7 @@ const config_1 = require("./config");
 const path = __importStar(require("path"));
 const rimraf_1 = require("rimraf");
 const copyStatic = () => {
-    fs_1.default.copyFileSync(config_1.config.static, path.join(config_1.config.outDir, config_1.config.pathPrefix));
+    fs_1.default.copyFileSync(path.resolve(path.join("./", config_1.config.static)), path.resolve(path.join("./", config_1.config.outDir, config_1.config.pathPrefix)));
 };
 exports.copyStatic = copyStatic;
 const deleteOutputDir = () => {
