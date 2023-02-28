@@ -12,9 +12,10 @@ export const copyStatic = async() => {
   for (const file of files) {
     const before = path.join("/", config.static);
     const after = path.join("/", config.outDir, config.pathPrefix)
-    const outputPath = file.replace(before, after);
-    await mkdirp(outputPath)
-    fs.copyFileSync(file, outputPath);
+    const outputPath = path.relative("./", file.replace(before, after));
+    mkdirp(outputPath).then(() => {
+      fs.copyFileSync(file, outputPath)
+    })
   }
 }
 

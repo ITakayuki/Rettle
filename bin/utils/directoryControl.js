@@ -49,9 +49,10 @@ const copyStatic = () => __awaiter(void 0, void 0, void 0, function* () {
     for (const file of files) {
         const before = path.join("/", config_1.config.static);
         const after = path.join("/", config_1.config.outDir, config_1.config.pathPrefix);
-        const outputPath = file.replace(before, after);
-        yield (0, utility_1.mkdirp)(outputPath);
-        fs_1.default.copyFileSync(file, outputPath);
+        const outputPath = path.relative("./", file.replace(before, after));
+        (0, utility_1.mkdirp)(outputPath).then(() => {
+            fs_1.default.copyFileSync(file, outputPath);
+        });
     }
 });
 exports.copyStatic = copyStatic;
