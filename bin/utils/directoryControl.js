@@ -30,12 +30,13 @@ exports.deleteOutputDir = exports.copyStatic = void 0;
 const fs_1 = __importDefault(require("fs"));
 const config_1 = require("./config");
 const path = __importStar(require("path"));
+const rimraf_1 = require("rimraf");
 const copyStatic = () => {
     fs_1.default.copyFileSync(config_1.config.static, path.join(config_1.config.outDir, config_1.config.pathPrefix));
 };
 exports.copyStatic = copyStatic;
 const deleteOutputDir = () => {
-    fs_1.default.rmdirSync(path.join(config_1.config.outDir));
+    (0, rimraf_1.rimrafSync)(path.join(config_1.config.outDir));
 };
 exports.deleteOutputDir = deleteOutputDir;
 //# sourceMappingURL=directoryControl.js.map
