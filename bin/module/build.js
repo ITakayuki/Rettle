@@ -22,7 +22,11 @@ const utility_1 = require("../utils/utility");
 const HTMLBuilder_1 = require("../utils/HTMLBuilder");
 const html_minifier_terser_1 = require("html-minifier-terser");
 const css_purge_1 = require("css-purge");
+const directoryControl_1 = require("../utils/directoryControl");
 const build = () => __awaiter(void 0, void 0, void 0, function* () {
+    if (fs_1.default.existsSync(config_1.config.outDir)) {
+        (0, directoryControl_1.deleteOutputDir)();
+    }
     /* build app.js files */
     const buildSetupOptions = {
         outDir: path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix)
@@ -97,6 +101,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             fs_1.default.writeFileSync(cssOutputPath, style, "utf-8");
         }));
     }));
+    (0, directoryControl_1.copyStatic)();
 });
 exports.build = build;
 //# sourceMappingURL=build.js.map

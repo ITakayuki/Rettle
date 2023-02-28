@@ -12,8 +12,12 @@ import {getEntryPaths, mkdirp} from "../utils/utility";
 import {transformReact2HTMLCSS, createHeaders, createHelmet} from "../utils/HTMLBuilder";
 import {minify} from "html-minifier-terser";
 import {purgeCSS} from "css-purge";
+import {deleteOutputDir, copyStatic} from "../utils/directoryControl";
 
 export const build = async() => {
+  if (fs.existsSync(config.outDir)) {
+    deleteOutputDir();
+  }
   /* build app.js files */
   const buildSetupOptions = {
     outDir: path.join(config.outDir, config.pathPrefix)
@@ -84,4 +88,5 @@ export const build = async() => {
       fs.writeFileSync(cssOutputPath, style, "utf-8");
     })
   })
+  copyStatic();
 }

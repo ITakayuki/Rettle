@@ -12,7 +12,6 @@ export interface templateHTMLInterface extends Pick<RettleConfigInterface, "head
   noScript: string[];
 }
 
-
 export const templateHtml = (options: templateHTMLInterface) => {
   return `
 <!DOCTYPE html>
