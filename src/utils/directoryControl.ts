@@ -3,6 +3,7 @@ import {config} from "./config";
 import * as path from "path";
 import {rimrafSync} from "rimraf";
 import glob from "glob";
+import {mkdirp} from "./utility";
 
 export const copyStatic = () => {
   const files = glob.sync(path.resolve(path.join("./", config.static,"**/*")), {
@@ -11,7 +12,10 @@ export const copyStatic = () => {
   for (const file of files) {
     const before = path.join("/", config.static);
     const after = path.join("/", config.outDir, config.pathPrefix)
-    fs.copyFileSync(file, file.replace(before, after));
+    const outputPath = file.replace(before, after);
+    mkdirp(outputPath).then(() => {
+      fs.copyFileSync(file, outputPath);
+    })
   }
 }
 

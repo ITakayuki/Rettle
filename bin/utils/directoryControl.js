@@ -32,6 +32,7 @@ const config_1 = require("./config");
 const path = __importStar(require("path"));
 const rimraf_1 = require("rimraf");
 const glob_1 = __importDefault(require("glob"));
+const utility_1 = require("./utility");
 const copyStatic = () => {
     const files = glob_1.default.sync(path.resolve(path.join("./", config_1.config.static, "**/*")), {
         nodir: true
@@ -39,7 +40,10 @@ const copyStatic = () => {
     for (const file of files) {
         const before = path.join("/", config_1.config.static);
         const after = path.join("/", config_1.config.outDir, config_1.config.pathPrefix);
-        fs_1.default.copyFileSync(file, file.replace(before, after));
+        const outputPath = file.replace(before, after);
+        (0, utility_1.mkdirp)(outputPath).then(() => {
+            fs_1.default.copyFileSync(file, outputPath);
+        });
     }
 };
 exports.copyStatic = copyStatic;
