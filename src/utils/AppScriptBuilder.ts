@@ -101,7 +101,7 @@ export const buildScript = ({outDir}: BuildScriptInterface) => {
       bundle: true,
       // all cache scripts
       entryPoints: files,
-      outdir: files.length <= 1 ? path.join(outDir, config.js) : outDir,
+      outdir: files.length <= 1 ? path.join(outDir, path.dirname(config.js)) : outDir,
       sourcemap: process.env.NODE_ENV !== "production",
       platform: "browser",
       target: "es6",
@@ -118,6 +118,9 @@ export const buildScript = ({outDir}: BuildScriptInterface) => {
 
 export const watchScript = ({ outDir}: BuildScriptInterface) => {
   return new Promise(resolve => {
+    const files = glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
+      nodir: true
+    });
     esBuild.build({
       bundle: true,
       watch: {
@@ -125,10 +128,8 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
           if (error) console.error("watch build failed:", error);
         },
       },
-      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
-        nodir: true
-      }),
-      outdir: outDir,
+      entryPoints: files,
+      outdir: files.length <= 1 ? path.join(outDir, path.dirname(config.js)) : outDir,
       sourcemap: process.env.NODE_ENV !== "production",
       platform: "browser",
       target: "es6",

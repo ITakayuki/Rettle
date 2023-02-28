@@ -43,6 +43,8 @@ const expressServer_1 = require("../utils/expressServer");
 const config_1 = require("../utils/config");
 const path = __importStar(require("path"));
 const glob_1 = __importDefault(require("glob"));
+const fs_1 = __importDefault(require("fs"));
+const directoryControl_1 = require("../utils/directoryControl");
 const watchSources = () => {
     (0, watcher_1.watchFiles)({
         change: (filename) => __awaiter(void 0, void 0, void 0, function* () {
@@ -70,7 +72,21 @@ const watchSources = () => {
         ready: () => { }
     });
 };
+const resetDir = (dirRoot) => {
+    return new Promise(resolve => {
+        if (fs_1.default.existsSync(dirRoot)) {
+            (0, directoryControl_1.deleteDir)(dirRoot);
+        }
+        resolve(null);
+    });
+};
 const server = () => __awaiter(void 0, void 0, void 0, function* () {
+    yield Promise.all([
+        resetDir(config_1.config.outDir),
+        resetDir(".cache/src"),
+        resetDir(".cache/scripts"),
+        resetDir(".cache/temporary"),
+    ]);
     /* build app.js files */
     const buildSetupOptions = {
         outDir: path.join(".cache/temporary", config_1.config.pathPrefix)

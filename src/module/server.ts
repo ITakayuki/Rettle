@@ -5,6 +5,8 @@ import {wakeupExpressServer} from "../utils/expressServer";
 import {config} from "../utils/config";
 import * as path from "path";
 import glob from "glob";
+import fs from "fs";
+import {deleteDir} from "../utils/directoryControl";
 
 const watchSources = () => {
   watchFiles({
@@ -33,7 +35,22 @@ const watchSources = () => {
   })
 }
 
+const resetDir = (dirRoot: string) => {
+  return new Promise(resolve => {
+    if (fs.existsSync(dirRoot)) {
+      deleteDir(dirRoot);
+    }
+    resolve(null)
+  })
+}
+
 export const server = async() => {
+  await Promise.all([
+    resetDir(config.outDir),
+    resetDir(".cache/src"),
+    resetDir(".cache/scripts"),
+    resetDir(".cache/temporary"),
+  ]);
   /* build app.js files */
   const buildSetupOptions = {
     outDir: path.join(".cache/temporary", config.pathPrefix)
