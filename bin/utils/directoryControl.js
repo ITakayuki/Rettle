@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -33,7 +42,7 @@ const path = __importStar(require("path"));
 const rimraf_1 = require("rimraf");
 const glob_1 = __importDefault(require("glob"));
 const utility_1 = require("./utility");
-const copyStatic = () => {
+const copyStatic = () => __awaiter(void 0, void 0, void 0, function* () {
     const files = glob_1.default.sync(path.resolve(path.join("./", config_1.config.static, "**/*")), {
         nodir: true
     });
@@ -41,11 +50,10 @@ const copyStatic = () => {
         const before = path.join("/", config_1.config.static);
         const after = path.join("/", config_1.config.outDir, config_1.config.pathPrefix);
         const outputPath = file.replace(before, after);
-        (0, utility_1.mkdirp)(outputPath).then(() => {
-            fs_1.default.copyFileSync(file, outputPath);
-        });
+        yield (0, utility_1.mkdirp)(outputPath);
+        fs_1.default.copyFileSync(file, outputPath);
     }
-};
+});
 exports.copyStatic = copyStatic;
 const deleteOutputDir = () => {
     (0, rimraf_1.rimrafSync)(path.join(config_1.config.outDir));

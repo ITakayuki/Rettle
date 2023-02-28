@@ -1,2 +1,2 @@
-export declare const copyStatic: () => void;
+export declare const copyStatic: () => Promise<void>;
 export declare const deleteOutputDir: () => void;

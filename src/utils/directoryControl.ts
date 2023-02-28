@@ -5,7 +5,7 @@ import {rimrafSync} from "rimraf";
 import glob from "glob";
 import {mkdirp} from "./utility";
 
-export const copyStatic = () => {
+export const copyStatic = async() => {
   const files = glob.sync(path.resolve(path.join("./", config.static,"**/*")), {
     nodir: true
   })
@@ -13,9 +13,8 @@ export const copyStatic = () => {
     const before = path.join("/", config.static);
     const after = path.join("/", config.outDir, config.pathPrefix)
     const outputPath = file.replace(before, after);
-    mkdirp(outputPath).then(() => {
-      fs.copyFileSync(file, outputPath);
-    })
+    await mkdirp(outputPath)
+    fs.copyFileSync(file, outputPath);
   }
 }
 
