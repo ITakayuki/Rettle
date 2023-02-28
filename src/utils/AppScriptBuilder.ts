@@ -94,13 +94,14 @@ export const createCacheAppFile = () => {
 
 export const buildScript = ({outDir}: BuildScriptInterface) => {
   return new Promise(resolve => {
+    const files = glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
+      nodir: true
+    });
     esBuild.build({
       bundle: true,
       // all cache scripts
-      entryPoints: glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
-        nodir: true
-      }),
-      outdir: outDir,
+      entryPoints: files,
+      outdir: files.length <= 1 ? path.join(outDir, config.js) : outDir,
       sourcemap: process.env.NODE_ENV !== "production",
       platform: "browser",
       target: "es6",

@@ -125,11 +125,12 @@ const createCacheAppFile = () => {
 exports.createCacheAppFile = createCacheAppFile;
 const buildScript = ({ outDir }) => {
     return new Promise(resolve => {
+        const files = glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
+            nodir: true
+        });
         esbuild_1.default.build(Object.assign({ bundle: true, 
             // all cache scripts
-            entryPoints: glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
-                nodir: true
-            }), outdir: outDir, sourcemap: process.env.NODE_ENV !== "production", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
+            entryPoints: files, outdir: files.length <= 1 ? path_1.default.join(outDir, config_1.config.js) : outDir, sourcemap: process.env.NODE_ENV !== "production", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
                 "process.env": JSON.stringify(config_1.config.envs),
             } }, config_1.config.esbuild)).then(() => {
             resolve(null);
