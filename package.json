@@ -1,6 +1,6 @@
 {
   "name": "rettle",
-  "version": "0.0.8-beta2.3",
+  "version": "0.0.8-beta2.4",
   "main": "./bin/rettle.js",
   "scripts": {
     "start": "tsc",

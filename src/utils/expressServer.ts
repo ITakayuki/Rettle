@@ -23,7 +23,7 @@ export const wakeupExpressServer = () => {
           const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`
           const helmet = createHelmet();
           const headers = createHeaders().concat(helmet.headers);
-          const script = path.join("/", key.replace("src/views/", path.join(config.pathPrefix)), config.js)
+          const script = path.join("/", key.replace("src/views", path.join(config.pathPrefix)), config.js)
           const result = config.template({
             html,
             style,
