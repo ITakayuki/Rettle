@@ -1,6 +1,6 @@
 {
   "name": "rettle",
-  "version": "0.0.8-beta1.1",
+  "version": "0.0.8-beta2.0",
   "main": "./bin/rettle.js",
   "scripts": {
     "start": "tsc",
@@ -10,18 +10,6 @@
   },
   "bin": {
     "rettle": "./bin/index.js"
-  },
-  "exports": {
-    ".": {
-      "import": "./bin/rettle.js",
-      "require": "./bin/rettle.js",
-      "types": "./bin/rettle.d.ts"
-    },
-    "./core": {
-      "types": "./bin/rettle-core.d.ts",
-      "import": "./bin/rettle-core.js",
-      "require": "./bin/rettle-core.js"
-    }
   },
   "keywords": [],
   "author": "",

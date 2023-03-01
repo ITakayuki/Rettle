@@ -68,7 +68,8 @@ const createFileName = (filePath) => {
 const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, function* () {
     let results = {};
     const tempObj = yield (0, Dependencies_1.getMadgeObject)(filepath, {
-        baseDir: "./"
+        baseDir: "./",
+        tsConfig: path_1.default.resolve("./tsconfig.json")
     });
     let obj = tempObj[filepath];
     for (const dep of obj) {
@@ -200,15 +201,14 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                     const key = node.declarations[0].id.name;
                     objects[key] = text;
                 }
-                const exportName = exportNodes[0].declaration.name;
-                const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
-                const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
-                const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
-                    return "//" + item;
-                }).join("\n")).replace(exportLine, "export default () => {}");
-                return (0, exports.translateTs2Js)(result);
             }
-            ;
+            const exportName = exportNodes[0].declaration.name;
+            const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
+            const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
+            const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+                return "//" + item;
+            }).join("\n")).replace(exportLine, "export default () => {}");
+            return (0, exports.translateTs2Js)(result);
         }
         else {
             // export default ()=>

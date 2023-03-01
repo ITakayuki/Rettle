@@ -32,7 +32,8 @@ export const getDependencies = async(targetDir: string, ignore: Array<string>) =
   for (const target of targets) {
     const promiseFunction = new Promise(async(resolve) => {
         const obj = await getMadgeObject(target, {
-          baseDir: "./"
+          baseDir: "./",
+          tsConfig: path.resolve("./tsconfig.json")
         });
         Object.keys(obj).forEach((key: string) => {
           if(checkScript(key)) {

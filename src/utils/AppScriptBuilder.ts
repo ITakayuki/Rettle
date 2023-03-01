@@ -36,7 +36,8 @@ const createFileName = (filePath:string) => {
 const createComponentDep = async(filepath: string) => {
   let results = {} as {[x in string]: any};
   const tempObj = await getMadgeObject(filepath, {
-    baseDir: "./"
+    baseDir: "./",
+    tsConfig: path.resolve("./tsconfig.json")
   })
   let obj = tempObj[filepath]
   for (const dep of obj) {
@@ -184,14 +185,14 @@ export const eraseExports = async(code:string) => {
           const key = node.declarations[0].id.name;
           objects[key] = text;
         }
-        const exportName = exportNodes[0].declaration.name;
-        const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end)
-        const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
-        const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
-          return "//" + item
-        }).join("\n")).replace(exportLine, "export default () => {}");
-        return translateTs2Js(result);
-      };
+      }
+      const exportName = exportNodes[0].declaration.name;
+      const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end)
+      const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
+      const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+        return "//" + item
+      }).join("\n")).replace(exportLine, "export default () => {}");
+      return translateTs2Js(result);
     } else {
       // export default ()=>
       let replaceDefaultRettle = "";

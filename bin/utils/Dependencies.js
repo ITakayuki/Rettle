@@ -69,7 +69,8 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
     for (const target of targets) {
         const promiseFunction = new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
             const obj = yield (0, exports.getMadgeObject)(target, {
-                baseDir: "./"
+                baseDir: "./",
+                tsConfig: path.resolve("./tsconfig.json")
             });
             Object.keys(obj).forEach((key) => {
                 if ((0, exports.checkScript)(key)) {
