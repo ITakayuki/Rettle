@@ -2,12 +2,12 @@ import { RettleConfigInterface } from "./utils/config";
 import { EmotionCache } from "@emotion/cache";
 import * as React from "react";
 import { SerializedStyles } from "@emotion/react";
+import { RettleMethods } from "./rettle-core";
 export declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
 export declare const createCache: (key: string) => EmotionCache;
 export declare const createRettle: (cache: EmotionCache, element: JSX.Element) => import("@emotion/server/create-instance").EmotionCritical;
-export declare const watcher: <T>(value: T, callback: () => void) => [{
-    value: T;
-}, (arg: T | ((val: T) => T)) => void];
+/********************/
+/********************/
 declare type RettleComponent = {
     frame: "[fr]";
     children: JSX.Element | React.ReactNode;
@@ -191,15 +191,5 @@ export declare const Component: {
     use: (props: RettleComponent & React.SVGProps<SVGUseElement>) => JSX.Element;
     view: (props: RettleComponent & React.SVGProps<SVGViewElement>) => JSX.Element;
 };
-interface RettleMethods {
-    getRefs: () => Record<string, HTMLElement>;
-    getRef: (key: string) => HTMLElement;
-    watcher: typeof watcher;
-    onMounted: typeof onMounted;
-}
-declare const onMounted: (cb: () => void) => void;
-export declare const RettleStart: (scripts: {
-    [x: string]: ({ getRefs }: RettleMethods, props: Record<string, any>) => Record<string, any>;
-}) => Promise<void>;
 export declare type RettleFrame = (methods: RettleMethods, props: Record<string, any>) => Record<string, any> | void;
 export {};
