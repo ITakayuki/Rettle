@@ -71,7 +71,7 @@ export const createCacheAppFile = () => {
       const files = await getDependencies(endpoint,ignore);
       const appResolvePath = createFileName(endpoint)
       const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
-      const appImports = [`import {RettleStart} from "rettle/core";`];
+      const appImports = [`import {RettleStart} from "rettle";`];
       const scriptObject = []
       const scriptRunner = [`RettleStart(scripts, {})`];
       const defs = [];
