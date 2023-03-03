@@ -13,6 +13,7 @@ import ts from "typescript";
 import {createHash, getFilesName} from "./utility";
 import deepmerge from "deepmerge";
 import {isPlainObject} from "is-plain-object";
+import {prepareSingleFileReplaceTscAliasPaths, SingleFileReplacer} from 'tsc-alias';
 
 interface BuildScriptInterface {
   outDir: string;
@@ -248,8 +249,16 @@ export const eraseExports = async(code:string) => {
   }
 }
 
+function treatFile(filePath: string, code: string, runFile: SingleFileReplacer) {
+  const newContents = runFile({fileContents: code, filePath});
+  fs.writeFileSync(filePath, newContents)
+}
+
 export const outputFormatFiles = (file:string) => {
   return new Promise(async(resolve, reject) => {
+    const replacer = await prepareSingleFileReplaceTscAliasPaths({
+      outDir: "./.cache/src"
+    })
     try {
       const filePath = path.isAbsolute(file) ? path.relative("./", file) : file;
       const outPath = path.join(".cache/", filePath).replace(".tsx", ".js");
@@ -257,10 +266,12 @@ export const outputFormatFiles = (file:string) => {
       await mkdirp(outPath);
       if (path.extname(filePath).includes("tsx")) {
         const code = await eraseExports(sourceCode);
-        fs.writeFileSync(outPath, code, "utf-8");
+        fs.writeFileSync(outPath, "", "utf-8");
+        treatFile(outPath, code, replacer);
       } else {
         const code = translateTs2Js(sourceCode);
-        fs.writeFileSync(outPath, code, "utf-8");
+        fs.writeFileSync(outPath, "", "utf-8");
+        treatFile(outPath, code, replacer);
       }
       resolve(null)
     } catch (e) {

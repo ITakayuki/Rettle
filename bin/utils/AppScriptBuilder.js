@@ -51,6 +51,7 @@ const typescript_1 = __importDefault(require("typescript"));
 const utility_2 = require("./utility");
 const deepmerge_1 = __importDefault(require("deepmerge"));
 const is_plain_object_1 = require("is-plain-object");
+const tsc_alias_1 = require("tsc-alias");
 const createTsConfigFile = () => {
     return new Promise(resolve => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -268,8 +269,15 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.eraseExports = eraseExports;
+function treatFile(filePath, code, runFile) {
+    const newContents = runFile({ fileContents: code, filePath });
+    fs_1.default.writeFileSync(filePath, newContents);
+}
 const outputFormatFiles = (file) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        const replacer = yield (0, tsc_alias_1.prepareSingleFileReplaceTscAliasPaths)({
+            outDir: "./.cache/src"
+        });
         try {
             const filePath = path_1.default.isAbsolute(file) ? path_1.default.relative("./", file) : file;
             const outPath = path_1.default.join(".cache/", filePath).replace(".tsx", ".js");
@@ -277,11 +285,13 @@ const outputFormatFiles = (file) => {
             yield (0, utility_1.mkdirp)(outPath);
             if (path_1.default.extname(filePath).includes("tsx")) {
                 const code = yield (0, exports.eraseExports)(sourceCode);
-                fs_1.default.writeFileSync(outPath, code, "utf-8");
+                fs_1.default.writeFileSync(outPath, "", "utf-8");
+                treatFile(outPath, code, replacer);
             }
             else {
                 const code = (0, exports.translateTs2Js)(sourceCode);
-                fs_1.default.writeFileSync(outPath, code, "utf-8");
+                fs_1.default.writeFileSync(outPath, "", "utf-8");
+                treatFile(outPath, code, replacer);
             }
             resolve(null);
         }

@@ -3,7 +3,6 @@ import {templateHtml} from "./template.html";
 import * as process from "process";
 import RettlePlugin from "esbuild-plugin-rettle";
 
-
 const config:RettleConfigInterface = {
   pathPrefix: "./",
   port: 3000,

@@ -133,7 +133,7 @@ export const RettleStart = async(scripts: {[index in string]: ({getRefs}: Rettle
         getRef: (key: string) => getRefs(frame, hash)()[key],
         watcher,
         onMounted
-      }, globalValues.scripts[parentHash]);
+      }, globalValues.scripts[parentHash] || {});
       globalValues.scripts[hash] = args;
       await ComponentInit(frame, hash, args);
     }

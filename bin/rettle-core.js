@@ -127,7 +127,7 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
                 getRef: (key) => getRefs(frame, hash)()[key],
                 watcher,
                 onMounted
-            }, globalValues.scripts[parentHash]);
+            }, globalValues.scripts[parentHash] || {});
             globalValues.scripts[hash] = args;
             yield ComponentInit(frame, hash, args);
         }
