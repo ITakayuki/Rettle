@@ -61,6 +61,15 @@ export const build = async() => {
   } catch (e) {
     throw e
   }
+
+  const jsFiles = glob.sync(path.join(config.outDir, config.pathPrefix, "/**/*.js"), {
+    nodir: true
+  })
+
+  for (const js of jsFiles) {
+    config.build?.buildScript(js);
+  }
+
   // Create HTML FILES
   const entryPaths = getEntryPaths();
   Object.keys(entryPaths).map(async(key) => {

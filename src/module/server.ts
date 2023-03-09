@@ -46,7 +46,6 @@ const resetDir = (dirRoot: string) => {
 
 export const server = async() => {
   await Promise.all([
-    resetDir(config.outDir),
     resetDir(".cache/src"),
     resetDir(".cache/scripts"),
     resetDir(".cache/temporary"),
