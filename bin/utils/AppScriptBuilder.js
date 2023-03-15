@@ -143,7 +143,6 @@ const buildScript = ({ outDir }) => {
                 "process.env": JSON.stringify(config_1.config.envs),
             },
             minify: config_1.config.esbuild.minify,
-            loader: config_1.config.esbuild.loader || [],
             plugins: config_1.config.esbuild.plugins("client")
         }).then(() => {
             resolve(null);
@@ -174,7 +173,6 @@ const watchScript = ({ outDir }) => {
                 "process.env": JSON.stringify(config_1.config.envs),
             },
             minify: config_1.config.esbuild.minify,
-            loader: config_1.config.esbuild.loader || [],
             plugins: config_1.config.esbuild.plugins("client")
         }).then(() => {
             resolve(null);

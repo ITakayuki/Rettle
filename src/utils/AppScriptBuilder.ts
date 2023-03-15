@@ -112,7 +112,6 @@ export const buildScript = ({outDir}: BuildScriptInterface) => {
         "process.env": JSON.stringify(config.envs),
       },
       minify: config.esbuild.minify,
-      loader: config.esbuild.loader || [],
       plugins: config.esbuild.plugins("client")
     }).then(() => {
       resolve(null);
@@ -142,7 +141,6 @@ export const watchScript = ({ outDir}: BuildScriptInterface) => {
         "process.env": JSON.stringify(config.envs),
       },
       minify: config.esbuild.minify,
-      loader: config.esbuild.loader || [],
       plugins: config.esbuild.plugins("client")
     }).then(() => {
       resolve(null);
