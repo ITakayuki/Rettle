@@ -48,7 +48,7 @@
     "@types/rechoir": "^0.6.1",
     "@types/webpack": "^5.28.0",
     "cross-env": "^7.0.3",
-    "esbuild-plugin-rettle": "^0.0.1-beta2",
+    "esbuild-plugin-rettle": "^0.0.1-beta3",
     "react": "^18.2.0",
     "react-helmet": "^6.1.0",
     "typescript": "^4.8.4"
@@ -76,6 +76,7 @@
     "interpret": "^3.1.1",
     "is-plain-object": "^5.0.0",
     "madge": "^6.0.0",
+    "node-html-parser": "^6.1.5",
     "react-dom": "^18.2.0",
     "rechoir": "^0.8.0",
     "rimraf": "^4.1.2",

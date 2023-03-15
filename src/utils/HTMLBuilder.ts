@@ -5,7 +5,7 @@ import * as path from "path";
 import {config} from "./config";
 import {version} from "./variable";
 import Helmet, {HelmetData} from "react-helmet";
-import * as console from "console";
+import { parse } from 'node-html-parser';
 
 const {dependencies} = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf-8"));
 
@@ -17,7 +17,7 @@ export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: 
         platform: "node",
         write: false,
         external: Object.keys(dependencies),
-        plugins: config.esbuild.plugins,
+        plugins: config.esbuild.plugins("server"),
         define: {
           "process.env": JSON.stringify(config.envs),
         }
@@ -27,6 +27,25 @@ export const transformReact2HTMLCSS = (path:string): Promise<{html:string, ids: 
         const context = {exports, module, process, require, __filename, __dirname};
         vm.runInNewContext(code, context);
         const result = context.module.exports.default as {html:string, ids: Array<string>, css: string};
+        const root = parse(result.html);
+        let HTML = root.toString();
+        const articles = root.querySelectorAll("[data-comment-out]");
+        for (const article of articles) {
+          const beforeHTML = article.toString();
+          const beginComment = article.getAttribute("comment-out-begin");
+          const endComment = article.getAttribute("comment-out-end");
+          const commentOutBegin = `<!--- ${beginComment !== "none" ? beginComment: "  "} --->`;
+          const commentOutEnd = endComment !== "none" ? `<!--- ${endComment} --->`: "";
+          let children: string = "";
+          for (const child of article.childNodes) {
+            children+=child.toString();
+          }
+          const htmlArr = [commentOutBegin];
+          if (article.childNodes.length !== 0) htmlArr.push(`<!--- ${children} --->`)
+          if (commentOutEnd !== "") htmlArr.push(commentOutEnd);
+          HTML = HTML.replace(beforeHTML, htmlArr.join("\n"))
+        }
+        result.html = HTML;
         if ("html" in result && "css" in result && "ids" in result) {
           resolve(result);
         } else {

@@ -130,11 +130,22 @@ const buildScript = ({ outDir }) => {
         const files = glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
             nodir: true
         });
-        esbuild_1.default.build(Object.assign({ bundle: true, 
+        esbuild_1.default.build({
+            bundle: true,
             // all cache scripts
-            entryPoints: files, outdir: files.length <= 1 ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js)) : outDir, sourcemap: process.env.NODE_ENV !== "production", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
+            entryPoints: files,
+            outdir: files.length <= 1 ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js)) : outDir,
+            sourcemap: process.env.NODE_ENV !== "production",
+            platform: "browser",
+            target: "es6",
+            tsconfig: ".cache/tsconfig.json",
+            define: {
                 "process.env": JSON.stringify(config_1.config.envs),
-            } }, config_1.config.esbuild)).then(() => {
+            },
+            minify: config_1.config.esbuild.minify,
+            loader: config_1.config.esbuild.loader || [],
+            plugins: config_1.config.esbuild.plugins("client")
+        }).then(() => {
             resolve(null);
         });
     });
@@ -145,14 +156,27 @@ const watchScript = ({ outDir }) => {
         const files = glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
             nodir: true
         });
-        esbuild_1.default.build(Object.assign({ bundle: true, watch: {
+        esbuild_1.default.build({
+            bundle: true,
+            watch: {
                 onRebuild(error, result) {
                     if (error)
                         console.error("watch build failed:", error);
                 },
-            }, entryPoints: files, outdir: files.length <= 1 ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js)) : outDir, sourcemap: process.env.NODE_ENV !== "production", platform: "browser", target: "es6", tsconfig: ".cache/tsconfig.json", define: {
+            },
+            entryPoints: files,
+            outdir: files.length <= 1 ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js)) : outDir,
+            sourcemap: process.env.NODE_ENV !== "production",
+            platform: "browser",
+            target: "es6",
+            tsconfig: ".cache/tsconfig.json",
+            define: {
                 "process.env": JSON.stringify(config_1.config.envs),
-            } }, config_1.config.esbuild)).then(() => {
+            },
+            minify: config_1.config.esbuild.minify,
+            loader: config_1.config.esbuild.loader || [],
+            plugins: config_1.config.esbuild.plugins("client")
+        }).then(() => {
             resolve(null);
         });
     });
@@ -280,7 +304,7 @@ const outputFormatFiles = (file) => {
         });
         try {
             const filePath = path_1.default.isAbsolute(file) ? path_1.default.relative("./", file) : file;
-            const outPath = path_1.default.join(".cache/", filePath).replace(".tsx", ".js");
+            const outPath = path_1.default.join(".cache/", filePath).replace(/\.ts(x)?/, ".js");
             const sourceCode = fs_1.default.readFileSync(filePath, "utf-8");
             yield (0, utility_1.mkdirp)(outPath);
             if (path_1.default.extname(filePath).includes("tsx")) {

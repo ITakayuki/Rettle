@@ -43,6 +43,7 @@ const path = __importStar(require("path"));
 const config_1 = require("./config");
 const variable_1 = require("./variable");
 const react_helmet_1 = __importDefault(require("react-helmet"));
+const node_html_parser_1 = require("node-html-parser");
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
@@ -52,7 +53,7 @@ const transformReact2HTMLCSS = (path) => {
             platform: "node",
             write: false,
             external: Object.keys(dependencies),
-            plugins: config_1.config.esbuild.plugins,
+            plugins: config_1.config.esbuild.plugins("server"),
             define: {
                 "process.env": JSON.stringify(config_1.config.envs),
             }
@@ -62,6 +63,27 @@ const transformReact2HTMLCSS = (path) => {
                 const context = { exports, module, process, require, __filename, __dirname };
                 vm_1.default.runInNewContext(code, context);
                 const result = context.module.exports.default;
+                const root = (0, node_html_parser_1.parse)(result.html);
+                let HTML = root.toString();
+                const articles = root.querySelectorAll("[data-comment-out]");
+                for (const article of articles) {
+                    const beforeHTML = article.toString();
+                    const beginComment = article.getAttribute("comment-out-begin");
+                    const endComment = article.getAttribute("comment-out-end");
+                    const commentOutBegin = `<!--- ${beginComment !== "none" ? beginComment : "  "} --->`;
+                    const commentOutEnd = endComment !== "none" ? `<!--- ${endComment} --->` : "";
+                    let children = "";
+                    for (const child of article.childNodes) {
+                        children += child.toString();
+                    }
+                    const htmlArr = [commentOutBegin];
+                    if (article.childNodes.length !== 0)
+                        htmlArr.push(`<!--- ${children} --->`);
+                    if (commentOutEnd !== "")
+                        htmlArr.push(commentOutEnd);
+                    HTML = HTML.replace(beforeHTML, htmlArr.join("\n"));
+                }
+                result.html = HTML;
                 if ("html" in result && "css" in result && "ids" in result) {
                     resolve(result);
                 }

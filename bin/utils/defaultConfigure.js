@@ -48,25 +48,28 @@ const config = {
     },
     esbuild: {
         minify: true,
-        plugins: [
-            (0, esbuild_plugin_rettle_1.default)({
-                filter: /./,
-                babel: {
-                    presets: [
-                        "@babel/preset-env",
-                        "@babel/preset-typescript",
-                        [
-                            "@babel/preset-react",
-                            {
-                                runtime: "automatic",
-                                importSource: "@emotion/react",
-                            },
+        plugins: (mode) => {
+            return [
+                (0, esbuild_plugin_rettle_1.default)({
+                    filter: /./,
+                    mode: mode,
+                    babel: {
+                        presets: [
+                            "@babel/preset-env",
+                            "@babel/preset-typescript",
+                            [
+                                "@babel/preset-react",
+                                {
+                                    runtime: "automatic",
+                                    importSource: "@emotion/react",
+                                },
+                            ],
                         ],
-                    ],
-                    plugins: ["@emotion/babel-plugin"],
-                },
-            }),
-        ],
+                        plugins: ["@emotion/babel-plugin"],
+                    },
+                }),
+            ];
+        }
     },
     envs: {
         NODE_ENV: process.env.NODE_ENV

@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Component = exports.createRettle = exports.createCache = exports.defineOption = void 0;
+exports.CommentOut = exports.Component = exports.createRettle = exports.createCache = exports.defineOption = void 0;
 const cache_1 = __importDefault(require("@emotion/cache"));
 const server_1 = __importDefault(require("react-dom/server"));
 const create_instance_1 = __importDefault(require("@emotion/server/create-instance"));
@@ -59,4 +59,12 @@ exports.Component = new Proxy({}, {
         };
     }
 });
+const CommentOut = (props) => {
+    return React.createElement("span", {
+        "comment-out-begin": props.begin || "none",
+        "comment-out-end": props.end || "none",
+        "data-comment-out": true
+    }, props.children);
+};
+exports.CommentOut = CommentOut;
 //# sourceMappingURL=rettle.js.map

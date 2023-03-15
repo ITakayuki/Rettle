@@ -82,7 +82,6 @@ const resetDir = (dirRoot) => {
 };
 const server = () => __awaiter(void 0, void 0, void 0, function* () {
     yield Promise.all([
-        resetDir(config_1.config.outDir),
         resetDir(".cache/src"),
         resetDir(".cache/scripts"),
         resetDir(".cache/temporary"),

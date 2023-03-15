@@ -44,7 +44,7 @@ interface esbuildInterface {
     tsconfigRow?: string;
     loader?: Record<string, string>;
     charset?: string;
-    plugins?: esBuild.Plugin[];
+    plugins?: (mode: "server" | "client") => esBuild.Plugin[];
 }
 export interface RettleConfigInterface {
     pathPrefix: string;

@@ -22,9 +22,9 @@ export const createRettle = (cache: EmotionCache, element: JSX.Element) => {
 }
 
 
-/********************/
-/* Common Methods */
-/********************/
+/***********************/
+/* Components Methods */
+/***********************/
 
 type RettleComponent =  {
   frame: "[fr]",
@@ -47,6 +47,20 @@ export const Component =  new Proxy({}, {
     }
   }
 }) as { [key in keyof IntrinsicElements]: (props: RettleComponent & IntrinsicElements[key]) => JSX.Element };
+
+interface CommentOutProps {
+  children?: React.ReactNode;
+  begin?: string;
+  end?: string;
+}
+
+export const CommentOut: React.FC<CommentOutProps> = (props) => {
+  return React.createElement("span",{
+    "comment-out-begin": props.begin || "none",
+    "comment-out-end": props.end || "none",
+    "data-comment-out": true
+  }, props.children)
+}
 
 
 

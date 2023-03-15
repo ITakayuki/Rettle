@@ -32,7 +32,7 @@ const resetDir = (dirRoot) => {
     });
 };
 const build = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     yield Promise.all([
         resetDir(config_1.config.outDir),
         resetDir(".cache/src"),
@@ -73,13 +73,19 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
     catch (e) {
         throw e;
     }
+    const jsFiles = glob_1.default.sync(path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, "/**/*.js"), {
+        nodir: true
+    });
+    for (const js of jsFiles) {
+        (_a = config_1.config.build) === null || _a === void 0 ? void 0 : _a.buildScript(js);
+    }
     // Create HTML FILES
     const entryPaths = (0, utility_1.getEntryPaths)();
     Object.keys(entryPaths).map((key) => __awaiter(void 0, void 0, void 0, function* () {
         const items = entryPaths[key];
         let styles = ``;
         yield Promise.all(items.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            var _b;
+            var _c;
             const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
             const helmet = (0, HTMLBuilder_1.createHelmet)();
             const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
@@ -102,23 +108,23 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 collapseWhitespace: true,
                 preserveLineBreaks: true,
             });
-            const code = (_b = config_1.config.build) === null || _b === void 0 ? void 0 : _b.buildHTML(minifyHtml, htmlOutputPath);
+            const code = (_c = config_1.config.build) === null || _c === void 0 ? void 0 : _c.buildHTML(minifyHtml, htmlOutputPath);
             fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
         })));
         const root = key.replace("./src/views", "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);
         (0, css_purge_1.purgeCSS)(styles, {}, (error, result) => __awaiter(void 0, void 0, void 0, function* () {
-            var _c;
+            var _d;
             if (error)
                 return console.log(`Cannot Purge style in ${key}`);
             yield (0, utility_1.mkdirp)(cssOutputPath);
             const style = result ? result : "";
-            const purge = (_c = config_1.config.build) === null || _c === void 0 ? void 0 : _c.buildCss(style, cssOutputPath);
+            const purge = (_d = config_1.config.build) === null || _d === void 0 ? void 0 : _d.buildCss(style, cssOutputPath);
             fs_1.default.writeFileSync(cssOutputPath, purge, "utf-8");
         }));
     }));
     yield (0, directoryControl_1.copyStatic)();
-    (_a = config_1.config.build) === null || _a === void 0 ? void 0 : _a.copyStatic();
+    (_b = config_1.config.build) === null || _b === void 0 ? void 0 : _b.copyStatic();
 });
 exports.build = build;
 //# sourceMappingURL=build.js.map

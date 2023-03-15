@@ -6,8 +6,8 @@ import { RettleMethods } from "./rettle-core";
 export declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
 export declare const createCache: (key: string) => EmotionCache;
 export declare const createRettle: (cache: EmotionCache, element: JSX.Element) => import("@emotion/server/create-instance").EmotionCritical;
-/********************/
-/********************/
+/***********************/
+/***********************/
 declare type RettleComponent = {
     frame: "[fr]";
     children: JSX.Element | React.ReactNode;
@@ -191,5 +191,11 @@ export declare const Component: {
     use: (props: RettleComponent & React.SVGProps<SVGUseElement>) => JSX.Element;
     view: (props: RettleComponent & React.SVGProps<SVGViewElement>) => JSX.Element;
 };
+interface CommentOutProps {
+    children?: React.ReactNode;
+    begin?: string;
+    end?: string;
+}
+export declare const CommentOut: React.FC<CommentOutProps>;
 export declare type RettleFrame = (methods: RettleMethods, props: Record<string, any>) => Record<string, any> | void;
 export {};

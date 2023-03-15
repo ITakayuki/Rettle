@@ -21,25 +21,28 @@ const config:RettleConfigInterface = {
   },
   esbuild: {
     minify: true,
-    plugins: [
-      RettlePlugin({
-        filter: /./,
-        babel: {
-          presets: [
-            "@babel/preset-env",
-            "@babel/preset-typescript",
-            [
-              "@babel/preset-react",
-              {
-                runtime: "automatic",
-                importSource: "@emotion/react",
-              },
+    plugins: (mode) => {
+      return [
+        RettlePlugin({
+          filter: /./,
+          mode: mode,
+          babel: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-typescript",
+              [
+                "@babel/preset-react",
+                {
+                  runtime: "automatic",
+                  importSource: "@emotion/react",
+                },
+              ],
             ],
-          ],
-          plugins: ["@emotion/babel-plugin"],
-        },
-      }),
-    ],
+            plugins: ["@emotion/babel-plugin"],
+          },
+        }),
+      ]
+    }
   },
   envs: {
     NODE_ENV: process.env.NODE_ENV as string
