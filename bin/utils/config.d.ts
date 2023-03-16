@@ -38,12 +38,6 @@ interface BuildOptionsInterface {
     buildHTML?: (code: string, outDir: string) => string | Buffer;
 }
 interface esbuildInterface {
-    minify: boolean;
-    bundle?: boolean;
-    tsconfig?: string;
-    tsconfigRow?: string;
-    loader?: Record<string, string>;
-    charset?: string;
     plugins?: (mode: "server" | "client") => esBuild.Plugin[];
 }
 export interface RettleConfigInterface {
@@ -54,7 +48,6 @@ export interface RettleConfigInterface {
     endpoints: Array<string>;
     static: string;
     outDir: string;
-    staticPath: string;
     envs?: Record<string, string>;
     header?: {
         meta?: Array<object>;
@@ -62,8 +55,6 @@ export interface RettleConfigInterface {
         script?: Array<object>;
     };
     template: (options: templateHTMLInterface) => string;
-    encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
-    alias?: Record<string, string>;
     build?: BuildOptionsInterface;
     esbuild: esbuildInterface;
     version: boolean;

@@ -39,15 +39,13 @@ const config = {
     static: "/static",
     template: template_html_1.templateHtml,
     endpoints: ["./src/views"],
-    staticPath: "/static",
-    encode: "UTF-8",
     build: {
         buildHTML: (code) => code,
         buildCss: (code) => code,
+        buildScript: () => { },
         copyStatic: () => { }
     },
     esbuild: {
-        minify: true,
         plugins: (mode) => {
             return [
                 (0, esbuild_plugin_rettle_1.default)({

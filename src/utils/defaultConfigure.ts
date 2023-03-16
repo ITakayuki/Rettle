@@ -12,15 +12,13 @@ const config:RettleConfigInterface = {
   static: "/static",
   template: templateHtml,
   endpoints: ["./src/views"],
-  staticPath: "/static",
-  encode: "UTF-8",
   build: {
     buildHTML: (code) => code,
     buildCss: (code) => code,
+    buildScript: () => {},
     copyStatic: () => {}
   },
   esbuild: {
-    minify: true,
     plugins: (mode) => {
       return [
         RettlePlugin({
