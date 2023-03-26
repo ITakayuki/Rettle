@@ -34,16 +34,17 @@ const config = {
     pathPrefix: "./",
     port: 3000,
     outDir: "./htdocs",
+    static: "/static",
     css: "/assets/style/app.css",
     js: "/assets/script/app.js",
-    static: "/static",
+    beautify: {},
     template: template_html_1.templateHtml,
     endpoints: ["./src/views"],
     build: {
         buildHTML: (code) => code,
         buildCss: (code) => code,
         buildScript: () => { },
-        copyStatic: () => { }
+        copyStatic: () => { },
     },
     esbuild: {
         plugins: (mode) => {
@@ -67,13 +68,13 @@ const config = {
                     },
                 }),
             ];
-        }
+        },
     },
     envs: {
-        NODE_ENV: process.env.NODE_ENV
+        NODE_ENV: process.env.NODE_ENV,
     },
     version: true,
-    server: (app, express) => { }
+    server: (app, express) => { },
 };
 exports.defaultConfig = config;
 //# sourceMappingURL=defaultConfigure.js.map

@@ -53,7 +53,7 @@ const deepmerge_1 = __importDefault(require("deepmerge"));
 const is_plain_object_1 = require("is-plain-object");
 const tsc_alias_1 = require("tsc-alias");
 const createTsConfigFile = () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
             fs_1.default.mkdirSync(path_1.default.resolve(".cache"));
         }
@@ -63,33 +63,38 @@ const createTsConfigFile = () => {
 };
 exports.createTsConfigFile = createTsConfigFile;
 const createFileName = (filePath) => {
-    const relativePath = path_1.default.relative(path_1.default.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "");
+    const relativePath = path_1.default
+        .relative(path_1.default.resolve("./src/views/"), filePath)
+        .replace("/**/*", "")
+        .replace("**/*", "");
     return relativePath;
 };
 const createComponentDep = (filepath) => __awaiter(void 0, void 0, void 0, function* () {
     let results = {};
     const tempObj = yield (0, Dependencies_1.getMadgeObject)(filepath, {
         baseDir: "./",
-        tsConfig: path_1.default.resolve("./tsconfig.json")
+        tsConfig: path_1.default.resolve("./tsconfig.json"),
     });
     let obj = tempObj[filepath];
     for (const dep of obj) {
         if ((0, Dependencies_1.checkScript)(dep)) {
             const temp = yield createComponentDep(dep);
             results = (0, deepmerge_1.default)(results, {
-                [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", {${temp}})),`
+                [(0, utility_2.getFilesName)(dep)]: `createComponent("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", Script_${createScriptHash(dep)}("${(0, utility_2.createHash)(path_1.default.resolve(dep))}", {${temp}})),`,
             }, { isMergeableObject: is_plain_object_1.isPlainObject });
         }
         else {
             const temp = yield createComponentDep(dep);
             results = (0, deepmerge_1.default)(results, {
-                [(0, utility_2.getFilesName)(dep)]: `{${temp}},`
+                [(0, utility_2.getFilesName)(dep)]: `{${temp}},`,
             }, { isMergeableObject: is_plain_object_1.isPlainObject });
         }
     }
-    return Object.keys(results).map(item => {
+    return Object.keys(results)
+        .map((item) => {
         return `${item}: ${results[item]}`;
-    }).join("\n");
+    })
+        .join("\n");
 });
 const createScriptHash = (str) => {
     return crypto_1.default.createHash("md5").update(str).digest("hex");
@@ -110,14 +115,17 @@ const createCacheAppFile = () => {
             for (const file of files) {
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
                 const hashName = createScriptHash(file);
-                appImports.push(`import {script as Script_${hashName}} from "${path_1.default.relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`);
+                appImports.push(`import {script as Script_${hashName}} from "${path_1.default
+                    .relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/"))
+                    .replace(".tsx", "")
+                    .replace(".jsx", "")}";`);
                 scriptObject.push(`"${hash}": Script_${hashName}`);
             }
             yield (0, utility_1.mkdirp)(appFilePath);
             const code = [
                 appImports.join("\n"),
                 `const scripts = {${scriptObject.join(",\n")}};`,
-                scriptRunner.join("\n")
+                scriptRunner.join("\n"),
             ];
             fs_1.default.writeFileSync(appFilePath, code.join("\n"), "utf-8");
         }
@@ -126,15 +134,19 @@ const createCacheAppFile = () => {
 };
 exports.createCacheAppFile = createCacheAppFile;
 const buildScript = ({ outDir }) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         const files = glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
-            nodir: true
+            nodir: true,
         });
-        esbuild_1.default.build({
+        esbuild_1.default
+            .build({
             bundle: true,
             // all cache scripts
             entryPoints: files,
-            outdir: files.length <= 1 ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js)) : outDir,
+            // If only one file is used, the directory structure is not reproduced, so separate the files.
+            outdir: files.length <= 1
+                ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js))
+                : outDir,
             sourcemap: process.env.NODE_ENV !== "production",
             platform: "browser",
             target: "es6",
@@ -142,19 +154,21 @@ const buildScript = ({ outDir }) => {
             define: {
                 "process.env": JSON.stringify(config_1.config.envs),
             },
-            plugins: config_1.config.esbuild.plugins("client")
-        }).then(() => {
+            plugins: config_1.config.esbuild.plugins("client"),
+        })
+            .then(() => {
             resolve(null);
         });
     });
 };
 exports.buildScript = buildScript;
 const watchScript = ({ outDir }) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         const files = glob_1.default.sync(path_1.default.resolve("./.cache/scripts/**/*.js"), {
-            nodir: true
+            nodir: true,
         });
-        esbuild_1.default.build({
+        esbuild_1.default
+            .build({
             bundle: true,
             watch: {
                 onRebuild(error, result) {
@@ -163,7 +177,9 @@ const watchScript = ({ outDir }) => {
                 },
             },
             entryPoints: files,
-            outdir: files.length <= 1 ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js)) : outDir,
+            outdir: files.length <= 1
+                ? path_1.default.join(outDir, path_1.default.dirname(config_1.config.js))
+                : outDir,
             sourcemap: process.env.NODE_ENV !== "production",
             platform: "browser",
             target: "es6",
@@ -171,8 +187,9 @@ const watchScript = ({ outDir }) => {
             define: {
                 "process.env": JSON.stringify(config_1.config.envs),
             },
-            plugins: config_1.config.esbuild.plugins("client")
-        }).then(() => {
+            plugins: config_1.config.esbuild.plugins("client"),
+        })
+            .then(() => {
             resolve(null);
         });
     });
@@ -182,8 +199,8 @@ const translateTs2Js = (code) => {
     return typescript_1.default.transpileModule(code, {
         compilerOptions: {
             target: 99,
-            "jsx": 2
-        }
+            jsx: 2,
+        },
     }).outputText;
 };
 exports.translateTs2Js = translateTs2Js;
@@ -193,15 +210,19 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
         //@ts-ignore
         const ast = acorn.Parser.extend((0, acorn_jsx_1.default)()).parse(jsCode, {
             ecmaVersion: 2019,
-            sourceType: "module"
+            sourceType: "module",
         });
         // @ts-ignore
-        const importNodes = ast.body.filter(item => item.type === "ImportDeclaration" && (item.source.value === "react" || item.source.raw === "react"));
+        const importNodes = ast.body.filter((item) => item.type === "ImportDeclaration" &&
+            (item.source.value === "react" || item.source.raw === "react"));
         //@ts-ignore
-        const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
+        const functionNodes = ast.body.filter((item) => item.type === "FunctionDeclaration" ||
+            item.type === "VariableDeclaration");
         //@ts-ignore
         const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
-        const importReact = importNodes.length !== 0 ? jsCode.slice(importNodes.start, importNodes.end) : null;
+        const importReact = importNodes.length !== 0
+            ? jsCode.slice(importNodes.start, importNodes.end)
+            : null;
         const objects = {};
         if (!exportNodes)
             throw new Error("Cannot Found export");
@@ -225,10 +246,17 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             }
             const exportName = exportNodes[0].declaration.name;
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
-            const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
-            const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
+            const removeReactJsCode = importReact
+                ? jsCode.replace(importReact, "//" + importReact)
+                : jsCode;
+            const result = removeReactJsCode
+                .replace(objects[exportName], objects[exportName]
+                .split("\n")
+                .map((item) => {
                 return "//" + item;
-            }).join("\n")).replace(exportLine, "export default () => {}");
+            })
+                .join("\n"))
+                .replace(exportLine, "export default () => {}");
             return (0, exports.translateTs2Js)(result);
         }
         else {
@@ -254,7 +282,9 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                     const { start, end } = node;
                     const text = jsCode.slice(start, end);
                     if (node.declarations[0].init.callee) {
-                        let cache = node.declarations[0].init.callee.property ? node.declarations[0].init.callee.property.name : node.declarations[0].init.callee.name;
+                        let cache = node.declarations[0].init.callee.property
+                            ? node.declarations[0].init.callee.property.name
+                            : node.declarations[0].init.callee.name;
                         if (cache === "createCache") {
                             cacheName = node.declarations[0].id.name;
                         }
@@ -268,9 +298,14 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                         objects[key] = text;
                     }
                 }
-                replaceDefaultRettle = jsCode.replace(objects[name], objects[name].split("\n").map(item => {
+                replaceDefaultRettle = jsCode
+                    .replace(objects[name], objects[name]
+                    .split("\n")
+                    .map((item) => {
                     return "//" + item;
-                }).join("\n")).replace(objects[cacheName], "//" + objects[cacheName]);
+                })
+                    .join("\n"))
+                    .replace(objects[cacheName], "//" + objects[cacheName]);
             }
             else {
                 replaceDefaultRettle = jsCode;
@@ -278,8 +313,13 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const exportName = exportNodes[0];
             const { start, end } = exportName;
             const exportStr = jsCode.slice(start, end);
-            const removeReactJsCode = importReact ? replaceDefaultRettle.replace(importReact, "//" + importReact) : replaceDefaultRettle;
-            const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
+            const removeReactJsCode = importReact
+                ? replaceDefaultRettle.replace(importReact, "//" + importReact)
+                : replaceDefaultRettle;
+            const result = removeReactJsCode.replace(exportStr, exportStr
+                .split("\n")
+                .map((item) => "//" + item)
+                .join("\n")) + "\nexport default () => {}";
             return (0, exports.translateTs2Js)(result);
         }
         return "";
@@ -296,7 +336,7 @@ function treatFile(filePath, code, runFile) {
 const outputFormatFiles = (file) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         const replacer = yield (0, tsc_alias_1.prepareSingleFileReplaceTscAliasPaths)({
-            outDir: "./.cache/src"
+            outDir: "./.cache/src",
         });
         try {
             const filePath = path_1.default.isAbsolute(file) ? path_1.default.relative("./", file) : file;
