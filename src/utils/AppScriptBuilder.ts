@@ -160,6 +160,7 @@ export const buildScript = ({ outDir }: BuildScriptInterface) => {
         define: {
           "process.env": JSON.stringify(config.envs),
         },
+        minify: true,
         plugins: config.esbuild.plugins("client"),
       })
       .then(() => {
