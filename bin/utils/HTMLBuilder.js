@@ -44,10 +44,39 @@ const config_1 = require("./config");
 const variable_1 = require("./variable");
 const react_helmet_1 = __importDefault(require("react-helmet"));
 const node_html_parser_1 = require("node-html-parser");
+const js_beautify_1 = __importDefault(require("js-beautify"));
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
+const insertCommentOut = (code) => {
+    const root = (0, node_html_parser_1.parse)(code);
+    let HTML = root.toString();
+    const articles = root.querySelectorAll("[data-comment-out]");
+    for (const article of articles) {
+        const beforeHTML = article.toString();
+        const beginComment = article.getAttribute("comment-out-begin");
+        const endComment = article.getAttribute("comment-out-end");
+        const commentOutBegin = `<!--- ${beginComment !== "none" ? beginComment : "  "} --->`;
+        const commentOutEnd = endComment !== "none" ? `<!--- ${endComment} --->` : "";
+        let children = "";
+        for (const child of article.childNodes) {
+            children += child.toString();
+        }
+        const htmlArr = [commentOutBegin];
+        if (article.childNodes.length !== 0)
+            htmlArr.push(`<!--- ${config_1.config.beautify.html
+                ? js_beautify_1.default.html(children, typeof config_1.config.beautify.html === "boolean"
+                    ? {}
+                    : config_1.config.beautify.html)
+                : children} --->`);
+        if (commentOutEnd !== "")
+            htmlArr.push(commentOutEnd);
+        HTML = HTML.replace(beforeHTML, htmlArr.join("\n"));
+    }
+    return HTML;
+};
 const transformReact2HTMLCSS = (path) => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        esBuild.build({
+        esBuild
+            .build({
             bundle: true,
             entryPoints: [path],
             platform: "node",
@@ -56,34 +85,31 @@ const transformReact2HTMLCSS = (path) => {
             plugins: config_1.config.esbuild.plugins("server"),
             define: {
                 "process.env": JSON.stringify(config_1.config.envs),
-            }
-        }).then(res => {
+            },
+        })
+            .then((res) => {
             try {
                 const code = res.outputFiles[0].text;
-                const context = { exports, module, process, require, __filename, __dirname };
+                const context = {
+                    exports,
+                    module,
+                    process,
+                    require,
+                    __filename,
+                    __dirname,
+                };
                 vm_1.default.runInNewContext(code, context);
                 const result = context.module.exports.default;
-                const root = (0, node_html_parser_1.parse)(result.html);
-                let HTML = root.toString();
-                const articles = root.querySelectorAll("[data-comment-out]");
-                for (const article of articles) {
-                    const beforeHTML = article.toString();
-                    const beginComment = article.getAttribute("comment-out-begin");
-                    const endComment = article.getAttribute("comment-out-end");
-                    const commentOutBegin = `<!--- ${beginComment !== "none" ? beginComment : "  "} --->`;
-                    const commentOutEnd = endComment !== "none" ? `<!--- ${endComment} --->` : "";
-                    let children = "";
-                    for (const child of article.childNodes) {
-                        children += child.toString();
-                    }
-                    const htmlArr = [commentOutBegin];
-                    if (article.childNodes.length !== 0)
-                        htmlArr.push(`<!--- ${children} --->`);
-                    if (commentOutEnd !== "")
-                        htmlArr.push(commentOutEnd);
-                    HTML = HTML.replace(beforeHTML, htmlArr.join("\n"));
+                const HTML = insertCommentOut(result.html);
+                if (process.env.NODE_ENV !== "server" && config_1.config.beautify.html) {
+                    result.html =
+                        typeof config_1.config.beautify.html === "boolean"
+                            ? js_beautify_1.default.html(HTML, {})
+                            : js_beautify_1.default.html(HTML, config_1.config.beautify.html);
                 }
-                result.html = HTML;
+                else {
+                    result.html = HTML;
+                }
                 if ("html" in result && "css" in result && "ids" in result) {
                     resolve(result);
                 }
@@ -94,15 +120,16 @@ const transformReact2HTMLCSS = (path) => {
             catch (e) {
                 reject(e);
             }
-        }).catch(e => {
+        })
+            .catch((e) => {
             reject(e);
         });
     }));
 };
 exports.transformReact2HTMLCSS = transformReact2HTMLCSS;
 const createHeaderTags = (tagName, contents) => {
-    return contents.map(item => {
-        const content = Object.keys(item).map(key => {
+    return contents.map((item) => {
+        const content = Object.keys(item).map((key) => {
             return `${key}="${item[key]}"`;
         });
         return `<${tagName} ${content.join(" ")} ${tagName === "script" ? "></script>" : ">"}`;
@@ -111,16 +138,19 @@ const createHeaderTags = (tagName, contents) => {
 exports.createHeaderTags = createHeaderTags;
 const createHeaders = () => {
     var _a, _b, _c, _d, _e, _f;
-    const versionMeta = config_1.config.version ? [`<meta name="generator" content="Rettle ${variable_1.version}">`] : [""];
-    const headerMeta = ((_a = config_1.config.header) === null || _a === void 0 ? void 0 : _a.meta) ? (0, exports.createHeaderTags)("meta", (_b = config_1.config.header) === null || _b === void 0 ? void 0 : _b.meta) : [""];
-    const headerLink = ((_c = config_1.config.header) === null || _c === void 0 ? void 0 : _c.link) ? (0, exports.createHeaderTags)("link", (_d = config_1.config.header) === null || _d === void 0 ? void 0 : _d.link) : [""];
-    const headerScript = ((_e = config_1.config.header) === null || _e === void 0 ? void 0 : _e.script) ? (0, exports.createHeaderTags)("script", (_f = config_1.config.header) === null || _f === void 0 ? void 0 : _f.script) : [""];
-    return [
-        ...versionMeta,
-        ...headerMeta,
-        ...headerLink,
-        ...headerScript,
-    ];
+    const versionMeta = config_1.config.version
+        ? [`<meta name="generator" content="Rettle ${variable_1.version}">`]
+        : [""];
+    const headerMeta = ((_a = config_1.config.header) === null || _a === void 0 ? void 0 : _a.meta)
+        ? (0, exports.createHeaderTags)("meta", (_b = config_1.config.header) === null || _b === void 0 ? void 0 : _b.meta)
+        : [""];
+    const headerLink = ((_c = config_1.config.header) === null || _c === void 0 ? void 0 : _c.link)
+        ? (0, exports.createHeaderTags)("link", (_d = config_1.config.header) === null || _d === void 0 ? void 0 : _d.link)
+        : [""];
+    const headerScript = ((_e = config_1.config.header) === null || _e === void 0 ? void 0 : _e.script)
+        ? (0, exports.createHeaderTags)("script", (_f = config_1.config.header) === null || _f === void 0 ? void 0 : _f.script)
+        : [""];
+    return [...versionMeta, ...headerMeta, ...headerLink, ...headerScript];
 };
 exports.createHeaders = createHeaders;
 const createHelmet = () => {
@@ -132,9 +162,9 @@ const createHelmet = () => {
         headers: [],
         attributes: {
             body: "",
-            html: ""
+            html: "",
         },
-        body: []
+        body: [],
     };
     for (const opts of heads) {
         const opt = opts;

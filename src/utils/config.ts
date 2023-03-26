@@ -6,7 +6,7 @@ import * as core from "express-serve-static-core";
 import * as bodyParser from "body-parser";
 import * as serveStatic from "serve-static";
 import * as qs from "qs";
-
+import js_beautify from "js-beautify";
 interface RouterOptions {
   caseSensitive?: boolean | undefined;
   mergeParams?: boolean | undefined;
@@ -45,13 +45,13 @@ interface BuildOptionsInterface {
 }
 
 interface esbuildInterface {
-  minify: boolean;
-  bundle?: boolean;
-  tsconfig?: string;
-  tsconfigRow?: string;
-  loader?: Record<string, string>;
-  charset?: string;
   plugins?: (mode: "server"|"client") => esBuild.Plugin[];
+}
+
+interface BeautifyOptions {
+  css?: js_beautify.CSSBeautifyOptions | boolean,
+  html?: js_beautify.HTMLBeautifyOptions | boolean,
+  script?: js_beautify.JSBeautifyOptions | boolean
 }
 
 export interface  RettleConfigInterface {
@@ -59,10 +59,10 @@ export interface  RettleConfigInterface {
   port: number;
   css: string;
   js: string;
+  beautify: BeautifyOptions,
   endpoints: Array<string>;
   static: string;
   outDir: string;
-  staticPath: string;
   envs?: Record<string, string>;
   header?: {
     meta?: Array<object>;
@@ -70,8 +70,6 @@ export interface  RettleConfigInterface {
     script?: Array<object>;
   },
   template: (options: templateHTMLInterface) => string;
-  encode: "UTF-8" | "Shift_JIS" | "EUC-JP";
-  alias?: Record<string, string>;
   build?: BuildOptionsInterface;
   esbuild: esbuildInterface,
   version: boolean,

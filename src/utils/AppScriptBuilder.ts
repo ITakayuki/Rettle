@@ -3,183 +3,250 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {getDependencies, getMadgeLeaves,getMadgeObject, checkScript} from "./Dependencies";
-import {config, getIgnores} from "./config";
+import {
+  getDependencies,
+  getMadgeLeaves,
+  getMadgeObject,
+  checkScript,
+} from "./Dependencies";
+import { config, getIgnores } from "./config";
 import glob from "glob";
-import {mkdirp} from "./utility";
-import * as acorn from 'acorn';
+import { mkdirp } from "./utility";
+import * as acorn from "acorn";
 import jsx from "acorn-jsx";
 import ts from "typescript";
-import {createHash, getFilesName} from "./utility";
+import { createHash, getFilesName } from "./utility";
 import deepmerge from "deepmerge";
-import {isPlainObject} from "is-plain-object";
-import {prepareSingleFileReplaceTscAliasPaths, SingleFileReplacer} from 'tsc-alias';
+import { isPlainObject } from "is-plain-object";
+import {
+  prepareSingleFileReplaceTscAliasPaths,
+  SingleFileReplacer,
+} from "tsc-alias";
 
 interface BuildScriptInterface {
   outDir: string;
 }
 
 export const createTsConfigFile = () => {
-  return new Promise(resolve => {
-    if(!fs.existsSync(path.resolve(".cache"))) {
+  return new Promise((resolve) => {
+    if (!fs.existsSync(path.resolve(".cache"))) {
       fs.mkdirSync(path.resolve(".cache"));
     }
-    fs.writeFileSync(path.resolve("./.cache/tsconfig.json"), JSON.stringify(tsConfig, null, 2), "utf-8");
+    fs.writeFileSync(
+      path.resolve("./.cache/tsconfig.json"),
+      JSON.stringify(tsConfig, null, 2),
+      "utf-8"
+    );
     resolve(null);
-  })
-}
+  });
+};
 
-const createFileName = (filePath:string) => {
-  const relativePath = path.relative(path.resolve("./src/views/"), filePath).replace("/**/*", "").replace("**/*", "")
-  return relativePath
-}
+const createFileName = (filePath: string) => {
+  const relativePath = path
+    .relative(path.resolve("./src/views/"), filePath)
+    .replace("/**/*", "")
+    .replace("**/*", "");
+  return relativePath;
+};
 
-const createComponentDep = async(filepath: string) => {
-  let results = {} as {[x in string]: any};
+const createComponentDep = async (filepath: string) => {
+  let results = {} as { [x in string]: any };
   const tempObj = await getMadgeObject(filepath, {
     baseDir: "./",
-    tsConfig: path.resolve("./tsconfig.json")
-  })
-  let obj = tempObj[filepath]
+    tsConfig: path.resolve("./tsconfig.json"),
+  });
+  let obj = tempObj[filepath];
   for (const dep of obj) {
     if (checkScript(dep)) {
       const temp = await createComponentDep(dep);
-      results = deepmerge(results, {
-        [getFilesName(dep)]: `createComponent("${createHash(path.resolve(dep))}", Script_${createScriptHash(dep)}("${createHash(path.resolve(dep))}", {${temp}})),`
-      }, {isMergeableObject: isPlainObject});
+      results = deepmerge(
+        results,
+        {
+          [getFilesName(dep)]: `createComponent("${createHash(
+            path.resolve(dep)
+          )}", Script_${createScriptHash(dep)}("${createHash(
+            path.resolve(dep)
+          )}", {${temp}})),`,
+        },
+        { isMergeableObject: isPlainObject }
+      );
     } else {
       const temp = await createComponentDep(dep);
-      results = deepmerge(results, {
-        [getFilesName(dep)]: `{${temp}},`
-      }, {isMergeableObject: isPlainObject});
+      results = deepmerge(
+        results,
+        {
+          [getFilesName(dep)]: `{${temp}},`,
+        },
+        { isMergeableObject: isPlainObject }
+      );
     }
   }
-  return Object.keys(results).map(item => {
-    return `${item}: ${results[item]}`;
-  }).join("\n");
-}
+  return Object.keys(results)
+    .map((item) => {
+      return `${item}: ${results[item]}`;
+    })
+    .join("\n");
+};
 
 const createScriptHash = (str: string) => {
-  return crypto.createHash("md5").update(str).digest("hex")
-}
+  return crypto.createHash("md5").update(str).digest("hex");
+};
 
 export const createCacheAppFile = () => {
-  return new Promise(async(resolve) => {
-    const jsFileName = path.basename(config.js).replace(".js", "")
+  return new Promise(async (resolve) => {
+    const jsFileName = path.basename(config.js).replace(".js", "");
     const jsBaseDir = path.dirname(config.js);
     for (const endpoint of config.endpoints) {
       const ignore = getIgnores(endpoint);
-      const files = await getDependencies(endpoint,ignore);
-      const appResolvePath = createFileName(endpoint)
-      const appFilePath = path.join(".cache/scripts",appResolvePath, jsBaseDir,`${jsFileName}.js`)
+      const files = await getDependencies(endpoint, ignore);
+      const appResolvePath = createFileName(endpoint);
+      const appFilePath = path.join(
+        ".cache/scripts",
+        appResolvePath,
+        jsBaseDir,
+        `${jsFileName}.js`
+      );
       const appImports = [`import {RettleStart} from "rettle/core";`];
-      const scriptObject = []
+      const scriptObject = [];
       const scriptRunner = [`RettleStart(scripts, {})`];
       const defs = [];
       for (const file of files) {
         const hash = createHash(path.resolve(file));
         const hashName = createScriptHash(file);
-        appImports.push(`import {script as Script_${hashName}} from "${path.relative(path.resolve(path.join(".cache/scripts", appResolvePath,jsBaseDir)), file.replace("src/", ".cache/src/")).replace(".tsx", "").replace(".jsx", "")}";`)
+        appImports.push(
+          `import {script as Script_${hashName}} from "${path
+            .relative(
+              path.resolve(
+                path.join(".cache/scripts", appResolvePath, jsBaseDir)
+              ),
+              file.replace("src/", ".cache/src/")
+            )
+            .replace(".tsx", "")
+            .replace(".jsx", "")}";`
+        );
         scriptObject.push(`"${hash}": Script_${hashName}`);
       }
       await mkdirp(appFilePath);
       const code = [
         appImports.join("\n"),
         `const scripts = {${scriptObject.join(",\n")}};`,
-        scriptRunner.join("\n")
-      ]
+        scriptRunner.join("\n"),
+      ];
       fs.writeFileSync(appFilePath, code.join("\n"), "utf-8");
     }
-    resolve(null)
-  })
-}
+    resolve(null);
+  });
+};
 
-export const buildScript = ({outDir}: BuildScriptInterface) => {
-  return new Promise(resolve => {
+export const buildScript = ({ outDir }: BuildScriptInterface) => {
+  return new Promise((resolve) => {
     const files = glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
-      nodir: true
+      nodir: true,
     });
-    esBuild.build({
-      bundle: true,
-      // all cache scripts
-      entryPoints: files,
-      outdir: files.length <= 1 ? path.join(outDir, path.dirname(config.js)) : outDir,
-      sourcemap: process.env.NODE_ENV !== "production",
-      platform: "browser",
-      target: "es6",
-      tsconfig: ".cache/tsconfig.json",
-      define: {
-        "process.env": JSON.stringify(config.envs),
-      },
-      minify: config.esbuild.minify,
-      plugins: config.esbuild.plugins("client")
-    }).then(() => {
-      resolve(null);
-    })
-  })
-}
-
-export const watchScript = ({ outDir}: BuildScriptInterface) => {
-  return new Promise(resolve => {
-    const files = glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
-      nodir: true
-    });
-    esBuild.build({
-      bundle: true,
-      watch: {
-        onRebuild(error, result) {
-          if (error) console.error("watch build failed:", error);
+    esBuild
+      .build({
+        bundle: true,
+        // all cache scripts
+        entryPoints: files,
+        // If only one file is used, the directory structure is not reproduced, so separate the files.
+        outdir:
+          files.length <= 1
+            ? path.join(outDir, path.dirname(config.js))
+            : outDir,
+        sourcemap: process.env.NODE_ENV !== "production",
+        platform: "browser",
+        target: "es6",
+        tsconfig: ".cache/tsconfig.json",
+        define: {
+          "process.env": JSON.stringify(config.envs),
         },
-      },
-      entryPoints: files,
-      outdir: files.length <= 1 ? path.join(outDir, path.dirname(config.js)) : outDir,
-      sourcemap: process.env.NODE_ENV !== "production",
-      platform: "browser",
-      target: "es6",
-      tsconfig: ".cache/tsconfig.json",
-      define: {
-        "process.env": JSON.stringify(config.envs),
-      },
-      minify: config.esbuild.minify,
-      plugins: config.esbuild.plugins("client")
-    }).then(() => {
-      resolve(null);
-    })
-  })
-}
+        plugins: config.esbuild.plugins("client"),
+      })
+      .then(() => {
+        resolve(null);
+      });
+  });
+};
 
-export const translateTs2Js = (code:string) => {
+export const watchScript = ({ outDir }: BuildScriptInterface) => {
+  return new Promise((resolve) => {
+    const files = glob.sync(path.resolve("./.cache/scripts/**/*.js"), {
+      nodir: true,
+    });
+    esBuild
+      .build({
+        bundle: true,
+        watch: {
+          onRebuild(error, result) {
+            if (error) console.error("watch build failed:", error);
+          },
+        },
+        entryPoints: files,
+        outdir:
+          files.length <= 1
+            ? path.join(outDir, path.dirname(config.js))
+            : outDir,
+        sourcemap: process.env.NODE_ENV !== "production",
+        platform: "browser",
+        target: "es6",
+        tsconfig: ".cache/tsconfig.json",
+        define: {
+          "process.env": JSON.stringify(config.envs),
+        },
+        plugins: config.esbuild.plugins("client"),
+      })
+      .then(() => {
+        resolve(null);
+      });
+  });
+};
+
+export const translateTs2Js = (code: string) => {
   return ts.transpileModule(code, {
     compilerOptions: {
       target: 99,
-      "jsx": 2
-    }
+      jsx: 2,
+    },
   }).outputText;
-}
+};
 
-export const eraseExports = async(code:string) => {
+export const eraseExports = async (code: string) => {
   try {
     const jsCode = translateTs2Js(code);
     //@ts-ignore
     const ast = acorn.Parser.extend(jsx()).parse(jsCode, {
       ecmaVersion: 2019,
-      sourceType: "module"
-    })
+      sourceType: "module",
+    });
     // @ts-ignore
-    const importNodes = ast.body.filter(item => item.type === "ImportDeclaration" && (item.source.value === "react" || item.source.raw === "react"));
+    const importNodes = ast.body.filter(
+      (item: any) =>
+        item.type === "ImportDeclaration" &&
+        (item.source.value === "react" || item.source.raw === "react")
+    );
     //@ts-ignore
-    const functionNodes = ast.body.filter(item => item.type === "FunctionDeclaration" || item.type === "VariableDeclaration");
+    const functionNodes = ast.body.filter(
+      (item: any) =>
+        item.type === "FunctionDeclaration" ||
+        item.type === "VariableDeclaration"
+    );
     //@ts-ignore
-    const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
-    const importReact = importNodes.length !== 0 ? jsCode.slice(importNodes.start, importNodes.end) : null;
+    const exportNodes = ast.body.filter(
+      (item: any) => item.type === "ExportDefaultDeclaration"
+    );
+    const importReact =
+      importNodes.length !== 0
+        ? jsCode.slice(importNodes.start, importNodes.end)
+        : null;
     const objects: Record<string, string> = {};
-    if (!exportNodes) throw new Error("Cannot Found export")
-    if (!exportNodes[0]) throw new Error("Cannot Found export")
-    if ("declaration" in exportNodes[0] === false) throw new Error("Cannot Found export")
+    if (!exportNodes) throw new Error("Cannot Found export");
+    if (!exportNodes[0]) throw new Error("Cannot Found export");
+    if ("declaration" in exportNodes[0] === false)
+      throw new Error("Cannot Found export");
     if (exportNodes[0].declaration.name) {
       // export default **
       for (const node of functionNodes) {
-        const {start, end} = node;
+        const { start, end } = node;
         const text = jsCode.slice(start, end);
         if (node.type === "FunctionDeclaration") {
           const key = node.id.name;
@@ -190,11 +257,21 @@ export const eraseExports = async(code:string) => {
         }
       }
       const exportName = exportNodes[0].declaration.name;
-      const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end)
-      const removeReactJsCode = importReact ? jsCode.replace(importReact, "//" + importReact) : jsCode;
-      const result = removeReactJsCode.replace(objects[exportName], objects[exportName].split("\n").map(item => {
-        return "//" + item
-      }).join("\n")).replace(exportLine, "export default () => {}");
+      const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
+      const removeReactJsCode = importReact
+        ? jsCode.replace(importReact, "//" + importReact)
+        : jsCode;
+      const result = removeReactJsCode
+        .replace(
+          objects[exportName],
+          objects[exportName]
+            .split("\n")
+            .map((item) => {
+              return "//" + item;
+            })
+            .join("\n")
+        )
+        .replace(exportLine, "export default () => {}");
       return translateTs2Js(result);
     } else {
       // export default ()=>
@@ -207,7 +284,7 @@ export const eraseExports = async(code:string) => {
             if (exportNodes[0].declaration.arguments[1]) {
               if (exportNodes[0].declaration.arguments[1].callee) {
                 if (exportNodes[0].declaration.arguments[1].callee.name) {
-                  name = exportNodes[0].declaration.arguments[1].callee.name
+                  name = exportNodes[0].declaration.arguments[1].callee.name;
                 }
               }
             }
@@ -216,12 +293,14 @@ export const eraseExports = async(code:string) => {
       }
       if (name) {
         for (const node of functionNodes) {
-          const {start, end} = node;
+          const { start, end } = node;
           const text = jsCode.slice(start, end);
           if (node.declarations[0].init.callee) {
-            let cache = node.declarations[0].init.callee.property ? node.declarations[0].init.callee.property.name : node.declarations[0].init.callee.name;
+            let cache = node.declarations[0].init.callee.property
+              ? node.declarations[0].init.callee.property.name
+              : node.declarations[0].init.callee.name;
             if (cache === "createCache") {
-              cacheName = node.declarations[0].id.name
+              cacheName = node.declarations[0].id.name;
             }
           }
           if (node.type === "FunctionDeclaration") {
@@ -232,35 +311,56 @@ export const eraseExports = async(code:string) => {
             objects[key] = text;
           }
         }
-        replaceDefaultRettle = jsCode.replace(objects[name], objects[name].split("\n").map(item => {
-          return "//" + item
-        }).join("\n")).replace(objects[cacheName], "//" + objects[cacheName])
+        replaceDefaultRettle = jsCode
+          .replace(
+            objects[name],
+            objects[name]
+              .split("\n")
+              .map((item) => {
+                return "//" + item;
+              })
+              .join("\n")
+          )
+          .replace(objects[cacheName], "//" + objects[cacheName]);
       } else {
         replaceDefaultRettle = jsCode;
       }
       const exportName = exportNodes[0];
-      const {start, end} = exportName;
+      const { start, end } = exportName;
       const exportStr = jsCode.slice(start, end);
-      const removeReactJsCode = importReact ? replaceDefaultRettle.replace(importReact, "//" + importReact) : replaceDefaultRettle;
-      const result = removeReactJsCode.replace(exportStr, exportStr.split("\n").map(item => "//" + item).join("\n")) + "\nexport default () => {}";
+      const removeReactJsCode = importReact
+        ? replaceDefaultRettle.replace(importReact, "//" + importReact)
+        : replaceDefaultRettle;
+      const result =
+        removeReactJsCode.replace(
+          exportStr,
+          exportStr
+            .split("\n")
+            .map((item) => "//" + item)
+            .join("\n")
+        ) + "\nexport default () => {}";
       return translateTs2Js(result);
     }
-    return ""
+    return "";
   } catch (e) {
     throw e;
   }
+};
+
+function treatFile(
+  filePath: string,
+  code: string,
+  runFile: SingleFileReplacer
+) {
+  const newContents = runFile({ fileContents: code, filePath });
+  fs.writeFileSync(filePath, newContents);
 }
 
-function treatFile(filePath: string, code: string, runFile: SingleFileReplacer) {
-  const newContents = runFile({fileContents: code, filePath});
-  fs.writeFileSync(filePath, newContents)
-}
-
-export const outputFormatFiles = (file:string) => {
-  return new Promise(async(resolve, reject) => {
+export const outputFormatFiles = (file: string) => {
+  return new Promise(async (resolve, reject) => {
     const replacer = await prepareSingleFileReplaceTscAliasPaths({
-      outDir: "./.cache/src"
-    })
+      outDir: "./.cache/src",
+    });
     try {
       const filePath = path.isAbsolute(file) ? path.relative("./", file) : file;
       const outPath = path.join(".cache/", filePath).replace(/\.ts(x)?/, ".js");
@@ -275,9 +375,9 @@ export const outputFormatFiles = (file:string) => {
         fs.writeFileSync(outPath, "", "utf-8");
         treatFile(outPath, code, replacer);
       }
-      resolve(null)
+      resolve(null);
     } catch (e) {
       reject(e);
     }
-  })
-}
+  });
+};

@@ -23,8 +23,9 @@ const HTMLBuilder_1 = require("../utils/HTMLBuilder");
 const html_minifier_terser_1 = require("html-minifier-terser");
 const css_purge_1 = require("css-purge");
 const directoryControl_1 = require("../utils/directoryControl");
+const js_beautify_1 = __importDefault(require("js-beautify"));
 const resetDir = (dirRoot) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         if (fs_1.default.existsSync(dirRoot)) {
             (0, directoryControl_1.deleteDir)(dirRoot);
         }
@@ -41,12 +42,12 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
     ]);
     /* build app.js files */
     const buildSetupOptions = {
-        outDir: path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix)
+        outDir: path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix),
     };
     const srcFiles = glob_1.default.sync("./src/**/*{ts,js,tsx,jsx,json}", {
-        nodir: true
+        nodir: true,
     });
-    yield Promise.all(srcFiles.map(file => new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Promise.all(srcFiles.map((file) => new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield (0, AppScriptBuilder_1.outputFormatFiles)(file);
             resolve(null);
@@ -73,8 +74,20 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
     catch (e) {
         throw e;
     }
+    if (config_1.config.beautify.script) {
+        const files = glob_1.default.sync(path_1.default.join(buildSetupOptions.outDir, "/**/*"), {
+            nodir: true,
+        });
+        for (const file of files) {
+            const code = fs_1.default.readFileSync(file, "utf-8");
+            const beauty = js_beautify_1.default.js(code, typeof config_1.config.beautify.script === "boolean"
+                ? {}
+                : config_1.config.beautify.script);
+            fs_1.default.writeFileSync(file, beauty);
+        }
+    }
     const jsFiles = glob_1.default.sync(path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, "/**/*.js"), {
-        nodir: true
+        nodir: true,
     });
     for (const js of jsFiles) {
         (_a = config_1.config.build) === null || _a === void 0 ? void 0 : _a.buildScript(js);
@@ -97,11 +110,13 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 headers,
                 script,
                 helmet: helmet.attributes,
-                noScript: helmet.body
+                noScript: helmet.body,
             });
             styles = styles + css;
             const exName = path_1.default.extname(item);
-            const htmlOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, item.replace("src/views/", "")).replace(exName, ".html");
+            const htmlOutputPath = path_1.default
+                .join(config_1.config.outDir, config_1.config.pathPrefix, item.replace("src/views/", ""))
+                .replace(exName, ".html");
             yield (0, utility_1.mkdirp)(htmlOutputPath);
             const minifyHtml = yield (0, html_minifier_terser_1.minify)(markup, {
                 collapseInlineTagWhitespace: true,
@@ -118,7 +133,12 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             if (error)
                 return console.log(`Cannot Purge style in ${key}`);
             yield (0, utility_1.mkdirp)(cssOutputPath);
-            const style = result ? result : "";
+            let style = result ? result : "";
+            style = config_1.config.beautify.css
+                ? typeof config_1.config.beautify.css === "boolean"
+                    ? js_beautify_1.default.css(style, {})
+                    : js_beautify_1.default.css(style, config_1.config.beautify.css)
+                : style;
             const purge = (_d = config_1.config.build) === null || _d === void 0 ? void 0 : _d.buildCss(style, cssOutputPath);
             fs_1.default.writeFileSync(cssOutputPath, purge, "utf-8");
         }));

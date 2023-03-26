@@ -1,26 +1,25 @@
-import {RettleConfigInterface} from "./config";
-import {templateHtml} from "./template.html";
+import { RettleConfigInterface } from "./config";
+import { templateHtml } from "./template.html";
 import * as process from "process";
 import RettlePlugin from "esbuild-plugin-rettle";
 
-const config:RettleConfigInterface = {
+const config: RettleConfigInterface = {
   pathPrefix: "./",
   port: 3000,
   outDir: "./htdocs",
+  static: "/static",
   css: "/assets/style/app.css",
   js: "/assets/script/app.js",
-  static: "/static",
+  beautify: {},
   template: templateHtml,
   endpoints: ["./src/views"],
-  staticPath: "/static",
-  encode: "UTF-8",
   build: {
     buildHTML: (code) => code,
     buildCss: (code) => code,
-    copyStatic: () => {}
+    buildScript: () => {},
+    copyStatic: () => {},
   },
   esbuild: {
-    minify: true,
     plugins: (mode) => {
       return [
         RettlePlugin({
@@ -41,14 +40,14 @@ const config:RettleConfigInterface = {
             plugins: ["@emotion/babel-plugin"],
           },
         }),
-      ]
-    }
+      ];
+    },
   },
   envs: {
-    NODE_ENV: process.env.NODE_ENV as string
+    NODE_ENV: process.env.NODE_ENV as string,
   },
   version: true,
-  server: (app, express) => {}
-}
+  server: (app, express) => {},
+};
 
 export const defaultConfig = config;
