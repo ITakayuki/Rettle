@@ -154,6 +154,7 @@ const buildScript = ({ outDir }) => {
             define: {
                 "process.env": JSON.stringify(config_1.config.envs),
             },
+            minify: true,
             plugins: config_1.config.esbuild.plugins("client"),
         })
             .then(() => {
