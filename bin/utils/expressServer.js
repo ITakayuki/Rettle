@@ -42,43 +42,59 @@ const path = __importStar(require("path"));
 const config_1 = require("./config");
 const Log_1 = require("./Log");
 const errorTemplate_html_1 = __importStar(require("./errorTemplate.html"));
-const utility_1 = require("./utility");
+const vite_1 = require("vite");
+const createViteServer = () => __awaiter(void 0, void 0, void 0, function* () {
+    const app = express_1.default.Router();
+    const vite = yield (0, vite_1.createServer)({
+        root: "./",
+        publicDir: path.resolve(path.join("./", config_1.config.static)),
+        logLevel: "info",
+        server: {
+            middlewareMode: true,
+            watch: {
+                usePolling: true,
+                interval: 100,
+            },
+        },
+    });
+    app.use(vite.middlewares);
+    app.use("*", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const url = req.originalUrl;
+        try {
+            const filePath = url.includes(".html")
+                ? path.resolve(path.join("./src/views/", url + ".tsx"))
+                : path.resolve(path.join("./src/views/", url, "index.tsx"));
+            const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(filePath);
+            const style = `<style data-emotion="${ids.join(" ")}">${css}</style>`;
+            const helmet = (0, HTMLBuilder_1.createHelmet)();
+            const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
+            const script = path.join("/.cache/scripts", config_1.config.pathPrefix, config_1.config.js);
+            const result = config_1.config.template({
+                html,
+                style,
+                headers,
+                script,
+                helmet: helmet.attributes,
+                noScript: helmet.body,
+            });
+            res
+                .status(200)
+                .set({ "Content-Type": "text/html" })
+                .end(yield vite.transformIndexHtml(url, result));
+        }
+        catch (e) {
+            const errorType = String(e);
+            const stack = e.stack
+                .split("\n")
+                .map((item, i) => (i !== 0 ? item + "<br/>" : ""))
+                .join("");
+            res.send((0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`)));
+        }
+    }));
+    return { app, vite };
+});
 const wakeupExpressServer = () => {
     const app = (0, express_1.default)();
-    const entryPaths = (0, utility_1.getEntryPaths)();
-    const viewPath = path.resolve("./src/views/");
-    Object.keys(entryPaths).map(key => {
-        const items = entryPaths[key];
-        items.forEach(item => {
-            const relativePath = path.relative(viewPath, item).replace(path.extname(item), "").replace("index", "");
-            app.get(path.join("/", config_1.config.pathPrefix, relativePath), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-                try {
-                    const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
-                    const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`;
-                    const helmet = (0, HTMLBuilder_1.createHelmet)();
-                    const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-                    const script = path.join("/", key.replace("src/views", path.join(config_1.config.pathPrefix)), config_1.config.js);
-                    const result = config_1.config.template({
-                        html,
-                        style,
-                        headers,
-                        script,
-                        helmet: helmet.attributes,
-                        noScript: helmet.body
-                    });
-                    res.setHeader("Content-Type", "text/html");
-                    res.send(result);
-                }
-                catch (e) {
-                    const errorType = String(e);
-                    const stack = e.stack.split("\n").map((item, i) => i !== 0 ? item + "<br/>" : "").join("");
-                    res.send((0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`)));
-                }
-            }));
-        });
-    });
-    app.use(path.join("/", config_1.config.pathPrefix), express_1.default.static(path.resolve(path.join("./", config_1.config.static)), { maxAge: "30d" }));
-    app.use(path.join("/"), express_1.default.static(path.resolve(path.join("./", ".cache/temporary/")), { maxAge: "30d" }));
     config_1.config.server(app, express_1.default);
     // 404
     app.use((req, res) => {
@@ -87,6 +103,9 @@ const wakeupExpressServer = () => {
     });
     app.listen(config_1.config.port, () => {
         console.log(Log_1.color.blue(`Listening http://${path.join(`localhost:${config_1.config.port}`, config_1.config.pathPrefix)}`));
+    });
+    createViteServer().then((vite) => {
+        vite.app.use(vite.app);
     });
 };
 exports.wakeupExpressServer = wakeupExpressServer;
