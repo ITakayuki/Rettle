@@ -54,13 +54,15 @@ const insertCommentOut = (code) => {
         const beforeHTML = article.toString();
         const beginComment = article.getAttribute("comment-out-begin");
         const endComment = article.getAttribute("comment-out-end");
-        const commentOutBegin = `<!--- ${beginComment !== "none" ? beginComment : "  "} --->`;
+        const commentOutBegin = beginComment !== "none" ? "<!--- ${beginComment} --->" : "";
         const commentOutEnd = endComment !== "none" ? `<!--- ${endComment} --->` : "";
         let children = "";
         for (const child of article.childNodes) {
             children += child.toString();
         }
         const htmlArr = [commentOutBegin];
+        if (commentOutBegin !== "")
+            htmlArr.push(commentOutBegin);
         if (article.childNodes.length !== 0)
             htmlArr.push(`<!--- ${config_1.config.beautify.html
                 ? js_beautify_1.default.html(children, typeof config_1.config.beautify.html === "boolean"
