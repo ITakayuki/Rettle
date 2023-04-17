@@ -44,7 +44,12 @@ export const vitePlugin: Plugin = {
         const tsxPath = `${
           fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
           fullReqPath
-        }.tsx`.replace(config.pathPrefix, "");
+        }.tsx`.replace(
+          config.pathPrefix.endsWith("/")
+            ? config.pathPrefix.slice(0, -1)
+            : config.pathPrefix,
+          ""
+        );
 
         if (fs.existsSync(tsxPath)) {
           try {

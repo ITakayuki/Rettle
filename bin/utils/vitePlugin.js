@@ -70,7 +70,9 @@ exports.vitePlugin = {
                     }
                 })[0] === config_1.config.pathPrefix.replace(/\//g, "")) {
                 const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
-                    fullReqPath}.tsx`.replace(config_1.config.pathPrefix, "");
+                    fullReqPath}.tsx`.replace(config_1.config.pathPrefix.endsWith("/")
+                    ? config_1.config.pathPrefix.slice(0, -1)
+                    : config_1.config.pathPrefix, "");
                 if (fs_1.default.existsSync(tsxPath)) {
                     try {
                         const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(tsxPath);
