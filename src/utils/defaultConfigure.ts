@@ -7,7 +7,7 @@ const config: RettleConfigInterface = {
   pathPrefix: "./",
   port: 3000,
   outDir: "./htdocs",
-  static: "/static",
+  static: "./static",
   css: "/assets/style/app.css",
   js: "/assets/script/app.js",
   beautify: {},
