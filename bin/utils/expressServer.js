@@ -42,6 +42,7 @@ const config_1 = require("./config");
 const errorTemplate_html_1 = __importStar(require("./errorTemplate.html"));
 const vite_1 = require("vite");
 const fs_1 = __importDefault(require("fs"));
+const utility_1 = require("./utility");
 const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* () {
     const vite = yield (0, vite_1.createServer)({
         plugins: [
@@ -49,8 +50,6 @@ const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* ()
                 name: "vite-plugin-rettle",
                 apply: "serve",
                 handleHotUpdate(context) {
-                    // ファイルが保存された時にホットリロードする
-                    // この記述がないと xxxx.pug を保存した時にリロードされない
                     context.server.ws.send({
                         type: "full-reload",
                     });
@@ -80,7 +79,8 @@ const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* ()
                                     const style = `<style data-emotion="${ids.join(" ")}">${css}</style>`;
                                     const helmet = (0, HTMLBuilder_1.createHelmet)();
                                     const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-                                    const script = path.join("/.cache/scripts", config_1.config.js);
+                                    const endpoint = (0, utility_1.checkEndpoint)(tsxPath);
+                                    const script = path.join("/.cache/scripts", endpoint || "", config_1.config.js);
                                     const result = config_1.config.template({
                                         html,
                                         style,

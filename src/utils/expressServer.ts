@@ -1,4 +1,3 @@
-import express from "express";
 import {
   transformReact2HTMLCSS,
   createHeaders,
@@ -6,11 +5,10 @@ import {
 } from "./HTMLBuilder";
 import * as path from "path";
 import { config } from "./config";
-import { color } from "./Log";
 import errorTemplateHtml, { errorTemplate } from "./errorTemplate.html";
-import { getEntryPaths } from "./utility";
 import { createServer, send } from "vite";
 import fs from "fs";
+import { checkEndpoint } from "./utility";
 
 export const wakeupExpressServer = async () => {
   const vite = await createServer({
@@ -19,8 +17,6 @@ export const wakeupExpressServer = async () => {
         name: "vite-plugin-rettle",
         apply: "serve",
         handleHotUpdate(context) {
-          // ファイルが保存された時にホットリロードする
-          // この記述がないと xxxx.pug を保存した時にリロードされない
           context.server.ws.send({
             type: "full-reload",
           });
@@ -69,7 +65,12 @@ export const wakeupExpressServer = async () => {
                   )}">${css}</style>`;
                   const helmet = createHelmet();
                   const headers = createHeaders().concat(helmet.headers);
-                  const script = path.join("/.cache/scripts", config.js);
+                  const endpoint = checkEndpoint(tsxPath);
+                  const script = path.join(
+                    "/.cache/scripts",
+                    endpoint || "",
+                    config.js
+                  );
                   const result = config.template({
                     html,
                     style,
