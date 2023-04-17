@@ -36,7 +36,14 @@ const config: RettleConfigInterface = {
                 },
               ],
             ],
-            plugins: ["@emotion/babel-plugin"],
+            plugins: [
+              [
+                "@emotion/babel-plugin",
+                {
+                  labelFormat: "[filename]_[local]",
+                },
+              ],
+            ],
           },
         }),
       ];
