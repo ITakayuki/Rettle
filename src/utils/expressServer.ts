@@ -63,6 +63,7 @@ export const wakeupExpressServer = async () => {
                 script,
                 helmet: helmet.attributes,
                 noScript: helmet.body,
+                mode: "server",
               });
               return send(req, res, result, "html", {});
             } else {

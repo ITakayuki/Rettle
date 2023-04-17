@@ -83,6 +83,7 @@ const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* ()
                                 script,
                                 helmet: helmet.attributes,
                                 noScript: helmet.body,
+                                mode: "server",
                             });
                             return (0, vite_1.send)(req, res, result, "html", {});
                         }
