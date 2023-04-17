@@ -33,7 +33,9 @@ const watchFiles = (args) => {
     const srcAllFilesPath = path.resolve("./src/**/*.{ts,tsx,js,jsx}");
     const watcher = chokidar_1.default.watch(srcAllFilesPath, {
         persistent: true,
-        awaitWriteFinish: true,
+        awaitWriteFinish: {
+            stabilityThreshold: 1000,
+        },
     });
     watcher.on("ready", () => {
         if (args.ready) {
