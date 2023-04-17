@@ -75,7 +75,7 @@ const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* ()
                             const style = `<style data-emotion="${ids.join(" ")}">${css}</style>`;
                             const helmet = (0, HTMLBuilder_1.createHelmet)();
                             const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-                            const script = path.join("/.cache/scripts", config_1.config.pathPrefix, config_1.config.js);
+                            const script = path.join("/.cache/scripts", config_1.config.js);
                             const result = config_1.config.template({
                                 html,
                                 style,
@@ -96,6 +96,8 @@ const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* ()
         server: {
             port: config_1.config.port,
         },
+        publicDir: config_1.config.static,
+        base: config_1.config.pathPrefix,
     });
     yield vite.listen();
     vite.printUrls();

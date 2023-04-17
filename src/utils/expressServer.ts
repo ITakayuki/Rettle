@@ -55,11 +55,7 @@ export const wakeupExpressServer = async () => {
               )}">${css}</style>`;
               const helmet = createHelmet();
               const headers = createHeaders().concat(helmet.headers);
-              const script = path.join(
-                "/.cache/scripts",
-                config.pathPrefix,
-                config.js
-              );
+              const script = path.join("/.cache/scripts", config.js);
               const result = config.template({
                 html,
                 style,
@@ -79,6 +75,8 @@ export const wakeupExpressServer = async () => {
     server: {
       port: config.port,
     },
+    publicDir: config.static,
+    base: config.pathPrefix,
   });
   await vite.listen();
   vite.printUrls();

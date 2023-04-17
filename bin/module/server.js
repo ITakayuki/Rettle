@@ -69,11 +69,11 @@ const watchSources = () => {
             console.log(Log_1.color.blue(`【Unlink Dir】-> ${filename}`));
             watcher.unwatch(filename);
         },
-        ready: () => { }
+        ready: () => { },
     });
 };
 const resetDir = (dirRoot) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         if (fs_1.default.existsSync(dirRoot)) {
             (0, directoryControl_1.deleteDir)(dirRoot);
         }
@@ -88,12 +88,12 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
     ]);
     /* build app.js files */
     const buildSetupOptions = {
-        outDir: path.join(".cache/temporary", config_1.config.pathPrefix)
+        outDir: path.join(".cache/temporary", config_1.config.pathPrefix),
     };
     const srcFiles = glob_1.default.sync("./src/**/*{ts,js,tsx,jsx,json}", {
-        nodir: true
+        nodir: true,
     });
-    yield Promise.all(srcFiles.map(file => new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Promise.all(srcFiles.map((file) => new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield (0, AppScriptBuilder_1.outputFormatFiles)(file);
             resolve(null);
@@ -115,20 +115,8 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
         throw e;
     }
     watchSources();
-    try {
-        yield (0, AppScriptBuilder_1.buildScript)(buildSetupOptions);
-    }
-    catch (e) {
-        throw e;
-    }
-    try {
-        yield (0, AppScriptBuilder_1.watchScript)(buildSetupOptions);
-    }
-    catch (e) {
-        throw e;
-    }
     /* wake up html and css server */
-    (0, expressServer_1.wakeupExpressServer)();
+    (0, expressServer_1.wakeupExpressServer)().then();
 });
 exports.server = server;
 //# sourceMappingURL=server.js.map

@@ -1,20 +1,26 @@
-import {watchFiles} from "./watcher";
-import {color} from "../utils/Log";
-import {createCacheAppFile, watchScript, buildScript, createTsConfigFile, outputFormatFiles} from "../utils/AppScriptBuilder";
-import {wakeupExpressServer} from "../utils/expressServer";
-import {config} from "../utils/config";
+import { watchFiles } from "./watcher";
+import { color } from "../utils/Log";
+import {
+  createCacheAppFile,
+  watchScript,
+  buildScript,
+  createTsConfigFile,
+  outputFormatFiles,
+} from "../utils/AppScriptBuilder";
+import { wakeupExpressServer } from "../utils/expressServer";
+import { config } from "../utils/config";
 import * as path from "path";
 import glob from "glob";
 import fs from "fs";
-import {deleteDir} from "../utils/directoryControl";
+import { deleteDir } from "../utils/directoryControl";
 
 const watchSources = () => {
   watchFiles({
-    change: async(filename) => {
+    change: async (filename) => {
       try {
         console.log(color.blue(`【Change File】-> ${filename}`));
         await outputFormatFiles(filename);
-        await createCacheAppFile()
+        await createCacheAppFile();
       } catch (e) {
         console.error(e);
       }
@@ -31,20 +37,20 @@ const watchSources = () => {
       console.log(color.blue(`【Unlink Dir】-> ${filename}`));
       watcher.unwatch(filename);
     },
-    ready: () => {}
-  })
-}
+    ready: () => {},
+  });
+};
 
 const resetDir = (dirRoot: string) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (fs.existsSync(dirRoot)) {
       deleteDir(dirRoot);
     }
-    resolve(null)
-  })
-}
+    resolve(null);
+  });
+};
 
-export const server = async() => {
+export const server = async () => {
   await Promise.all([
     resetDir(".cache/src"),
     resetDir(".cache/scripts"),
@@ -52,41 +58,35 @@ export const server = async() => {
   ]);
   /* build app.js files */
   const buildSetupOptions = {
-    outDir: path.join(".cache/temporary", config.pathPrefix)
-  }
+    outDir: path.join(".cache/temporary", config.pathPrefix),
+  };
   const srcFiles = glob.sync("./src/**/*{ts,js,tsx,jsx,json}", {
-    nodir: true
+    nodir: true,
   });
-  await Promise.all(srcFiles.map(file => new Promise(async(resolve, reject) => {
-    try {
-      await outputFormatFiles(file)
-      resolve(null);
-    } catch (e) {
-      reject(e)
-    }
-    })
-  ));
+  await Promise.all(
+    srcFiles.map(
+      (file) =>
+        new Promise(async (resolve, reject) => {
+          try {
+            await outputFormatFiles(file);
+            resolve(null);
+          } catch (e) {
+            reject(e);
+          }
+        })
+    )
+  );
   try {
     await createTsConfigFile();
   } catch (e) {
-    throw e
+    throw e;
   }
   try {
     await createCacheAppFile();
-  }catch (e) {
-    throw e
+  } catch (e) {
+    throw e;
   }
   watchSources();
-  try {
-    await buildScript(buildSetupOptions);
-  } catch (e) {
-    throw e
-  }
-  try {
-    await watchScript(buildSetupOptions)
-  } catch (e) {
-    throw e
-  }
   /* wake up html and css server */
-  wakeupExpressServer();
-}
+  wakeupExpressServer().then();
+};
