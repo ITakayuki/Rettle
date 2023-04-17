@@ -19,6 +19,9 @@ const wakeupViteServer = () => __awaiter(void 0, void 0, void 0, function* () {
         server: {
             port: config_1.config.server.port,
             host: config_1.config.server.host,
+            watch: {
+                usePolling: true,
+            },
         },
         publicDir: config_1.config.static,
         base: config_1.config.pathPrefix,

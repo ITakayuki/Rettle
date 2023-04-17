@@ -8,6 +8,9 @@ export const wakeupViteServer = async () => {
     server: {
       port: config.server.port,
       host: config.server.host,
+      watch: {
+        usePolling: true,
+      },
     },
     publicDir: config.static,
     base: config.pathPrefix,
