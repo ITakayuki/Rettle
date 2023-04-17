@@ -36,77 +36,69 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wakeupExpressServer = void 0;
-const express_1 = __importDefault(require("express"));
 const HTMLBuilder_1 = require("./HTMLBuilder");
 const path = __importStar(require("path"));
 const config_1 = require("./config");
-const Log_1 = require("./Log");
-const errorTemplate_html_1 = __importStar(require("./errorTemplate.html"));
+const errorTemplate_html_1 = __importDefault(require("./errorTemplate.html"));
 const vite_1 = require("vite");
-const createViteServer = () => __awaiter(void 0, void 0, void 0, function* () {
-    const app = express_1.default.Router();
+const fs_1 = __importDefault(require("fs"));
+const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* () {
     const vite = yield (0, vite_1.createServer)({
-        root: "./",
-        publicDir: path.resolve(path.join("./", config_1.config.static)),
-        logLevel: "info",
-        server: {
-            middlewareMode: true,
-            watch: {
-                usePolling: true,
-                interval: 100,
+        plugins: [
+            {
+                name: "vite-plugin-rettle",
+                apply: "serve",
+                handleHotUpdate(context) {
+                    // ファイルが保存された時にホットリロードする
+                    // この記述がないと xxxx.pug を保存した時にリロードされない
+                    context.server.ws.send({
+                        type: "full-reload",
+                    });
+                    return [];
+                },
+                configureServer(server) {
+                    server.middlewares.use((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+                        const root = server.config.root;
+                        let fullReqPath = path.join(root, "src", req.url || "");
+                        if (fullReqPath.endsWith("/")) {
+                            fullReqPath += "index.html";
+                        }
+                        if (fullReqPath.endsWith(".html")) {
+                            const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) || fullReqPath}.tsx`.replace(config_1.config.pathPrefix, "");
+                            if (!fs_1.default.existsSync(tsxPath)) {
+                                // xxxx.pug が存在しないなら 404 を返す
+                                const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;
+                                return (0, vite_1.send)(req, res, (0, errorTemplate_html_1.default)("", html), "html", {});
+                            }
+                            // xxxx.pug が存在するときは xxxx.pug をコンパイルした結果を返す
+                            const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(tsxPath);
+                            const style = `<style data-emotion="${ids.join(" ")}">${css}</style>`;
+                            const helmet = (0, HTMLBuilder_1.createHelmet)();
+                            const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
+                            const script = path.join("/.cache/scripts", config_1.config.pathPrefix, config_1.config.js);
+                            const result = config_1.config.template({
+                                html,
+                                style,
+                                headers,
+                                script,
+                                helmet: helmet.attributes,
+                                noScript: helmet.body,
+                            });
+                            return (0, vite_1.send)(req, res, result, "html", {});
+                        }
+                        else {
+                            return next();
+                        }
+                    }));
+                },
             },
+        ],
+        server: {
+            port: config_1.config.port,
         },
     });
-    app.use(vite.middlewares);
-    app.use("*", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const url = req.originalUrl;
-        try {
-            const filePath = url.includes(".html")
-                ? path.resolve(path.join("./src/views/", url + ".tsx"))
-                : path.resolve(path.join("./src/views/", url, "index.tsx"));
-            const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(filePath);
-            const style = `<style data-emotion="${ids.join(" ")}">${css}</style>`;
-            const helmet = (0, HTMLBuilder_1.createHelmet)();
-            const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-            const script = path.join("/.cache/scripts", config_1.config.pathPrefix, config_1.config.js);
-            const result = config_1.config.template({
-                html,
-                style,
-                headers,
-                script,
-                helmet: helmet.attributes,
-                noScript: helmet.body,
-            });
-            res
-                .status(200)
-                .set({ "Content-Type": "text/html" })
-                .end(yield vite.transformIndexHtml(url, result));
-        }
-        catch (e) {
-            const errorType = String(e);
-            const stack = e.stack
-                .split("\n")
-                .map((item, i) => (i !== 0 ? item + "<br/>" : ""))
-                .join("");
-            res.send((0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`)));
-        }
-    }));
-    return { app, vite };
+    yield vite.listen();
+    vite.printUrls();
 });
-const wakeupExpressServer = () => {
-    const app = (0, express_1.default)();
-    config_1.config.server(app, express_1.default);
-    // 404
-    app.use((req, res) => {
-        const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;
-        res.status(404).send((0, errorTemplate_html_1.default)("", html));
-    });
-    app.listen(config_1.config.port, () => {
-        console.log(Log_1.color.blue(`Listening http://${path.join(`localhost:${config_1.config.port}`, config_1.config.pathPrefix)}`));
-    });
-    createViteServer().then((vite) => {
-        vite.app.use(vite.app);
-    });
-};
 exports.wakeupExpressServer = wakeupExpressServer;
 //# sourceMappingURL=expressServer.js.map

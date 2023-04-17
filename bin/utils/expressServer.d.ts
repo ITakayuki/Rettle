@@ -1,1 +1,1 @@
-export declare const wakeupExpressServer: () => void;
+export declare const wakeupExpressServer: () => Promise<void>;
