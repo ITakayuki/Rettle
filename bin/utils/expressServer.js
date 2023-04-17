@@ -68,7 +68,11 @@ const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* ()
                             fullReqStaticPath += "index.html";
                         }
                         if (fullReqPath.endsWith(".html") &&
-                            fullReqPath.split("/")[0] === config_1.config.pathPrefix.replace(/\//g, "")) {
+                            req.url.split("/").filter((item) => {
+                                if (item !== "") {
+                                    return item;
+                                }
+                            })[0] === config_1.config.pathPrefix.replace(/\//g, "")) {
                             const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) || fullReqPath}.tsx`.replace(config_1.config.pathPrefix, "");
                             if (fs_1.default.existsSync(tsxPath)) {
                                 try {

@@ -46,7 +46,11 @@ export const wakeupExpressServer = async () => {
 
             if (
               fullReqPath.endsWith(".html") &&
-              fullReqPath.split("/")[0] === config.pathPrefix.replace(/\//g, "")
+              req.url!.split("/").filter((item) => {
+                if (item !== "") {
+                  return item;
+                }
+              })[0] === config.pathPrefix.replace(/\//g, "")
             ) {
               const tsxPath = `${
                 fullReqPath.slice(
