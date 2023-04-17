@@ -29,7 +29,7 @@ export const wakeupExpressServer = async () => {
         configureServer(server) {
           server.middlewares.use(async (req, res, next) => {
             const root = server.config.root;
-            let fullReqPath = path.join(root, "src", req.url || "");
+            let fullReqPath = path.join(root, "src/views", req.url || "");
 
             if (fullReqPath.endsWith("/")) {
               fullReqPath += "index.html";

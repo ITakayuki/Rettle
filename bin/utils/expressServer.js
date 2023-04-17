@@ -59,7 +59,7 @@ const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* ()
                 configureServer(server) {
                     server.middlewares.use((req, res, next) => __awaiter(this, void 0, void 0, function* () {
                         const root = server.config.root;
-                        let fullReqPath = path.join(root, "src", req.url || "");
+                        let fullReqPath = path.join(root, "src/views", req.url || "");
                         if (fullReqPath.endsWith("/")) {
                             fullReqPath += "index.html";
                         }
