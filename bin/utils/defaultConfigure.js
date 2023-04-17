@@ -32,7 +32,6 @@ const process = __importStar(require("process"));
 const esbuild_plugin_rettle_1 = __importDefault(require("esbuild-plugin-rettle"));
 const config = {
     pathPrefix: "./",
-    port: 3000,
     outDir: "./htdocs",
     static: "./static",
     css: "/assets/style/app.css",
@@ -70,11 +69,14 @@ const config = {
             ];
         },
     },
+    server: {
+        port: 3000,
+        host: "0.0.0.0",
+    },
     envs: {
         NODE_ENV: process.env.NODE_ENV,
     },
     version: true,
-    server: (app, express) => { },
 };
 exports.defaultConfig = config;
 //# sourceMappingURL=defaultConfigure.js.map

@@ -39,7 +39,7 @@ exports.server = void 0;
 const watcher_1 = require("./watcher");
 const Log_1 = require("../utils/Log");
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
-const expressServer_1 = require("../utils/expressServer");
+const viteServer_1 = require("../utils/viteServer");
 const config_1 = require("../utils/config");
 const path = __importStar(require("path"));
 const glob_1 = __importDefault(require("glob"));
@@ -116,7 +116,7 @@ const server = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     watchSources();
     /* wake up html and css server */
-    (0, expressServer_1.wakeupExpressServer)().then();
+    (0, viteServer_1.wakeupViteServer)().then();
 });
 exports.server = server;
 //# sourceMappingURL=server.js.map

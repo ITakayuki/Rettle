@@ -7,7 +7,7 @@ import {
   createTsConfigFile,
   outputFormatFiles,
 } from "../utils/AppScriptBuilder";
-import { wakeupExpressServer } from "../utils/expressServer";
+import { wakeupViteServer } from "../utils/viteServer";
 import { config } from "../utils/config";
 import * as path from "path";
 import glob from "glob";
@@ -88,5 +88,5 @@ export const server = async () => {
   }
   watchSources();
   /* wake up html and css server */
-  wakeupExpressServer().then();
+  wakeupViteServer().then();
 };

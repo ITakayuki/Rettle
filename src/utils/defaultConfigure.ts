@@ -5,7 +5,6 @@ import RettlePlugin from "esbuild-plugin-rettle";
 
 const config: RettleConfigInterface = {
   pathPrefix: "./",
-  port: 3000,
   outDir: "./htdocs",
   static: "./static",
   css: "/assets/style/app.css",
@@ -43,11 +42,14 @@ const config: RettleConfigInterface = {
       ];
     },
   },
+  server: {
+    port: 3000,
+    host: "0.0.0.0",
+  },
   envs: {
     NODE_ENV: process.env.NODE_ENV as string,
   },
   version: true,
-  server: (app, express) => {},
 };
 
 export const defaultConfig = config;

@@ -1,37 +1,7 @@
 /// <reference types="node" />
 import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
-import { Express } from "express";
-import * as core from "express-serve-static-core";
-import * as bodyParser from "body-parser";
-import * as serveStatic from "serve-static";
-import * as qs from "qs";
 import js_beautify from "js-beautify";
-interface RouterOptions {
-    caseSensitive?: boolean | undefined;
-    mergeParams?: boolean | undefined;
-    strict?: boolean | undefined;
-}
-interface Application extends core.Application {
-}
-interface Handler extends core.Handler {
-}
-interface Request<P = core.ParamsDictionary, ResBody = any, ReqBody = any, ReqQuery = core.Query, Locals extends Record<string, any> = Record<string, any>> extends core.Request<P, ResBody, ReqBody, ReqQuery, Locals> {
-}
-export interface Response<ResBody = any, Locals extends Record<string, any> = Record<string, any>> extends core.Response<ResBody, Locals> {
-}
-declare type e = {
-    json: typeof bodyParser.json;
-    raw: typeof bodyParser.raw;
-    text: typeof bodyParser.text;
-    application: Application;
-    request: Request;
-    response: Response;
-    static: serveStatic.RequestHandlerConstructor<Response>;
-    urlencoded: typeof bodyParser.urlencoded;
-    query(options: qs.IParseOptions | typeof qs.parse): Handler;
-    Router(options?: RouterOptions): core.Router;
-};
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: (outDir: string) => void;
@@ -48,7 +18,6 @@ interface BeautifyOptions {
 }
 export interface RettleConfigInterface {
     pathPrefix: string;
-    port: number;
     css: string;
     js: string;
     beautify: BeautifyOptions;
@@ -65,7 +34,10 @@ export interface RettleConfigInterface {
     build?: BuildOptionsInterface;
     esbuild: esbuildInterface;
     version: boolean;
-    server: (app: Express, express: e & (() => core.Express)) => void;
+    server: {
+        port: number;
+        host: string;
+    };
 }
 export declare const getIgnores: (endpoint: string) => string[];
 export declare const config: any;
