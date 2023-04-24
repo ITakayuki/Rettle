@@ -9,6 +9,7 @@ import {
 import { checkEndpoint } from "./utility";
 import { send, Plugin } from "vite";
 import errorTemplateHtml, { errorTemplate } from "./errorTemplate.html";
+import glob from "glob";
 
 export const vitePlugin: Plugin = {
   name: "vite-plugin-rettle",
@@ -21,6 +22,19 @@ export const vitePlugin: Plugin = {
   },
   configureServer(server) {
     server.middlewares.use(async (req, res, next) => {
+      if (config.server.listenDir && req.url) {
+        for (const dir of config.server.listenDir) {
+          const absPath = path.resolve(dir);
+          const listenFiles = glob.sync(path.join(dir, "/**/*"), {
+            nodir: true,
+          });
+          for (const file of listenFiles) {
+            if (path.join(absPath, req.url) === file) {
+              res.end(fs.readFileSync(file, "utf-8"));
+            }
+          }
+        }
+      }
       const root = server.config.root;
       let fullReqPath = path.join(root, "src/views", req.url || "");
       let fullReqStaticPath = path.join(root, config.static, req.url || "");
@@ -45,10 +59,8 @@ export const vitePlugin: Plugin = {
           fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
           fullReqPath
         }.tsx`.replace(
-          config.pathPrefix.endsWith("/")
-            ? config.pathPrefix.slice(0, -1)
-            : config.pathPrefix,
-          ""
+          path.join("/src/views/", config.pathPrefix),
+          "/src/views/"
         );
 
         if (fs.existsSync(tsxPath)) {
