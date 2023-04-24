@@ -20,9 +20,8 @@ const insertCommentOut = (code: string) => {
     const beforeHTML = article.toString();
     const beginComment = article.getAttribute("comment-out-begin");
     const endComment = article.getAttribute("comment-out-end");
-    const commentOutBegin = `<!--- ${
-      beginComment !== "none" ? beginComment : "  "
-    } --->`;
+    const commentOutBegin =
+      beginComment !== "none" ? "<!--- ${beginComment} --->" : "";
     const commentOutEnd =
       endComment !== "none" ? `<!--- ${endComment} --->` : "";
     let children: string = "";
@@ -30,6 +29,7 @@ const insertCommentOut = (code: string) => {
       children += child.toString();
     }
     const htmlArr = [commentOutBegin];
+    if (commentOutBegin !== "") htmlArr.push(commentOutBegin);
     if (article.childNodes.length !== 0)
       htmlArr.push(
         `<!--- ${

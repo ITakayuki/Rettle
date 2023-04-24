@@ -5,9 +5,8 @@ import RettlePlugin from "esbuild-plugin-rettle";
 
 const config: RettleConfigInterface = {
   pathPrefix: "./",
-  port: 3000,
   outDir: "./htdocs",
-  static: "/static",
+  static: "./static",
   css: "/assets/style/app.css",
   js: "/assets/script/app.js",
   beautify: {},
@@ -37,17 +36,27 @@ const config: RettleConfigInterface = {
                 },
               ],
             ],
-            plugins: ["@emotion/babel-plugin"],
+            plugins: [
+              [
+                "@emotion/babel-plugin",
+                {
+                  labelFormat: "[filename]_[local]",
+                },
+              ],
+            ],
           },
         }),
       ];
     },
   },
+  server: {
+    port: 3000,
+    host: "0.0.0.0",
+  },
   envs: {
     NODE_ENV: process.env.NODE_ENV as string,
   },
   version: true,
-  server: (app, express) => {},
 };
 
 export const defaultConfig = config;

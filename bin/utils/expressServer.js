@@ -36,58 +36,94 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wakeupExpressServer = void 0;
-const express_1 = __importDefault(require("express"));
 const HTMLBuilder_1 = require("./HTMLBuilder");
 const path = __importStar(require("path"));
 const config_1 = require("./config");
-const Log_1 = require("./Log");
 const errorTemplate_html_1 = __importStar(require("./errorTemplate.html"));
+const vite_1 = require("vite");
+const fs_1 = __importDefault(require("fs"));
 const utility_1 = require("./utility");
-const wakeupExpressServer = () => {
-    const app = (0, express_1.default)();
-    const entryPaths = (0, utility_1.getEntryPaths)();
-    const viewPath = path.resolve("./src/views/");
-    Object.keys(entryPaths).map(key => {
-        const items = entryPaths[key];
-        items.forEach(item => {
-            const relativePath = path.relative(viewPath, item).replace(path.extname(item), "").replace("index", "");
-            app.get(path.join("/", config_1.config.pathPrefix, relativePath), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-                try {
-                    const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
-                    const style = `<style data-emotion="${ids.join(' ')}">${css}</style>`;
-                    const helmet = (0, HTMLBuilder_1.createHelmet)();
-                    const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-                    const script = path.join("/", key.replace("src/views", path.join(config_1.config.pathPrefix)), config_1.config.js);
-                    const result = config_1.config.template({
-                        html,
-                        style,
-                        headers,
-                        script,
-                        helmet: helmet.attributes,
-                        noScript: helmet.body
+const wakeupExpressServer = () => __awaiter(void 0, void 0, void 0, function* () {
+    const vite = yield (0, vite_1.createServer)({
+        plugins: [
+            {
+                name: "vite-plugin-rettle",
+                apply: "serve",
+                handleHotUpdate(context) {
+                    context.server.ws.send({
+                        type: "full-reload",
                     });
-                    res.setHeader("Content-Type", "text/html");
-                    res.send(result);
-                }
-                catch (e) {
-                    const errorType = String(e);
-                    const stack = e.stack.split("\n").map((item, i) => i !== 0 ? item + "<br/>" : "").join("");
-                    res.send((0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`)));
-                }
-            }));
-        });
+                    return [];
+                },
+                configureServer(server) {
+                    server.middlewares.use((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+                        const root = server.config.root;
+                        let fullReqPath = path.join(root, "src/views", req.url || "");
+                        let fullReqStaticPath = path.join(root, config_1.config.static, req.url || "");
+                        if (fullReqPath.endsWith("/")) {
+                            fullReqPath += "index.html";
+                        }
+                        if (fullReqStaticPath.endsWith("/")) {
+                            fullReqStaticPath += "index.html";
+                        }
+                        if (fullReqPath.endsWith(".html") &&
+                            req.url.split("/").filter((item) => {
+                                if (item !== "") {
+                                    return item;
+                                }
+                            })[0] === config_1.config.pathPrefix.replace(/\//g, "")) {
+                            const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) || fullReqPath}.tsx`.replace(config_1.config.pathPrefix, "");
+                            if (fs_1.default.existsSync(tsxPath)) {
+                                try {
+                                    const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(tsxPath);
+                                    const style = `<style data-emotion="${ids.join(" ")}">${css}</style>`;
+                                    const helmet = (0, HTMLBuilder_1.createHelmet)();
+                                    const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
+                                    const endpoint = (0, utility_1.checkEndpoint)(tsxPath);
+                                    const script = path.join("/.cache/scripts", endpoint || "", config_1.config.js);
+                                    const result = config_1.config.template({
+                                        html,
+                                        style,
+                                        headers,
+                                        script,
+                                        helmet: helmet.attributes,
+                                        noScript: helmet.body,
+                                        mode: "server",
+                                    });
+                                    return (0, vite_1.send)(req, res, result, "html", {});
+                                }
+                                catch (e) {
+                                    const errorType = String(e);
+                                    const stack = e.stack
+                                        .split("\n")
+                                        .map((item, i) => i !== 0 ? item + "<br/>" : "")
+                                        .join("");
+                                    return (0, vite_1.send)(req, res, (0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`)), "html", {});
+                                }
+                            }
+                            else if (fs_1.default.existsSync(fullReqStaticPath)) {
+                                return next();
+                            }
+                            else {
+                                const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;
+                                return (0, vite_1.send)(req, res, (0, errorTemplate_html_1.default)("", html), "html", {});
+                            }
+                        }
+                        else {
+                            return next();
+                        }
+                    }));
+                },
+            },
+        ],
+        server: {
+            port: config_1.config.port,
+        },
+        publicDir: config_1.config.static,
+        base: config_1.config.pathPrefix,
     });
-    app.use(path.join("/", config_1.config.pathPrefix), express_1.default.static(path.resolve(path.join("./", config_1.config.static)), { maxAge: "30d" }));
-    app.use(path.join("/"), express_1.default.static(path.resolve(path.join("./", ".cache/temporary/")), { maxAge: "30d" }));
-    config_1.config.server(app, express_1.default);
-    // 404
-    app.use((req, res) => {
-        const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;
-        res.status(404).send((0, errorTemplate_html_1.default)("", html));
-    });
-    app.listen(config_1.config.port, () => {
-        console.log(Log_1.color.blue(`Listening http://${path.join(`localhost:${config_1.config.port}`, config_1.config.pathPrefix)}`));
-    });
-};
+    yield vite.listen();
+    vite.printUrls();
+});
 exports.wakeupExpressServer = wakeupExpressServer;
 //# sourceMappingURL=expressServer.js.map

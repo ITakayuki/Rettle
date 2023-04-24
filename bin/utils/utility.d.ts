@@ -4,3 +4,4 @@ export declare const getEntryPaths: () => {
     [index: string]: string[];
 };
 export declare const getFilesName: (filepath: string) => string;
+export declare const checkEndpoint: (file: string) => string | undefined;
