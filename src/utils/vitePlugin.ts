@@ -9,6 +9,8 @@ import {
 import { checkEndpoint } from "./utility";
 import { send, Plugin } from "vite";
 import errorTemplateHtml, { errorTemplate } from "./errorTemplate.html";
+import glob from "glob";
+import mime from "mime-types";
 
 export const vitePlugin: Plugin = {
   name: "vite-plugin-rettle",
@@ -21,6 +23,26 @@ export const vitePlugin: Plugin = {
   },
   configureServer(server) {
     server.middlewares.use(async (req, res, next) => {
+      if (config.server.listenDir && req.url) {
+        for (const dir of config.server.listenDir) {
+          const absPath = path.resolve(dir);
+          const listenFiles = glob.sync(path.join(dir, "/**/*"), {
+            nodir: true,
+          });
+          for (const file of listenFiles) {
+            const resolveFile = path.resolve(file);
+            if (path.join(absPath, req.url) === resolveFile) {
+              const binary = fs.readFileSync(resolveFile);
+              const type = mime.lookup(file);
+              return send(req, res, binary, "", {
+                headers: {
+                  "Content-Type": String(type),
+                },
+              });
+            }
+          }
+        }
+      }
       const root = server.config.root;
       let fullReqPath = path.join(root, "src/views", req.url || "");
       let fullReqStaticPath = path.join(root, config.static, req.url || "");
@@ -45,10 +67,8 @@ export const vitePlugin: Plugin = {
           fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
           fullReqPath
         }.tsx`.replace(
-          config.pathPrefix.endsWith("/")
-            ? config.pathPrefix.slice(0, -1)
-            : config.pathPrefix,
-          ""
+          path.join("/src/views/", config.pathPrefix),
+          "/src/views/"
         );
 
         if (fs.existsSync(tsxPath)) {

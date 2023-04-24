@@ -37,6 +37,7 @@ export interface RettleConfigInterface {
     server: {
         port: number;
         host: string;
+        listenDir?: string[];
     };
 }
 export declare const getIgnores: (endpoint: string) => string[];

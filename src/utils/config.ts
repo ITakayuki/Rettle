@@ -49,6 +49,7 @@ export interface RettleConfigInterface {
   server: {
     port: number;
     host: string;
+    listenDir?: string[];
   };
 }
 
