@@ -30,8 +30,9 @@ export const vitePlugin: Plugin = {
             nodir: true,
           });
           for (const file of listenFiles) {
-            if (path.join(absPath, req.url) === file) {
-              const binary = fs.readFileSync(file, "binary");
+            const resolveFile = path.resolve(file);
+            if (path.join(absPath, req.url) === resolveFile) {
+              const binary = fs.readFileSync(resolveFile);
               const type = mime.lookup(file);
               return send(req, res, binary, "", {
                 headers: {
