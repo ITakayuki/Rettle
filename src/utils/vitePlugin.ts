@@ -10,6 +10,7 @@ import { checkEndpoint } from "./utility";
 import { send, Plugin } from "vite";
 import errorTemplateHtml, { errorTemplate } from "./errorTemplate.html";
 import glob from "glob";
+import mime from "mime-types";
 
 export const vitePlugin: Plugin = {
   name: "vite-plugin-rettle",
@@ -30,7 +31,13 @@ export const vitePlugin: Plugin = {
           });
           for (const file of listenFiles) {
             if (path.join(absPath, req.url) === file) {
-              res.end(fs.readFileSync(file, "utf-8"));
+              const binary = fs.readFileSync(file, "binary");
+              const type = mime.lookup(file);
+              return send(req, res, binary, "", {
+                headers: {
+                  "Content-Type": String(type),
+                },
+              });
             }
           }
         }

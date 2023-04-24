@@ -44,6 +44,7 @@ const utility_1 = require("./utility");
 const vite_1 = require("vite");
 const errorTemplate_html_1 = __importStar(require("./errorTemplate.html"));
 const glob_1 = __importDefault(require("glob"));
+const mime_types_1 = __importDefault(require("mime-types"));
 exports.vitePlugin = {
     name: "vite-plugin-rettle",
     apply: "serve",
@@ -63,7 +64,13 @@ exports.vitePlugin = {
                     });
                     for (const file of listenFiles) {
                         if (path_1.default.join(absPath, req.url) === file) {
-                            res.end(fs_1.default.readFileSync(file, "utf-8"));
+                            const binary = fs_1.default.readFileSync(file, "binary");
+                            const type = mime_types_1.default.lookup(file);
+                            return (0, vite_1.send)(req, res, binary, "", {
+                                headers: {
+                                    "Content-Type": String(type),
+                                },
+                            });
                         }
                     }
                 }
