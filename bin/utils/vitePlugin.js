@@ -45,6 +45,18 @@ const vite_1 = require("vite");
 const errorTemplate_html_1 = __importStar(require("./errorTemplate.html"));
 const glob_1 = __importDefault(require("glob"));
 const mime_types_1 = __importDefault(require("mime-types"));
+const addStaticFiles = {};
+if (config_1.config.server.listenDir) {
+    for (const dir of config_1.config.server.listenDir) {
+        const listenFiles = glob_1.default.sync(path_1.default.join(dir, "/**/*"), {
+            nodir: true,
+        });
+        for (const file of listenFiles) {
+            const resolveFile = path_1.default.resolve(file);
+            addStaticFiles[file] = fs_1.default.readFileSync(resolveFile);
+        }
+    }
+}
 exports.vitePlugin = {
     name: "vite-plugin-rettle",
     apply: "serve",
@@ -56,23 +68,17 @@ exports.vitePlugin = {
     },
     configureServer(server) {
         server.middlewares.use((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            if (config_1.config.server.listenDir && req.url) {
+            if (req.url) {
+                const requestURL = req.url.split("?")[0].split("#")[0];
                 for (const dir of config_1.config.server.listenDir) {
-                    const absPath = path_1.default.resolve(dir);
-                    const listenFiles = glob_1.default.sync(path_1.default.join(dir, "/**/*"), {
-                        nodir: true,
-                    });
-                    for (const file of listenFiles) {
-                        const resolveFile = path_1.default.resolve(file);
-                        if (path_1.default.join(absPath, req.url) === resolveFile) {
-                            const binary = fs_1.default.readFileSync(resolveFile);
-                            const type = mime_types_1.default.lookup(file);
-                            return (0, vite_1.send)(req, res, binary, "", {
-                                headers: {
-                                    "Content-Type": String(type),
-                                },
-                            });
-                        }
+                    const requestFullFilePath = path_1.default.join(path_1.default.resolve(dir), requestURL);
+                    if (addStaticFiles[requestFullFilePath]) {
+                        const type = mime_types_1.default.lookup(requestURL);
+                        return (0, vite_1.send)(req, res, addStaticFiles[requestFullFilePath], "", {
+                            headers: {
+                                "Content-Type": String(type),
+                            },
+                        });
                     }
                 }
             }
