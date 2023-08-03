@@ -110,21 +110,21 @@ const createCacheAppFile = () => {
             const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.js`);
             const appImports = [`import {RettleStart} from "rettle/core";`];
             const scriptObject = [];
-            const scriptRunner = [`RettleStart(scripts, {})`];
+            const scriptRunner = [`RettleStart(clients, {})`];
             const defs = [];
             for (const file of files) {
                 const hash = (0, utility_2.createHash)(path_1.default.resolve(file));
                 const hashName = createScriptHash(file);
-                appImports.push(`import {script as Script_${hashName}} from "${path_1.default
+                appImports.push(`import {client as Client_${hashName}} from "${path_1.default
                     .relative(path_1.default.resolve(path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir)), file.replace("src/", ".cache/src/"))
                     .replace(".tsx", "")
                     .replace(".jsx", "")}";`);
-                scriptObject.push(`"${hash}": Script_${hashName}`);
+                scriptObject.push(`"${hash}": Client_${hashName}`);
             }
             yield (0, utility_1.mkdirp)(appFilePath);
             const code = [
                 appImports.join("\n"),
-                `const scripts = {${scriptObject.join(",\n")}};`,
+                `const clients = {${scriptObject.join(",\n")}};`,
                 scriptRunner.join("\n"),
             ];
             fs_1.default.writeFileSync(appFilePath, code.join("\n"), "utf-8");
