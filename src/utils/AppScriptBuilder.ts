@@ -259,7 +259,7 @@ export const eraseExports = async (code: string) => {
       const exportName = exportNodes[0].declaration.name;
       const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
       const removeReactJsCode = importReact
-        ? jsCode.replace(importReact, "")
+        ? jsCode.replace(importReact, "//" + importReact)
         : jsCode;
       const result = removeReactJsCode
         .replace(

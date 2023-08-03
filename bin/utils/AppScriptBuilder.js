@@ -247,7 +247,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const exportName = exportNodes[0].declaration.name;
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
             const removeReactJsCode = importReact
-                ? jsCode.replace(importReact, "")
+                ? jsCode.replace(importReact, "//" + importReact)
                 : jsCode;
             const result = removeReactJsCode
                 .replace(objects[exportName], objects[exportName]
