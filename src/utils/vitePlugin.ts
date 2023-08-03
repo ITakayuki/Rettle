@@ -36,7 +36,7 @@ export const vitePlugin: Plugin = {
   },
   configureServer(server) {
     server.middlewares.use(async (req, res, next) => {
-      if (req.url) {
+      if (req.url && config.server.listenDir) {
         const requestURL = req.url.split("?")[0].split("#")[0];
         for (const dir of config.server.listenDir) {
           const requestFullFilePath = path.join(path.resolve(dir), requestURL);
@@ -62,14 +62,7 @@ export const vitePlugin: Plugin = {
         fullReqStaticPath += "index.html";
       }
 
-      if (
-        fullReqPath.endsWith(".html") &&
-        req.url!.split("/").filter((item) => {
-          if (item !== "") {
-            return item;
-          }
-        })[0] === config.pathPrefix.replace(/\//g, "")
-      ) {
+      if (fullReqPath.endsWith(".html")) {
         const tsxPath = `${
           fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
           fullReqPath
@@ -122,6 +115,9 @@ export const vitePlugin: Plugin = {
             );
           }
         } else if (fs.existsSync(fullReqStaticPath)) {
+          if (req.url?.endsWith("/")) {
+            req.url = req.url + "index.html";
+          }
           return next();
         } else {
           const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;

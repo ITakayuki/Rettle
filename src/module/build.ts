@@ -95,7 +95,7 @@ export const build = async () => {
   );
 
   for (const js of jsFiles) {
-    config.build?.buildScript(js);
+    config.build.buildScript!(js);
   }
 
   // Create HTML FILES
@@ -135,7 +135,7 @@ export const build = async () => {
           collapseWhitespace: true,
           preserveLineBreaks: true,
         });
-        const code = config.build?.buildHTML(minifyHtml, htmlOutputPath);
+        const code = config.build.buildHTML!(minifyHtml, htmlOutputPath);
         fs.writeFileSync(htmlOutputPath, code, "utf-8");
       })
     );
@@ -155,10 +155,10 @@ export const build = async () => {
           ? js_beautify.css(style, {})
           : js_beautify.css(style, config.beautify.css)
         : style;
-      const purge = config.build?.buildCss(style, cssOutputPath);
+      const purge = config.build.buildCss!(style, cssOutputPath);
       fs.writeFileSync(cssOutputPath, purge, "utf-8");
     });
   });
   await copyStatic();
-  config.build?.copyStatic();
+  config.build.copyStatic!();
 };

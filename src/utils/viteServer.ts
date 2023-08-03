@@ -15,7 +15,7 @@ export const wakeupViteServer = async () => {
     publicDir: config.static,
     base: config.pathPrefix,
     define: {
-      "process.env": JSON.stringify(Object.assign(process.env, config.envs)),
+      "process.env": JSON.stringify(Object.assign(process.env, config.define)),
     },
   });
   await vite.listen();

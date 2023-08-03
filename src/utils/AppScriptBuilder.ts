@@ -158,10 +158,9 @@ export const buildScript = ({ outDir }: BuildScriptInterface) => {
         target: "es6",
         tsconfig: ".cache/tsconfig.json",
         define: {
-          "process.env": JSON.stringify(config.envs),
+          "process.env": JSON.stringify(config.define),
         },
         minify: true,
-        plugins: config.esbuild.plugins("client"),
       })
       .then(() => {
         resolve(null);
@@ -192,9 +191,9 @@ export const watchScript = ({ outDir }: BuildScriptInterface) => {
         target: "es6",
         tsconfig: ".cache/tsconfig.json",
         define: {
-          "process.env": JSON.stringify(config.envs),
+          "process.env": JSON.stringify(config.define),
         },
-        plugins: config.esbuild.plugins("client"),
+        plugins: config.esbuild.plugins!("client"),
       })
       .then(() => {
         resolve(null);

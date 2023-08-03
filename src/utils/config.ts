@@ -36,19 +36,19 @@ export interface RettleConfigInterface {
   endpoints: Array<string>;
   static: string;
   outDir: string;
-  envs?: Record<string, string>;
+  define?: Record<string, string>;
   header?: {
-    meta?: Array<object>;
-    link?: Array<object>;
-    script?: Array<object>;
+    meta?: Record<string, string | number | boolean>[];
+    link?: Record<string, string | number | boolean>[];
+    script?: Record<string, string | number | boolean>[];
   };
   template: (options: templateHTMLInterface) => string;
-  build?: BuildOptionsInterface;
+  build: BuildOptionsInterface;
   esbuild: esbuildInterface;
   version: boolean;
   server: {
-    port: number;
-    host: string;
+    port?: number;
+    host?: string;
     listenDir?: string[];
   };
 }
@@ -111,4 +111,4 @@ export const getIgnores = (endpoint: string) => {
   });
 };
 
-export const config = getConfigure();
+export const config: RettleConfigInterface = getConfigure();

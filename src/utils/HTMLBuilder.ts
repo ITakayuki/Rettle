@@ -60,9 +60,9 @@ export const transformReact2HTMLCSS = (
         platform: "node",
         write: false,
         external: Object.keys(dependencies),
-        plugins: config.esbuild.plugins("server"),
+        plugins: config.esbuild.plugins!("server"),
         define: {
-          "process.env": JSON.stringify(config.envs),
+          "process.env": JSON.stringify(config.define),
         },
       })
       .then((res) => {
@@ -110,9 +110,9 @@ export const transformReact2HTMLCSS = (
 
 export const createHeaderTags = (
   tagName: string,
-  contents: Array<Record<string, string>>
+  contents: Record<string, string | number | boolean>[]
 ) => {
-  return contents.map((item) => {
+  return contents.map((item: any) => {
     const content = Object.keys(item).map((key) => {
       return `${key}="${item[key]}"`;
     });
@@ -126,8 +126,10 @@ export const createHeaders = () => {
   const versionMeta = config.version
     ? [`<meta name="generator" content="Rettle ${version}">`]
     : [""];
-  const headerMeta = config.header?.meta
-    ? createHeaderTags("meta", config.header?.meta)
+  const headerMeta = config.header
+    ? config.header.meta
+      ? createHeaderTags("meta", config.header.meta)
+      : [""]
     : [""];
   const headerLink = config.header?.link
     ? createHeaderTags("link", config.header?.link)

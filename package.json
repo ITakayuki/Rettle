@@ -1,6 +1,6 @@
 {
   "name": "rettle",
-  "version": "0.0.8-beta2.9",
+  "version": "0.0.8-beta3.0",
   "main": "./bin/rettle.js",
   "scripts": {
     "start": "tsc",
@@ -87,7 +87,7 @@
     "rimraf": "^4.1.2",
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.2",
-    "vite": "^4.2.1",
+    "vite": "^4.3.1",
     "vite-plugin-full-reload": "^1.0.5"
   }
 }
