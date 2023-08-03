@@ -247,13 +247,13 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const exportName = exportNodes[0].declaration.name;
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
             const removeReactJsCode = importReact
-                ? jsCode.replace(importReact, "//" + importReact)
+                ? jsCode.replace(importReact, "")
                 : jsCode;
             const result = removeReactJsCode
                 .replace(objects[exportName], objects[exportName]
                 .split("\n")
                 .map((item) => {
-                return "//" + item;
+                return "";
             })
                 .join("\n"))
                 .replace(exportLine, "export default () => {}");
@@ -302,7 +302,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                     .replace(objects[name], objects[name]
                     .split("\n")
                     .map((item) => {
-                    return "//" + item;
+                    return "";
                 })
                     .join("\n"))
                     .replace(objects[cacheName], "//" + objects[cacheName]);
@@ -318,7 +318,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                 : replaceDefaultRettle;
             const result = removeReactJsCode.replace(exportStr, exportStr
                 .split("\n")
-                .map((item) => "//" + item)
+                .map((item) => "")
                 .join("\n")) + "\nexport default () => {}";
             return (0, exports.translateTs2Js)(result);
         }

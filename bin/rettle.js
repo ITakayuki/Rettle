@@ -57,13 +57,13 @@ exports.Component = new Proxy({}, {
             }, {});
             return React.createElement(key, Object.assign(prop, { "data-rettle-fr": props.frame }), props.children);
         };
-    }
+    },
 });
 const CommentOut = (props) => {
     return React.createElement("span", {
         "comment-out-begin": props.begin || "none",
         "comment-out-end": props.end || "none",
-        "data-comment-out": true
+        "data-comment-out": true,
     }, props.children);
 };
 exports.CommentOut = CommentOut;

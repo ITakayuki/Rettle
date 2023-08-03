@@ -259,7 +259,7 @@ export const eraseExports = async (code: string) => {
       const exportName = exportNodes[0].declaration.name;
       const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
       const removeReactJsCode = importReact
-        ? jsCode.replace(importReact, "//" + importReact)
+        ? jsCode.replace(importReact, "")
         : jsCode;
       const result = removeReactJsCode
         .replace(
@@ -267,7 +267,7 @@ export const eraseExports = async (code: string) => {
           objects[exportName]
             .split("\n")
             .map((item) => {
-              return "//" + item;
+              return "";
             })
             .join("\n")
         )
@@ -317,7 +317,7 @@ export const eraseExports = async (code: string) => {
             objects[name]
               .split("\n")
               .map((item) => {
-                return "//" + item;
+                return "";
               })
               .join("\n")
           )
@@ -336,7 +336,7 @@ export const eraseExports = async (code: string) => {
           exportStr,
           exportStr
             .split("\n")
-            .map((item) => "//" + item)
+            .map((item) => "")
             .join("\n")
         ) + "\nexport default () => {}";
       return translateTs2Js(result);

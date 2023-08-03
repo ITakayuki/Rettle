@@ -11,4 +11,6 @@ declare const onMounted: (cb: () => void) => void;
 export declare const RettleStart: (scripts: {
     [x: string]: ({ getRefs }: RettleMethods, props: Record<string, any>) => Record<string, any>;
 }) => Promise<void>;
+export declare type RettleClient<T> = (methods: RettleMethods, props: T) => Record<string, any> | void;
+export declare const createClient: <T>(mounted: RettleClient<T>) => RettleClient<T>;
 export {};

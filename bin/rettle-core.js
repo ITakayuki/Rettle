@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RettleStart = void 0;
+exports.createClient = exports.RettleStart = void 0;
 const globalValues = {
     props: {},
     scripts: {},
-    isLoaded: false
+    isLoaded: false,
 };
 const events = [
     // Other Events
@@ -44,10 +44,10 @@ const events = [
     // Keyboard Events
     `keypress`,
     `keydown`,
-    `keyup`
+    `keyup`,
 ];
 const ComponentInit = (frame, hash, args) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         for (const event of events) {
             const selector = `data-${event}-${hash}`;
             const eventTargets = frame.querySelectorAll(`[${selector}]`);
@@ -71,9 +71,11 @@ const ComponentInit = (frame, hash, args) => {
 };
 const watcher = (value, callback) => {
     const temp = {
-        value: value
+        value: value,
     };
-    return [temp, (setter) => {
+    return [
+        temp,
+        (setter) => {
             if (typeof setter !== "function") {
                 temp.value = setter;
             }
@@ -82,7 +84,8 @@ const watcher = (value, callback) => {
                 temp.value = call(temp.value);
             }
             callback();
-        }];
+        },
+    ];
 };
 const getRefs = (frame, hash) => {
     const targets = frame.querySelectorAll(`[data-ref-${hash}]`);
@@ -117,7 +120,8 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
     yield Promise.all(frames.map((frame) => __awaiter(void 0, void 0, void 0, function* () {
         const hash = frame.getAttribute("data-rettle-fr");
         let parents = frame.parentNode;
-        while (!parents.getAttribute("data-rettle-fr") && document.body !== parents) {
+        while (!parents.getAttribute("data-rettle-fr") &&
+            document.body !== parents) {
             parents = parents.parentNode;
         }
         const parentHash = parents.getAttribute("data-rettle-fr");
@@ -126,7 +130,7 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
                 getRefs: getRefs(frame, hash),
                 getRef: (key) => getRefs(frame, hash)()[key],
                 watcher,
-                onMounted
+                onMounted,
             }, globalValues.scripts[parentHash] || {});
             globalValues.scripts[hash] = args;
             yield ComponentInit(frame, hash, args);
@@ -135,4 +139,8 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
     globalValues.isLoaded = true;
 });
 exports.RettleStart = RettleStart;
+const createClient = (mounted) => {
+    return mounted;
+};
+exports.createClient = createClient;
 //# sourceMappingURL=rettle-core.js.map

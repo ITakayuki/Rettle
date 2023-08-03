@@ -2,7 +2,6 @@ import { RettleConfigInterface } from "./utils/config";
 import { EmotionCache } from "@emotion/cache";
 import * as React from "react";
 import { SerializedStyles } from "@emotion/react";
-import { RettleMethods } from "./rettle-core";
 export declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
 export declare const createCache: (key: string) => EmotionCache;
 export declare const createRettle: (cache: EmotionCache, element: JSX.Element) => import("@emotion/server/create-instance").EmotionCritical;
@@ -197,5 +196,4 @@ interface CommentOutProps {
     end?: string;
 }
 export declare const CommentOut: React.FC<CommentOutProps>;
-export declare type RettleFrame = (methods: RettleMethods, props: Record<string, any>) => Record<string, any> | void;
 export {};

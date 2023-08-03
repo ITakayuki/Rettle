@@ -1,16 +1,14 @@
 interface globalValueInterface {
-  props: {[index in string]: Record<string, any>},
-  scripts: {[index in string]: Record<string, any>},
-  isLoaded: boolean
+  props: { [index in string]: Record<string, any> };
+  scripts: { [index in string]: Record<string, any> };
+  isLoaded: boolean;
 }
 
-const globalValues:globalValueInterface = {
+const globalValues: globalValueInterface = {
   props: {},
   scripts: {},
-  isLoaded: false
-}
-
-
+  isLoaded: false,
+};
 
 const events = [
   // Other Events
@@ -41,12 +39,15 @@ const events = [
   // Keyboard Events
   `keypress`,
   `keydown`,
-  `keyup`
-]
+  `keyup`,
+];
 
-
-const ComponentInit = (frame:Element, hash: string, args: Record<string, any>) => {
-  return new Promise(resolve => {
+const ComponentInit = (
+  frame: Element,
+  hash: string,
+  args: Record<string, any>
+) => {
+  return new Promise((resolve) => {
     for (const event of events) {
       const selector = `data-${event}-${hash}`;
       const eventTargets = frame.querySelectorAll(`[${selector}]`);
@@ -54,8 +55,12 @@ const ComponentInit = (frame:Element, hash: string, args: Record<string, any>) =
         for (const eventTarget of eventTargets) {
           const labelName = eventTarget.getAttribute(selector);
           if (!args) return console.error(`Cannot found property ${labelName}`);
-          if (labelName === null) return console.error(`Cannot found property ${selector} of ${eventTarget}`);
-          if (!args.hasOwnProperty(labelName)) return console.error(`Cannot found property ${labelName}`);
+          if (labelName === null)
+            return console.error(
+              `Cannot found property ${selector} of ${eventTarget}`
+            );
+          if (!args.hasOwnProperty(labelName))
+            return console.error(`Cannot found property ${labelName}`);
           if (labelName in args) {
             eventTarget.addEventListener(event, args[labelName]);
           }
@@ -63,32 +68,37 @@ const ComponentInit = (frame:Element, hash: string, args: Record<string, any>) =
       }
     }
     resolve(null);
-  })
-}
-
+  });
+};
 
 type watcherFunctionType<T> = (arg: T) => T;
 
-const watcher = <T,>(value: T, callback: () => void): [{value: T}, (arg:  ((val: T) => T) | T) => void ] => {
+const watcher = <T>(
+  value: T,
+  callback: () => void
+): [{ value: T }, (arg: ((val: T) => T) | T) => void] => {
   const temp = {
-    value: value
-  }
-  return [temp, (setter: T | watcherFunctionType<T> ) => {
-    if (typeof setter !== "function") {
-      temp.value = setter;
-    } else if (typeof setter === "function") {
-      const call = setter as watcherFunctionType<T>
-      temp.value = call(temp.value);
-    }
-    callback();
-  }]
-}
+    value: value,
+  };
+  return [
+    temp,
+    (setter: T | watcherFunctionType<T>) => {
+      if (typeof setter !== "function") {
+        temp.value = setter;
+      } else if (typeof setter === "function") {
+        const call = setter as watcherFunctionType<T>;
+        temp.value = call(temp.value);
+      }
+      callback();
+    },
+  ];
+};
 
 export interface RettleMethods {
   getRefs: () => Record<string, HTMLElement>;
   getRef: (key: string) => HTMLElement;
-  watcher: typeof watcher,
-  onMounted: typeof onMounted
+  watcher: typeof watcher;
+  onMounted: typeof onMounted;
 }
 const getRefs = (frame: Element, hash: string) => {
   const targets = frame.querySelectorAll(`[data-ref-${hash}]`);
@@ -103,7 +113,7 @@ const getRefs = (frame: Element, hash: string) => {
     result[tag!] = target as HTMLElement;
   }
   return () => result;
-}
+};
 
 const onMounted = (cb: () => void) => {
   const mountInterval = setInterval(() => {
@@ -113,30 +123,52 @@ const onMounted = (cb: () => void) => {
       } catch (e) {
         console.error(e);
       }
-      clearInterval(mountInterval)
+      clearInterval(mountInterval);
     }
   }, 500);
-}
+};
 
-export const RettleStart = async(scripts: {[index in string]: ({getRefs}: RettleMethods, props: Record<string, any>) => Record<string, any>}) => {
+export const RettleStart = async (scripts: {
+  [index in string]: (
+    { getRefs }: RettleMethods,
+    props: Record<string, any>
+  ) => Record<string, any>;
+}) => {
   const frames = [...document.querySelectorAll("[data-rettle-fr]")];
-  await Promise.all(frames.map(async(frame) => {
-    const hash = frame.getAttribute("data-rettle-fr")!;
-    let parents = frame.parentNode! as Element;
-    while (!parents.getAttribute("data-rettle-fr") && document.body !== parents) {
-      parents = parents.parentNode! as Element;
-    }
-    const parentHash = parents.getAttribute("data-rettle-fr")!;
-    if (scripts[hash]) {
-      const args = scripts[hash]({
-        getRefs: getRefs(frame, hash),
-        getRef: (key: string) => getRefs(frame, hash)()[key],
-        watcher,
-        onMounted
-      }, globalValues.scripts[parentHash] || {});
-      globalValues.scripts[hash] = args;
-      await ComponentInit(frame, hash, args);
-    }
-  }))
+  await Promise.all(
+    frames.map(async (frame) => {
+      const hash = frame.getAttribute("data-rettle-fr")!;
+      let parents = frame.parentNode! as Element;
+      while (
+        !parents.getAttribute("data-rettle-fr") &&
+        document.body !== parents
+      ) {
+        parents = parents.parentNode! as Element;
+      }
+      const parentHash = parents.getAttribute("data-rettle-fr")!;
+      if (scripts[hash]) {
+        const args = scripts[hash](
+          {
+            getRefs: getRefs(frame, hash),
+            getRef: (key: string) => getRefs(frame, hash)()[key],
+            watcher,
+            onMounted,
+          },
+          globalValues.scripts[parentHash] || {}
+        );
+        globalValues.scripts[hash] = args;
+        await ComponentInit(frame, hash, args);
+      }
+    })
+  );
   globalValues.isLoaded = true;
-}
+};
+
+export type RettleClient<T> = (
+  methods: RettleMethods,
+  props: T
+) => Record<string, any> | void;
+
+export const createClient = <T>(mounted: RettleClient<T>) => {
+  return mounted;
+};
