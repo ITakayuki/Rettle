@@ -25,7 +25,7 @@ const createRettle = (cache: EmotionCache, element: JSX.Element) => {
 /***********************/
 
 type RettleComponent = {
-  frame: true;
+  frame: "[fr]";
   children: JSX.Element | React.ReactNode;
   css?: SerializedStyles;
   clientKey?: string;

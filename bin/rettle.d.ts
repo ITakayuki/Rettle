@@ -8,7 +8,7 @@ declare const createRettle: (cache: EmotionCache, element: JSX.Element) => impor
 /***********************/
 /***********************/
 declare type RettleComponent = {
-    frame: true;
+    frame: "[fr]";
     children: JSX.Element | React.ReactNode;
     css?: SerializedStyles;
     clientKey?: string;
@@ -114,7 +114,7 @@ declare const Component: {
     sub: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
     summary: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
     sup: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
-    table: (props: RettleComponent & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => JSX.Element;
+    table: (props: never) => JSX.Element;
     template: (props: RettleComponent & React.ClassAttributes<HTMLTemplateElement> & React.HTMLAttributes<HTMLTemplateElement>) => JSX.Element;
     tbody: (props: RettleComponent & React.ClassAttributes<HTMLTableSectionElement> & React.HTMLAttributes<HTMLTableSectionElement>) => JSX.Element;
     td: (props: RettleComponent & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>) => JSX.Element;
