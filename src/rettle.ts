@@ -7,43 +7,58 @@ import { SerializedStyles } from "@emotion/react";
 import { IntrinsicElements } from "./elementTypes";
 import { CacheProvider } from "@emotion/react";
 
-export const defineOption = (options: () => Partial<RettleConfigInterface>) => {
+const defineOption = (options: () => Partial<RettleConfigInterface>) => {
   return options;
 };
 
-export const createCache = (key: string) => emotionCreateCache({ key });
+const createCache = (key: string) => emotionCreateCache({ key });
 
-export const createRettle = (cache: EmotionCache, element: JSX.Element) => {
+const createRettle = (cache: EmotionCache, element: JSX.Element) => {
   const html = React.createElement(CacheProvider, { value: cache }, element);
   const { extractCritical } = createEmotionServer(cache);
   return extractCritical(ReactDom.renderToString(html));
 };
 
 /***********************/
+
 /* Components Methods */
 /***********************/
 
 type RettleComponent = {
-  frame: "[fr]";
+  frame: true;
   children: JSX.Element | React.ReactNode;
   css?: SerializedStyles;
+  clientKey?: string;
 };
-export const Component = new Proxy(
+const Component = new Proxy(
   {},
   {
     get: (_, key: keyof IntrinsicElements) => {
       return (props: Record<string, any>) => {
         const prop = Object.keys(props).reduce((objAcc: any, key: any) => {
           // 累積オブジェクトにキーを追加して、値を代入
-          if (key !== "frame" && key !== "css" && key !== "children") {
+          if (
+            key !== "frame" &&
+            key !== "css" &&
+            key !== "children" &&
+            key !== "clientKey"
+          ) {
             objAcc[key] = props[key];
           }
           // 累積オブジェクトを更新
           return objAcc;
         }, {});
+        const clientKey = props.clientKey
+          ? {
+              "data-client-key": props.clientKey,
+            }
+          : {};
         return React.createElement(
           key,
-          Object.assign(prop, { "data-rettle-fr": props.frame }),
+          Object.assign(prop, {
+            "data-rettle-fr": props.frame,
+            ...clientKey,
+          }),
           props.children
         );
       };
@@ -61,7 +76,7 @@ interface CommentOutProps {
   end?: string;
 }
 
-export const CommentOut: React.FC<CommentOutProps> = (props) => {
+const CommentOut: React.FC<CommentOutProps> = (props) => {
   return React.createElement(
     "span",
     {
@@ -72,3 +87,5 @@ export const CommentOut: React.FC<CommentOutProps> = (props) => {
     props.children
   );
 };
+
+export { Component, CommentOut, createRettle, defineOption, createCache };

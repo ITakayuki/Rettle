@@ -2,17 +2,18 @@ import { RettleConfigInterface } from "./utils/config";
 import { EmotionCache } from "@emotion/cache";
 import * as React from "react";
 import { SerializedStyles } from "@emotion/react";
-export declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
-export declare const createCache: (key: string) => EmotionCache;
-export declare const createRettle: (cache: EmotionCache, element: JSX.Element) => import("@emotion/server/create-instance").EmotionCritical;
+declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
+declare const createCache: (key: string) => EmotionCache;
+declare const createRettle: (cache: EmotionCache, element: JSX.Element) => import("@emotion/server/create-instance").EmotionCritical;
 /***********************/
 /***********************/
 declare type RettleComponent = {
-    frame: "[fr]";
+    frame: true;
     children: JSX.Element | React.ReactNode;
     css?: SerializedStyles;
+    clientKey?: string;
 };
-export declare const Component: {
+declare const Component: {
     a: (props: RettleComponent & React.ClassAttributes<HTMLAnchorElement> & React.AnchorHTMLAttributes<HTMLAnchorElement>) => JSX.Element;
     abbr: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
     address: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
@@ -113,7 +114,7 @@ export declare const Component: {
     sub: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
     summary: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
     sup: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
-    table: (props: never) => JSX.Element;
+    table: (props: RettleComponent & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => JSX.Element;
     template: (props: RettleComponent & React.ClassAttributes<HTMLTemplateElement> & React.HTMLAttributes<HTMLTemplateElement>) => JSX.Element;
     tbody: (props: RettleComponent & React.ClassAttributes<HTMLTableSectionElement> & React.HTMLAttributes<HTMLTableSectionElement>) => JSX.Element;
     td: (props: RettleComponent & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>) => JSX.Element;
@@ -195,5 +196,5 @@ interface CommentOutProps {
     begin?: string;
     end?: string;
 }
-export declare const CommentOut: React.FC<CommentOutProps>;
-export {};
+declare const CommentOut: React.FC<CommentOutProps>;
+export { Component, CommentOut, createRettle, defineOption, createCache };

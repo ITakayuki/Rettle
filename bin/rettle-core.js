@@ -9,11 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createClient = exports.RettleStart = void 0;
+exports.RettleStart = exports.useReactive = exports.createClient = exports.watcher = exports.onDocumentReady = void 0;
 const globalValues = {
     props: {},
     scripts: {},
     isLoaded: false,
+    readyFunctions: [],
+    watcherStorage: {},
 };
 const events = [
     // Other Events
@@ -46,6 +48,18 @@ const events = [
     `keydown`,
     `keyup`,
 ];
+const djb2Hash = (str) => {
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) + hash + str.charCodeAt(i);
+    }
+    return hash;
+};
+const createHash = (str) => {
+    const hash = djb2Hash(str);
+    const fullStr = "0000000" + (hash & 0xffffff).toString(16);
+    return fullStr.substring(fullStr.length - 8, fullStr.length);
+};
 const ComponentInit = (frame, hash, args) => {
     return new Promise((resolve) => {
         for (const event of events) {
@@ -69,24 +83,42 @@ const ComponentInit = (frame, hash, args) => {
         resolve(null);
     });
 };
-const watcher = (value, callback) => {
-    const temp = {
+const useReactive = (value) => {
+    let hash = `${createHash(JSON.stringify(value))}_`;
+    hash = hash + Math.floor(Math.random() * 10 ** 10);
+    globalValues.watcherStorage[hash] = [];
+    const target = typeof value === "object"
+        ? Object.assign(Object.assign({}, value), { hash }) : {
         value: value,
+        hash: hash,
     };
-    return [
-        temp,
-        (setter) => {
-            if (typeof setter !== "function") {
-                temp.value = setter;
+    return new Proxy(target, {
+        set: function (target, property, val, receiver) {
+            if (property !== hash) {
+                target[property] = val;
+                for (const fn of globalValues.watcherStorage[hash]) {
+                    fn();
+                }
+                return true;
             }
-            else if (typeof setter === "function") {
-                const call = setter;
-                temp.value = call(temp.value);
+            else {
+                return false;
             }
-            callback();
         },
-    ];
+    });
 };
+exports.useReactive = useReactive;
+const watcher = (hook, targets, initialize) => {
+    for (const target of targets) {
+        globalValues.watcherStorage[target.hash].push(() => {
+            hook();
+        });
+    }
+    if (initialize) {
+        hook();
+    }
+};
+exports.watcher = watcher;
 const getRefs = (frame, hash) => {
     const targets = frame.querySelectorAll(`[data-ref-${hash}]`);
     const result = {};
@@ -102,19 +134,10 @@ const getRefs = (frame, hash) => {
     }
     return () => result;
 };
-const onMounted = (cb) => {
-    const mountInterval = setInterval(() => {
-        if (globalValues.isLoaded === true) {
-            try {
-                cb();
-            }
-            catch (e) {
-                console.error(e);
-            }
-            clearInterval(mountInterval);
-        }
-    }, 500);
+const onDocumentReady = (cb) => {
+    globalValues.readyFunctions.push(cb);
 };
+exports.onDocumentReady = onDocumentReady;
 const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () {
     const frames = [...document.querySelectorAll("[data-rettle-fr]")];
     yield Promise.all(frames.map((frame) => __awaiter(void 0, void 0, void 0, function* () {
@@ -125,17 +148,33 @@ const RettleStart = (scripts) => __awaiter(void 0, void 0, void 0, function* () 
             parents = parents.parentNode;
         }
         const parentHash = parents.getAttribute("data-rettle-fr");
+        const propsKey = frame.getAttribute("data-client-key");
+        let props;
+        if (propsKey && globalValues.scripts[parentHash]) {
+            if (globalValues.scripts[parentHash][propsKey]) {
+                props = globalValues.scripts[parentHash][propsKey];
+            }
+        }
+        if (!props) {
+            props = {};
+        }
         if (scripts[hash]) {
             const args = scripts[hash]({
                 getRefs: getRefs(frame, hash),
                 getRef: (key) => getRefs(frame, hash)()[key],
-                watcher,
-                onMounted,
-            }, globalValues.scripts[parentHash] || {});
+            }, props);
             globalValues.scripts[hash] = args;
             yield ComponentInit(frame, hash, args);
         }
     })));
+    const mountInterval = setInterval(() => {
+        if (globalValues.isLoaded) {
+            clearInterval(mountInterval);
+            for (const fn of globalValues.readyFunctions) {
+                fn();
+            }
+        }
+    }, 500);
     globalValues.isLoaded = true;
 });
 exports.RettleStart = RettleStart;

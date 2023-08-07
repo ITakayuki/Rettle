@@ -1,16 +1,16 @@
-declare const watcher: <T>(value: T, callback: () => void) => [{
+declare type Reactive<T> = T extends object ? T : {
     value: T;
-}, (arg: T | ((val: T) => T)) => void];
-export interface RettleMethods {
-    getRefs: () => Record<string, HTMLElement>;
-    getRef: (key: string) => HTMLElement;
-    watcher: typeof watcher;
-    onMounted: typeof onMounted;
+};
+declare const useReactive: <T>(value: T) => Reactive<T>;
+declare const watcher: (hook: () => void, targets: Reactive<any>[], initialize?: boolean) => void;
+interface RettleMethods {
+    getRefs: <T = Record<string, HTMLElement>>() => T;
+    getRef: <T = HTMLElement>(key: string) => T;
 }
-declare const onMounted: (cb: () => void) => void;
-export declare const RettleStart: (scripts: {
+declare const onDocumentReady: (cb: () => void) => void;
+declare const RettleStart: (scripts: {
     [x: string]: ({ getRefs }: RettleMethods, props: Record<string, any>) => Record<string, any>;
 }) => Promise<void>;
-export declare type RettleClient<T> = (methods: RettleMethods, props: T) => Record<string, any> | void;
-export declare const createClient: <T>(mounted: RettleClient<T>) => RettleClient<T>;
-export {};
+declare type RettleClient<T> = (methods: RettleMethods, props: T) => Record<string, any> | void;
+declare const createClient: <T>(mounted: RettleClient<T>) => RettleClient<T>;
+export { onDocumentReady, watcher, createClient, useReactive, RettleStart, type RettleClient, RettleMethods, };

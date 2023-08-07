@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CommentOut = exports.Component = exports.createRettle = exports.createCache = exports.defineOption = void 0;
+exports.createCache = exports.defineOption = exports.createRettle = exports.CommentOut = exports.Component = void 0;
 const cache_1 = __importDefault(require("@emotion/cache"));
 const server_1 = __importDefault(require("react-dom/server"));
 const create_instance_1 = __importDefault(require("@emotion/server/create-instance"));
@@ -44,21 +44,30 @@ const createRettle = (cache, element) => {
     return extractCritical(server_1.default.renderToString(html));
 };
 exports.createRettle = createRettle;
-exports.Component = new Proxy({}, {
+const Component = new Proxy({}, {
     get: (_, key) => {
         return (props) => {
             const prop = Object.keys(props).reduce((objAcc, key) => {
                 // 累積オブジェクトにキーを追加して、値を代入
-                if (key !== "frame" && key !== "css" && key !== "children") {
+                if (key !== "frame" &&
+                    key !== "css" &&
+                    key !== "children" &&
+                    key !== "clientKey") {
                     objAcc[key] = props[key];
                 }
                 // 累積オブジェクトを更新
                 return objAcc;
             }, {});
-            return React.createElement(key, Object.assign(prop, { "data-rettle-fr": props.frame }), props.children);
+            const clientKey = props.clientKey
+                ? {
+                    "data-client-key": props.clientKey,
+                }
+                : {};
+            return React.createElement(key, Object.assign(prop, Object.assign({ "data-rettle-fr": props.frame }, clientKey)), props.children);
         };
     },
 });
+exports.Component = Component;
 const CommentOut = (props) => {
     return React.createElement("span", {
         "comment-out-begin": props.begin || "none",
