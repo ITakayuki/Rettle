@@ -21,14 +21,14 @@ const insertCommentOut = (code: string) => {
     const beginComment = article.getAttribute("comment-out-begin");
     const endComment = article.getAttribute("comment-out-end");
     const commentOutBegin =
-      beginComment !== "none" ? "<!--- ${beginComment} --->" : "";
+      beginComment !== "none" ? `<!--- ${beginComment} --->` : "";
     const commentOutEnd =
       endComment !== "none" ? `<!--- ${endComment} --->` : "";
     let children: string = "";
     for (const child of article.childNodes) {
       children += child.toString();
     }
-    const htmlArr = [commentOutBegin];
+    const htmlArr = [];
     if (commentOutBegin !== "") htmlArr.push(commentOutBegin);
     if (article.childNodes.length !== 0)
       htmlArr.push(
