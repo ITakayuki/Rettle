@@ -1,9 +1,6 @@
 import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
 import * as path from "path";
-import * as bodyParser from "body-parser";
-import * as serveStatic from "serve-static";
-import * as qs from "qs";
 import js_beautify from "js-beautify";
 interface RouterOptions {
   caseSensitive?: boolean | undefined;
@@ -102,8 +99,10 @@ const getConfigure = () => {
 export const getIgnores = (endpoint: string) => {
   const ignores = config.endpoints.filter(
     (x: string, i: number, self: string[]) => {
+      const rootEndpoint = path.join(config.root, self[i]);
       return (
-        self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
+        self[i] !== endpoint &&
+        !endpoint.includes(rootEndpoint.replace("/**/*", ""))
       );
     }
   ) as string[];

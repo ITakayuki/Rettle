@@ -64,7 +64,7 @@ const createTsConfigFile = () => {
 exports.createTsConfigFile = createTsConfigFile;
 const createFileName = (filePath) => {
     const relativePath = path_1.default
-        .relative(path_1.default.resolve("./src/views/"), filePath)
+        .relative(path_1.default.resolve(config_1.config.root), filePath)
         .replace("/**/*", "")
         .replace("**/*", "");
     return relativePath;
@@ -104,9 +104,10 @@ const createCacheAppFile = () => {
         const jsFileName = path_1.default.basename(config_1.config.js).replace(".js", "");
         const jsBaseDir = path_1.default.dirname(config_1.config.js);
         for (const endpoint of config_1.config.endpoints) {
-            const ignore = (0, config_1.getIgnores)(endpoint);
-            const files = yield (0, Dependencies_1.getDependencies)(endpoint, ignore);
-            const appResolvePath = createFileName(endpoint);
+            const rootEndpoint = path_1.default.join(config_1.config.root, endpoint);
+            const ignore = (0, config_1.getIgnores)(rootEndpoint);
+            const files = yield (0, Dependencies_1.getDependencies)(rootEndpoint, ignore);
+            const appResolvePath = createFileName(rootEndpoint);
             const appFilePath = path_1.default.join(".cache/scripts", appResolvePath, jsBaseDir, `${jsFileName}.js`);
             const appImports = [`import {RettleStart} from "rettle/core";`];
             const scriptObject = [];

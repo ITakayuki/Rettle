@@ -43,7 +43,7 @@ export const createTsConfigFile = () => {
 
 const createFileName = (filePath: string) => {
   const relativePath = path
-    .relative(path.resolve("./src/views/"), filePath)
+    .relative(path.resolve(config.root), filePath)
     .replace("/**/*", "")
     .replace("**/*", "");
   return relativePath;
@@ -97,9 +97,10 @@ export const createCacheAppFile = () => {
     const jsFileName = path.basename(config.js).replace(".js", "");
     const jsBaseDir = path.dirname(config.js);
     for (const endpoint of config.endpoints) {
-      const ignore = getIgnores(endpoint);
-      const files = await getDependencies(endpoint, ignore);
-      const appResolvePath = createFileName(endpoint);
+      const rootEndpoint = path.join(config.root, endpoint);
+      const ignore = getIgnores(rootEndpoint);
+      const files = await getDependencies(rootEndpoint, ignore);
+      const appResolvePath = createFileName(rootEndpoint);
       const appFilePath = path.join(
         ".cache/scripts",
         appResolvePath,

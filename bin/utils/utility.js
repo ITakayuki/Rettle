@@ -63,12 +63,13 @@ exports.createHash = createHash;
 const getEntryPaths = () => {
     const entryPaths = {};
     config_1.config.endpoints.map((endpoint) => {
-        const ignore = (0, config_1.getIgnores)(endpoint);
-        const files = glob_1.default.sync(path.join(endpoint, "/**/*"), {
+        const rootEndpoint = path.join(config_1.config.root, endpoint);
+        const ignore = (0, config_1.getIgnores)(rootEndpoint);
+        const files = glob_1.default.sync(path.join(rootEndpoint, "/**/*"), {
             ignore,
             nodir: true,
         });
-        entryPaths[endpoint] = files;
+        entryPaths[rootEndpoint] = files;
     });
     return entryPaths;
 };
@@ -91,10 +92,11 @@ const checkEndpoint = (file) => {
         return countSlash(a) < countSlash(b) ? 1 : -1;
     });
     for (const ep of endpoints) {
-        const absPath = path.resolve(ep);
+        const rootEndpoint = path.join(config_1.config.root, ep);
+        const absPath = path.resolve(rootEndpoint);
         const absFilePath = path.isAbsolute(file) ? file : path.resolve(file);
         if (absFilePath.includes(absPath)) {
-            const fp = absPath.replace(path.resolve("./src/views/"), "");
+            const fp = absPath.replace(path.resolve(config_1.config.root), "");
             return fp.endsWith("/") ? fp.slice(0, -1) : fp;
         }
     }

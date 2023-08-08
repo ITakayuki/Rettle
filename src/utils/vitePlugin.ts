@@ -68,7 +68,7 @@ export const vitePlugin: Plugin = {
           fullReqPath
         }.tsx`.replace(
           path.join("/src/views/", config.pathPrefix),
-          "/src/views/"
+          config.root
         );
 
         if (fs.existsSync(tsxPath)) {

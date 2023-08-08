@@ -108,7 +108,10 @@ export const build = async () => {
         const { html, css, ids } = await transformReact2HTMLCSS(item);
         const helmet = createHelmet();
         const headers = createHeaders().concat(helmet.headers);
-        const root = key.replace("src/views", config.pathPrefix);
+        const root = key.replace(
+          path.join(config.root, item),
+          config.pathPrefix
+        );
         const script = path.join("/", root, config.js);
         headers.push(
           `<link rel="stylesheet" href="${path.join("/", root, config.css)}">`
@@ -123,11 +126,7 @@ export const build = async () => {
         styles = styles + css;
         const exName = path.extname(item);
         const htmlOutputPath = path
-          .join(
-            config.outDir,
-            config.pathPrefix,
-            item.replace("src/views/", "")
-          )
+          .join(config.outDir, config.pathPrefix, item.replace(config.root, ""))
           .replace(exName, ".html");
         await mkdirp(htmlOutputPath);
         const minifyHtml = await minify(markup, {

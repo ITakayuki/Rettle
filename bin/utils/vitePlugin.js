@@ -94,7 +94,7 @@ exports.vitePlugin = {
             }
             if (fullReqPath.endsWith(".html")) {
                 const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
-                    fullReqPath}.tsx`.replace(path_1.default.join("/src/views/", config_1.config.pathPrefix), "/src/views/");
+                    fullReqPath}.tsx`.replace(path_1.default.join("/src/views/", config_1.config.pathPrefix), config_1.config.root);
                 if (fs_1.default.existsSync(tsxPath)) {
                     try {
                         const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(tsxPath);

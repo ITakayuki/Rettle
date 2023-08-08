@@ -69,7 +69,9 @@ const getConfigure = () => {
 };
 const getIgnores = (endpoint) => {
     const ignores = exports.config.endpoints.filter((x, i, self) => {
-        return (self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", "")));
+        const rootEndpoint = path.join(exports.config.root, self[i]);
+        return (self[i] !== endpoint &&
+            !endpoint.includes(rootEndpoint.replace("/**/*", "")));
     });
     return ignores.map((item) => {
         return item.includes("/**/*") ? item : path.join(item, "/**/*");
