@@ -100,7 +100,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
             const helmet = (0, HTMLBuilder_1.createHelmet)();
             const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-            const root = key.replace(path_1.default.join(config_1.config.root, item), config_1.config.pathPrefix);
+            const root = key.replace(config_1.config.root, config_1.config.pathPrefix);
             const script = path_1.default.join("/", root, config_1.config.js);
             headers.push(`<link rel="stylesheet" href="${path_1.default.join("/", root, config_1.config.css)}">`);
             const markup = config_1.config.template({
@@ -124,7 +124,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             const code = config_1.config.build.buildHTML(minifyHtml, htmlOutputPath);
             fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
         })));
-        const root = key.replace("./src/views", "");
+        const root = key.replace(config_1.config.root, "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);
         (0, css_purge_1.purgeCSS)(styles, {}, (error, result) => __awaiter(void 0, void 0, void 0, function* () {
             if (error)

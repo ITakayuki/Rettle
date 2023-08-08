@@ -38,7 +38,7 @@ const config = {
     js: "/assets/script/app.js",
     beautify: {},
     template: template_html_1.templateHtml,
-    root: "./src/views",
+    root: "src/views/",
     endpoints: ["/"],
     build: {
         buildHTML: (code) => code,

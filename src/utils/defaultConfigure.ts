@@ -11,7 +11,7 @@ const config: RettleConfigInterface = {
   js: "/assets/script/app.js",
   beautify: {},
   template: templateHtml,
-  root: "./src/views",
+  root: "src/views/",
   endpoints: ["/"],
   build: {
     buildHTML: (code) => code,

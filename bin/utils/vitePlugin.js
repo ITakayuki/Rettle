@@ -84,7 +84,7 @@ exports.vitePlugin = {
                 }
             }
             const root = server.config.root;
-            let fullReqPath = path_1.default.join(root, "src/views", req.url || "");
+            let fullReqPath = path_1.default.join(root, config_1.config.root, req.url || "");
             let fullReqStaticPath = path_1.default.join(root, config_1.config.static, req.url || "");
             if (fullReqPath.endsWith("/")) {
                 fullReqPath += "index.html";
@@ -94,7 +94,7 @@ exports.vitePlugin = {
             }
             if (fullReqPath.endsWith(".html")) {
                 const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
-                    fullReqPath}.tsx`.replace(path_1.default.join("/src/views/", config_1.config.pathPrefix), config_1.config.root);
+                    fullReqPath}.tsx`.replace(path_1.default.join(config_1.config.root, config_1.config.pathPrefix), config_1.config.root);
                 if (fs_1.default.existsSync(tsxPath)) {
                     try {
                         const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(tsxPath);

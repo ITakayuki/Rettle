@@ -65,7 +65,7 @@ const getEntryPaths = () => {
     config_1.config.endpoints.map((endpoint) => {
         const rootEndpoint = path.join(config_1.config.root, endpoint);
         const ignore = (0, config_1.getIgnores)(rootEndpoint);
-        const files = glob_1.default.sync(path.join(rootEndpoint, "/**/*"), {
+        const files = glob_1.default.sync(path.join("./", rootEndpoint, "/**/*"), {
             ignore,
             nodir: true,
         });

@@ -51,7 +51,7 @@ export const vitePlugin: Plugin = {
         }
       }
       const root = server.config.root;
-      let fullReqPath = path.join(root, "src/views", req.url || "");
+      let fullReqPath = path.join(root, config.root, req.url || "");
       let fullReqStaticPath = path.join(root, config.static, req.url || "");
 
       if (fullReqPath.endsWith("/")) {
@@ -66,10 +66,7 @@ export const vitePlugin: Plugin = {
         const tsxPath = `${
           fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
           fullReqPath
-        }.tsx`.replace(
-          path.join("/src/views/", config.pathPrefix),
-          config.root
-        );
+        }.tsx`.replace(path.join(config.root, config.pathPrefix), config.root);
 
         if (fs.existsSync(tsxPath)) {
           try {
