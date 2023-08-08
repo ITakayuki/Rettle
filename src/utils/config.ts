@@ -32,6 +32,7 @@ export interface RettleConfigInterface {
   pathPrefix: string;
   css: string;
   js: string;
+  root: string;
   beautify: BeautifyOptions;
   endpoints: Array<string>;
   static: string;

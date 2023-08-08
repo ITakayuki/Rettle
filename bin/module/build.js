@@ -100,7 +100,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
             const helmet = (0, HTMLBuilder_1.createHelmet)();
             const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-            const root = key.replace("src/views", config_1.config.pathPrefix);
+            const root = key.replace(item.replace("./", ""), config_1.config.pathPrefix);
             const script = path_1.default.join("/", root, config_1.config.js);
             headers.push(`<link rel="stylesheet" href="${path_1.default.join("/", root, config_1.config.css)}">`);
             const markup = config_1.config.template({
