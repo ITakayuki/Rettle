@@ -1,10 +1,11 @@
 import { config } from "./config";
 import { createServer } from "vite";
-import { vitePlugin } from "./vitePlugin";
-import FullReload from "vite-plugin-full-reload";
+import { viteRettlePlugin } from "./viteRettlePlugin";
+import { viteAdditionalStaticPlugin } from "./viteAdditionalStaticPlugin";
+
 export const wakeupViteServer = async () => {
   const vite = await createServer({
-    plugins: [vitePlugin, FullReload(["./**/*"])],
+    plugins: [viteAdditionalStaticPlugin, viteRettlePlugin],
     server: {
       port: config.server.port,
       host: config.server.host,

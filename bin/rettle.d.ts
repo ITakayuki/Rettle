@@ -4,7 +4,8 @@ import * as React from "react";
 import { SerializedStyles } from "@emotion/react";
 declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
 declare const createCache: (key: string) => EmotionCache;
-declare const createRettle: (cache: EmotionCache, element: JSX.Element) => import("@emotion/server/create-instance").EmotionCritical;
+declare const createRettle: (element: JSX.Element, cache?: EmotionCache) => import("@emotion/server/create-instance").EmotionCritical;
+declare const createDynamicRoute: (routing: (id: string) => object, Application: React.FC<any>, cache?: EmotionCache) => (id: string) => import("@emotion/server/create-instance").EmotionCritical;
 /***********************/
 /***********************/
 declare type RettleComponent = {
@@ -197,4 +198,4 @@ interface CommentOutProps {
     end?: string;
 }
 declare const CommentOut: React.FC<CommentOutProps>;
-export { Component, CommentOut, createRettle, defineOption, createCache };
+export { Component, CommentOut, createRettle, defineOption, createCache, createDynamicRoute, };

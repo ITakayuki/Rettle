@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createHelmet = exports.createHeaders = exports.createHeaderTags = exports.transformReact2HTMLCSS = void 0;
+exports.createHelmet = exports.createHeaders = exports.createHeaderTags = exports.transformReact2HTMLCSSDynamic = exports.transformReact2HTMLCSS = void 0;
 const esBuild = __importStar(require("esbuild"));
 const vm_1 = __importDefault(require("vm"));
 const fs_1 = __importDefault(require("fs"));
@@ -129,6 +129,61 @@ const transformReact2HTMLCSS = (path) => {
     }));
 };
 exports.transformReact2HTMLCSS = transformReact2HTMLCSS;
+const transformReact2HTMLCSSDynamic = (path, id) => {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        esBuild
+            .build({
+            bundle: true,
+            entryPoints: [path],
+            platform: "node",
+            write: false,
+            external: Object.keys(dependencies),
+            plugins: config_1.config.esbuild.plugins("server"),
+            define: {
+                "process.env": JSON.stringify(config_1.config.define),
+            },
+        })
+            .then((res) => {
+            try {
+                const code = res.outputFiles[0].text;
+                const context = {
+                    exports,
+                    module,
+                    process,
+                    require,
+                    __filename,
+                    __dirname,
+                };
+                vm_1.default.runInNewContext(code, context);
+                const dynamicRouteFunction = context.module.exports.default;
+                const result = dynamicRouteFunction(id);
+                const HTML = insertCommentOut(result.html);
+                if (process.env.NODE_ENV !== "server" && config_1.config.beautify.html) {
+                    result.html =
+                        typeof config_1.config.beautify.html === "boolean"
+                            ? js_beautify_1.default.html(HTML, {})
+                            : js_beautify_1.default.html(HTML, config_1.config.beautify.html);
+                }
+                else {
+                    result.html = HTML;
+                }
+                if ("html" in result && "css" in result && "ids" in result) {
+                    resolve(result);
+                }
+                else {
+                    reject(new Error(`${path}: The value of export default is different.`));
+                }
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+            .catch((e) => {
+            reject(e);
+        });
+    }));
+};
+exports.transformReact2HTMLCSSDynamic = transformReact2HTMLCSSDynamic;
 const createHeaderTags = (tagName, contents) => {
     return contents.map((item) => {
         const content = Object.keys(item).map((key) => {

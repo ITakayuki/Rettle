@@ -108,6 +108,69 @@ export const transformReact2HTMLCSS = (
   });
 };
 
+export const transformReact2HTMLCSSDynamic = (
+  path: string,
+  id: string
+): Promise<{ html: string; ids: Array<string>; css: string }> => {
+  return new Promise(async (resolve, reject) => {
+    esBuild
+      .build({
+        bundle: true,
+        entryPoints: [path],
+        platform: "node",
+        write: false,
+        external: Object.keys(dependencies),
+        plugins: config.esbuild.plugins!("server"),
+        define: {
+          "process.env": JSON.stringify(config.define),
+        },
+      })
+      .then((res) => {
+        try {
+          const code = res.outputFiles![0].text;
+          const context = {
+            exports,
+            module,
+            process,
+            require,
+            __filename,
+            __dirname,
+          };
+          vm.runInNewContext(code, context);
+          const dynamicRouteFunction = context.module.exports.default as (
+            id: string
+          ) => {
+            html: string;
+            ids: Array<string>;
+            css: string;
+          };
+          const result = dynamicRouteFunction(id);
+          const HTML = insertCommentOut(result.html);
+          if (process.env.NODE_ENV !== "server" && config.beautify.html) {
+            result.html =
+              typeof config.beautify.html === "boolean"
+                ? js_beautify.html(HTML, {})
+                : js_beautify.html(HTML, config.beautify.html);
+          } else {
+            result.html = HTML;
+          }
+          if ("html" in result && "css" in result && "ids" in result) {
+            resolve(result);
+          } else {
+            reject(
+              new Error(`${path}: The value of export default is different.`)
+            );
+          }
+        } catch (e) {
+          reject(e);
+        }
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  });
+};
+
 export const createHeaderTags = (
   tagName: string,
   contents: Record<string, string | number | boolean>[]

@@ -13,10 +13,29 @@ const defineOption = (options: () => Partial<RettleConfigInterface>) => {
 
 const createCache = (key: string) => emotionCreateCache({ key });
 
-const createRettle = (cache: EmotionCache, element: JSX.Element) => {
+const createRettle = (
+  element: JSX.Element,
+  cache: EmotionCache = createCache("css")
+) => {
   const html = React.createElement(CacheProvider, { value: cache }, element);
   const { extractCritical } = createEmotionServer(cache);
   return extractCritical(ReactDom.renderToString(html));
+};
+
+const createDynamicRoute = (
+  routing: (id: string) => object,
+  Application: React.FC<any>,
+  cache: EmotionCache = createCache("css")
+) => {
+  return (id: string) => {
+    const html = React.createElement(
+      CacheProvider,
+      { value: cache },
+      React.createElement(Application, { ...routing(id) })
+    );
+    const { extractCritical } = createEmotionServer(cache);
+    return extractCritical(ReactDom.renderToString(html));
+  };
 };
 
 /***********************/
@@ -88,4 +107,11 @@ const CommentOut: React.FC<CommentOutProps> = (props) => {
   );
 };
 
-export { Component, CommentOut, createRettle, defineOption, createCache };
+export {
+  Component,
+  CommentOut,
+  createRettle,
+  defineOption,
+  createCache,
+  createDynamicRoute,
+};
