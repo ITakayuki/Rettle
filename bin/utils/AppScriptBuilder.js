@@ -239,6 +239,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                 const { start, end } = node;
                 const text = jsCode.slice(start, end);
                 if (node.type === "FunctionDeclaration") {
+                    console.log("FunctionDeclaration: ", node.id.name);
                     const key = node.id.name;
                     objects[key] = text;
                 }
