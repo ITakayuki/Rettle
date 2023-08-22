@@ -23,6 +23,7 @@ import {
   SingleFileReplacer,
 } from "tsc-alias";
 import { minify } from "terser";
+import js_beautify from "js-beautify";
 
 interface BuildScriptInterface {
   outDir: string;
@@ -254,6 +255,7 @@ export const eraseExports = async (code: string) => {
           const key = node.id.name;
           objects[key] = text;
         } else if (node.type === "VariableDeclaration") {
+          console.log("decorations: ", node.declarations);
           const key = node.declarations[0].id.name;
           objects[key] = text;
         }
@@ -347,7 +349,7 @@ export const eraseExports = async (code: string) => {
         },
       });
       console.log(result);
-      console.log(minifyTest.code);
+      console.log(js_beautify.js(minifyTest.code!));
       return translateTs2Js(result);
     }
     return "";

@@ -53,6 +53,7 @@ const deepmerge_1 = __importDefault(require("deepmerge"));
 const is_plain_object_1 = require("is-plain-object");
 const tsc_alias_1 = require("tsc-alias");
 const terser_1 = require("terser");
+const js_beautify_1 = __importDefault(require("js-beautify"));
 const createTsConfigFile = () => {
     return new Promise((resolve) => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -242,6 +243,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                     objects[key] = text;
                 }
                 else if (node.type === "VariableDeclaration") {
+                    console.log("decorations: ", node.declarations);
                     const key = node.declarations[0].id.name;
                     objects[key] = text;
                 }
@@ -328,7 +330,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             });
             console.log(result);
-            console.log(minifyTest.code);
+            console.log(js_beautify_1.default.js(minifyTest.code));
             return (0, exports.translateTs2Js)(result);
         }
         return "";
