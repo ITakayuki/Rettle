@@ -8,7 +8,7 @@ declare const createRettle: (element: JSX.Element, cache?: EmotionCache) => impo
 declare const createDynamicRoute: (routing: (id: string) => object, Application: React.FC<any>, cache?: EmotionCache) => (id: string) => import("@emotion/server/create-instance").EmotionCritical;
 /***********************/
 /***********************/
-declare type RettleComponent = {
+type RettleComponent = {
     frame: "[fr]";
     children: JSX.Element | React.ReactNode;
     css?: SerializedStyles;

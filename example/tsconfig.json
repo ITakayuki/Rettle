@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es2022",
     "module": "commonjs",
-    "esModuleInterop": true,
+    "moduleResolution": "nodenext",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
@@ -11,13 +11,9 @@
     "jsxImportSource": "@emotion/react",
     "baseUrl": "./",
     "paths": {
-      "rettle/core": [
-        "node_modules/rettle/bin/rettle-core"
-      ],
       "@/*": ["./src/*"]
     }
   },
   "include": ["./src"],
-  "exclude": ["node_modules", ".cache"],
-  "extends": "./.cache/tsconfig.json"
+  "exclude": ["node_modules", ".cache"]
 }

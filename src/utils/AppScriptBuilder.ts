@@ -22,6 +22,7 @@ import {
   prepareSingleFileReplaceTscAliasPaths,
   SingleFileReplacer,
 } from "tsc-alias";
+import { minify } from "terser";
 
 interface BuildScriptInterface {
   outDir: string;
@@ -340,6 +341,13 @@ export const eraseExports = async (code: string) => {
             .map((item) => "")
             .join("\n")
         ) + "\nexport default () => {}";
+      const minifyTest = await minify(result, {
+        compress: {
+          dead_code: true,
+        },
+      });
+      console.log(result);
+      console.log(minifyTest.code);
       return translateTs2Js(result);
     }
     return "";

@@ -52,6 +52,7 @@ const utility_2 = require("./utility");
 const deepmerge_1 = __importDefault(require("deepmerge"));
 const is_plain_object_1 = require("is-plain-object");
 const tsc_alias_1 = require("tsc-alias");
+const terser_1 = require("terser");
 const createTsConfigFile = () => {
     return new Promise((resolve) => {
         if (!fs_1.default.existsSync(path_1.default.resolve(".cache"))) {
@@ -321,6 +322,13 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                 .split("\n")
                 .map((item) => "")
                 .join("\n")) + "\nexport default () => {}";
+            const minifyTest = yield (0, terser_1.minify)(result, {
+                compress: {
+                    dead_code: true,
+                },
+            });
+            console.log(result);
+            console.log(minifyTest.code);
             return (0, exports.translateTs2Js)(result);
         }
         return "";

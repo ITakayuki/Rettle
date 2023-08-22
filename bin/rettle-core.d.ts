@@ -1,4 +1,4 @@
-declare type Reactive<T> = T extends object ? T : {
+type Reactive<T> = T extends object ? T : {
     value: T;
 };
 declare const useReactive: <T>(value: T) => Reactive<T>;
@@ -11,6 +11,6 @@ declare const onDocumentReady: (cb: () => void) => void;
 declare const RettleStart: (scripts: {
     [x: string]: ({ getRefs }: RettleMethods, props: Record<string, any>) => Record<string, any>;
 }) => Promise<void>;
-declare type RettleClient<T> = (methods: RettleMethods, props: T) => Record<string, any> | void;
+type RettleClient<T> = (methods: RettleMethods, props: T) => Record<string, any> | void;
 declare const createClient: <T>(mounted: RettleClient<T>) => RettleClient<T>;
 export { onDocumentReady, watcher, createClient, useReactive, RettleStart, type RettleClient, RettleMethods, };
