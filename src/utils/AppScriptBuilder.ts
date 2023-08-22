@@ -279,7 +279,7 @@ export const eraseExports = async (code: string) => {
         .replace(exportLine, "export default () => {}");
       return translateTs2Js(result);
     } else {
-      console.log("exportNodes", exportNodes);
+      console.log("exportNodes", exportNodes[0].declaration.arguments);
       // export default ()=>
       let replaceDefaultRettle = "";
       let name = "";
