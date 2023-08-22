@@ -294,10 +294,10 @@ export const eraseExports = async (code: string) => {
       if (exportNodes[0]) {
         if (exportNodes[0].declaration) {
           if (exportNodes[0].declaration.arguments) {
-            if (exportNodes[0].declaration.arguments[1]) {
-              if (exportNodes[0].declaration.arguments[1].callee) {
-                if (exportNodes[0].declaration.arguments[1].callee.name) {
-                  name = exportNodes[0].declaration.arguments[1].callee.name;
+            if (exportNodes[0].declaration.arguments[0]) {
+              if (exportNodes[0].declaration.arguments[0].callee) {
+                if (exportNodes[0].declaration.arguments[0].callee.name) {
+                  name = exportNodes[0].declaration.arguments[0].callee.name;
                 }
               }
             }
