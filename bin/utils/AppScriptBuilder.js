@@ -265,6 +265,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             return (0, exports.translateTs2Js)(result);
         }
         else {
+            console.log(exportNodes);
             // export default ()=>
             let replaceDefaultRettle = "";
             let name = "";
