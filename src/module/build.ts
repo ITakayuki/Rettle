@@ -118,7 +118,9 @@ export const build = async () => {
               const routingSetting = config.build.dynamicRoutes[relativePath];
               for (const id of routeIsArray
                 ? (routingSetting as string[])
-                : ((routingSetting as () => string[])() as string[])) {
+                : ((await (
+                    routingSetting as () => Promise<string[]>
+                  )()) as string[])) {
                 const compileData = await transformReact2HTMLCSSDynamic(
                   item,
                   id

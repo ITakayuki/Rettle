@@ -9,7 +9,7 @@ const Hoge = (props: any) => {
       <Helmet>
         <meta charSet={"utf-8"} />
       </Helmet>
-      俺もコンビニ行ってくる
+      {props.text}
     </Component.div>
   );
 };

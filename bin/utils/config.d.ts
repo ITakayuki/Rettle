@@ -3,7 +3,7 @@ import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
 import js_beautify from "js-beautify";
 type DynamicRouteArray = string[];
-type DynamicRouteFunction = () => DynamicRouteArray;
+type DynamicRouteFunction = () => Promise<DynamicRouteArray>;
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: (outDir: string) => void;

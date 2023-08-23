@@ -10,7 +10,7 @@ interface RouterOptions {
 
 type DynamicRouteArray = string[];
 
-type DynamicRouteFunction = () => DynamicRouteArray;
+type DynamicRouteFunction = () => Promise<DynamicRouteArray>;
 
 type DynamicRoute = string[] | DynamicRouteFunction;
 

@@ -105,7 +105,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                         const routingSetting = config_1.config.build.dynamicRoutes[relativePath];
                         for (const id of routeIsArray
                             ? routingSetting
-                            : routingSetting()) {
+                            : (yield routingSetting())) {
                             const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSSDynamic)(item, id);
                             const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData, id);
                             styles = styles + style;
