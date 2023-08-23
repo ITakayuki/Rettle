@@ -140,6 +140,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                 ? js_beautify_1.default.css(formattedStyle.styles, {})
                 : js_beautify_1.default.css(formattedStyle.styles, config_1.config.beautify.css)
             : formattedStyle.styles;
+        yield (0, utility_1.mkdirp)(cssOutputPath);
         fs_1.default.writeFileSync(cssOutputPath, beautyStyle, "utf-8");
     }));
     yield (0, directoryControl_1.copyStatic)();

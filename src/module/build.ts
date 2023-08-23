@@ -169,6 +169,7 @@ export const build = async () => {
         ? js_beautify.css(formattedStyle.styles, {})
         : js_beautify.css(formattedStyle.styles, config.beautify.css)
       : formattedStyle.styles;
+    await mkdirp(cssOutputPath);
     fs.writeFileSync(cssOutputPath, beautyStyle, "utf-8");
   });
   await copyStatic();
