@@ -248,15 +248,10 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const exportName = exportNodes[0].declaration.name;
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
             const removeReactJsCode = importReact
-                ? jsCode.replace(importReact, "//" + importReact)
+                ? jsCode.replace(importReact, "")
                 : jsCode;
             const result = removeReactJsCode
-                .replace(objects[exportName], objects[exportName]
-                .split("\n")
-                .map((item) => {
-                return "";
-            })
-                .join("\n"))
+                .replace(objects[exportName], "")
                 .replace(exportLine, "export default () => {}");
             return (0, exports.translateTs2Js)(result);
         }
@@ -270,6 +265,9 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                     if (exportNodes[0].declaration.arguments) {
                         for (const argument of exportNodes[0].declaration.arguments) {
                             if (argument) {
+                                if (argument.name) {
+                                    names.push(argument.name);
+                                }
                                 if (argument.callee) {
                                     if (argument.callee.name) {
                                         names.push(argument.callee.name);
@@ -301,17 +299,13 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
                         objects[key] = text;
                     }
                 }
+                replaceDefaultRettle = jsCode;
                 for (const name of names) {
                     if (objects[name]) {
-                        replaceDefaultRettle = jsCode.replace(objects[name], objects[name]
-                            .split("\n")
-                            .map((item) => {
-                            return "";
-                        })
-                            .join("\n"));
+                        replaceDefaultRettle = replaceDefaultRettle.replace(objects[name], "");
                     }
                 }
-                replaceDefaultRettle = replaceDefaultRettle.replace(objects[cacheName], "//" + objects[cacheName]);
+                replaceDefaultRettle = replaceDefaultRettle.replace(objects[cacheName], "");
             }
             else {
                 replaceDefaultRettle = jsCode;
@@ -320,12 +314,9 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const { start, end } = exportName;
             const exportStr = jsCode.slice(start, end);
             const removeReactJsCode = importReact
-                ? replaceDefaultRettle.replace(importReact, "//" + importReact)
+                ? replaceDefaultRettle.replace(importReact, "")
                 : replaceDefaultRettle;
-            const result = removeReactJsCode.replace(exportStr, exportStr
-                .split("\n")
-                .map((item) => "")
-                .join("\n")) + "\nexport default () => {}";
+            const result = removeReactJsCode.replace(exportStr, "") + "\nexport default () => {};";
             return (0, exports.translateTs2Js)(result);
         }
         return "";

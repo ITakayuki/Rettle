@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { Helmet } from "react-helmet";
 import { createClient } from "rettle/core";
 
-const App = (props: any) => {
+const Hoge = (props: any) => {
   return (
     <Component.div frame={"[fr]"} css={css({ fontSize: "32px" })}>
       <Helmet>
@@ -24,7 +24,7 @@ export default createDynamicRoute((id) => {
     },
   } as { [index: string]: any };
   return data[id];
-}, App);
+}, Hoge);
 
 export const client = createClient(() => {
   console.log("Dynamic");

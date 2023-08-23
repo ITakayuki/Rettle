@@ -255,18 +255,10 @@ export const eraseExports = async (code: string) => {
       const exportName = exportNodes[0].declaration.name;
       const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
       const removeReactJsCode = importReact
-        ? jsCode.replace(importReact, "//" + importReact)
+        ? jsCode.replace(importReact, "")
         : jsCode;
       const result = removeReactJsCode
-        .replace(
-          objects[exportName],
-          objects[exportName]
-            .split("\n")
-            .map((item) => {
-              return "";
-            })
-            .join("\n")
-        )
+        .replace(objects[exportName], "")
         .replace(exportLine, "export default () => {}");
       return translateTs2Js(result);
     } else {
@@ -279,6 +271,9 @@ export const eraseExports = async (code: string) => {
           if (exportNodes[0].declaration.arguments) {
             for (const argument of exportNodes[0].declaration.arguments) {
               if (argument) {
+                if (argument.name) {
+                  names.push(argument.name);
+                }
                 if (argument.callee) {
                   if (argument.callee.name) {
                     names.push(argument.callee.name);
@@ -309,22 +304,18 @@ export const eraseExports = async (code: string) => {
             objects[key] = text;
           }
         }
+        replaceDefaultRettle = jsCode;
         for (const name of names) {
           if (objects[name]) {
-            replaceDefaultRettle = jsCode.replace(
+            replaceDefaultRettle = replaceDefaultRettle.replace(
               objects[name],
-              objects[name]
-                .split("\n")
-                .map((item) => {
-                  return "";
-                })
-                .join("\n")
+              ""
             );
           }
         }
         replaceDefaultRettle = replaceDefaultRettle.replace(
           objects[cacheName],
-          "//" + objects[cacheName]
+          ""
         );
       } else {
         replaceDefaultRettle = jsCode;
@@ -333,16 +324,10 @@ export const eraseExports = async (code: string) => {
       const { start, end } = exportName;
       const exportStr = jsCode.slice(start, end);
       const removeReactJsCode = importReact
-        ? replaceDefaultRettle.replace(importReact, "//" + importReact)
+        ? replaceDefaultRettle.replace(importReact, "")
         : replaceDefaultRettle;
       const result =
-        removeReactJsCode.replace(
-          exportStr,
-          exportStr
-            .split("\n")
-            .map((item) => "")
-            .join("\n")
-        ) + "\nexport default () => {}";
+        removeReactJsCode.replace(exportStr, "") + "\nexport default () => {};";
       return translateTs2Js(result);
     }
     return "";
