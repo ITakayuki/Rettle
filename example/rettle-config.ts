@@ -2,6 +2,9 @@ import { defineOption } from "rettle";
 export default defineOption(() => {
   return {
     outDir: "dist",
+    beautify: {
+      css: true,
+    },
     build: {
       dynamicRoutes: {
         "./src/views/[id]/index.tsx": async () => {
