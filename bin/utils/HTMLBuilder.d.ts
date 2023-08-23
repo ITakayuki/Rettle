@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export declare const transformReact2HTMLCSS: (path: string) => Promise<{
     html: string;
     ids: Array<string>;
@@ -19,4 +20,13 @@ interface RettleHelmetType {
     body: string[];
 }
 export declare const createHelmet: () => RettleHelmetType;
+export declare const compileHTML: (key: string, file: string, codes: {
+    html: string;
+    css: string;
+    ids: string[];
+}) => Promise<{
+    code: string | Buffer;
+    htmlOutputPath: string;
+    style: string;
+}>;
 export {};

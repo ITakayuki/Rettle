@@ -221,8 +221,6 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             item.type === "VariableDeclaration");
         //@ts-ignore
         const defaultExportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
-        // @ts-ignore
-        const namedExportNodes = ast.body.filter((item) => item.type === "ExportNamedDeclaration");
         const objects = {};
         if (!defaultExportNodes)
             throw new Error("Cannot Found export");
@@ -310,12 +308,6 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const exportName = defaultExportNodes[0];
             const { start, end } = exportName;
             const exportStr = jsCode.slice(start, end);
-            for (const exp of namedExportNodes) {
-                if (exp.declaration.declarations[0].id.name === "buildRequest") {
-                    const buildRequestLine = jsCode.slice(exp.start, exp.end);
-                    replaceDefaultRettle = replaceDefaultRettle.replace(buildRequestLine, "");
-                }
-            }
             const result = replaceDefaultRettle.replace(exportStr, "") +
                 "\nexport default () => {};";
             return (0, exports.translateTs2Js)(result);

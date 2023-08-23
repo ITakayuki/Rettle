@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createHelmet = exports.createHeaders = exports.createHeaderTags = exports.transformReact2HTMLCSSDynamic = exports.transformReact2HTMLCSS = void 0;
+exports.compileHTML = exports.createHelmet = exports.createHeaders = exports.createHeaderTags = exports.transformReact2HTMLCSSDynamic = exports.transformReact2HTMLCSS = void 0;
 const esBuild = __importStar(require("esbuild"));
 const vm_1 = __importDefault(require("vm"));
 const fs_1 = __importDefault(require("fs"));
@@ -45,6 +45,8 @@ const variable_1 = require("./variable");
 const react_helmet_1 = __importDefault(require("react-helmet"));
 const node_html_parser_1 = require("node-html-parser");
 const js_beautify_1 = __importDefault(require("js-beautify"));
+const utility_1 = require("./utility");
+const html_minifier_terser_1 = require("html-minifier-terser");
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const insertCommentOut = (code) => {
     const root = (0, node_html_parser_1.parse)(code);
@@ -242,4 +244,38 @@ const createHelmet = () => {
     return results;
 };
 exports.createHelmet = createHelmet;
+const compileHTML = (key, file, codes) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let style = "";
+        const helmet = (0, exports.createHelmet)();
+        const headers = (0, exports.createHeaders)().concat(helmet.headers);
+        const root = key.replace(config_1.config.root, config_1.config.pathPrefix);
+        const script = path.join("/", root, config_1.config.js);
+        headers.push(`<link rel="stylesheet" href="${path.join("/", root, config_1.config.css)}">`);
+        const markup = config_1.config.template({
+            html: codes.html,
+            headers,
+            script,
+            helmet: helmet.attributes,
+            noScript: helmet.body,
+        });
+        style = style + codes.css;
+        const exName = path.extname(file);
+        const htmlOutputPath = path
+            .join(config_1.config.outDir, config_1.config.pathPrefix, file.replace(config_1.config.root, ""))
+            .replace(exName, ".html");
+        yield (0, utility_1.mkdirp)(htmlOutputPath);
+        const minifyHtml = yield (0, html_minifier_terser_1.minify)(markup, {
+            collapseInlineTagWhitespace: true,
+            collapseWhitespace: true,
+            preserveLineBreaks: true,
+        });
+        const code = config_1.config.build.buildHTML(minifyHtml, htmlOutputPath);
+        return Promise.resolve({ code, htmlOutputPath, style });
+    }
+    catch (e) {
+        return Promise.reject(e);
+    }
+});
+exports.compileHTML = compileHTML;
 //# sourceMappingURL=HTMLBuilder.js.map

@@ -7,6 +7,8 @@ import { version } from "./variable";
 import Helmet, { HelmetData } from "react-helmet";
 import { parse } from "node-html-parser";
 import js_beautify from "js-beautify";
+import { mkdirp } from "./utility";
+import { minify } from "html-minifier-terser";
 
 const { dependencies } = JSON.parse(
   fs.readFileSync(path.resolve("./package.json"), "utf-8")
@@ -238,4 +240,43 @@ export const createHelmet = () => {
     }
   }
   return results;
+};
+
+export const compileHTML = async (
+  key: string,
+  file: string,
+  codes: { html: string; css: string; ids: string[] }
+) => {
+  try {
+    let style = "";
+    const helmet = createHelmet();
+    const headers = createHeaders().concat(helmet.headers);
+    const root = key.replace(config.root, config.pathPrefix);
+    const script = path.join("/", root, config.js);
+    headers.push(
+      `<link rel="stylesheet" href="${path.join("/", root, config.css)}">`
+    );
+    const markup = config.template({
+      html: codes.html,
+      headers,
+      script,
+      helmet: helmet.attributes,
+      noScript: helmet.body,
+    });
+    style = style + codes.css;
+    const exName = path.extname(file);
+    const htmlOutputPath = path
+      .join(config.outDir, config.pathPrefix, file.replace(config.root, ""))
+      .replace(exName, ".html");
+    await mkdirp(htmlOutputPath);
+    const minifyHtml = await minify(markup, {
+      collapseInlineTagWhitespace: true,
+      collapseWhitespace: true,
+      preserveLineBreaks: true,
+    });
+    const code = config.build.buildHTML!(minifyHtml, htmlOutputPath);
+    return Promise.resolve({ code, htmlOutputPath, style });
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };

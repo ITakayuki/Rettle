@@ -230,10 +230,6 @@ export const eraseExports = async (code: string) => {
     const defaultExportNodes = ast.body.filter(
       (item: any) => item.type === "ExportDefaultDeclaration"
     );
-    // @ts-ignore
-    const namedExportNodes = ast.body.filter(
-      (item: any) => item.type === "ExportNamedDeclaration"
-    );
     const objects: Record<string, string> = {};
     if (!defaultExportNodes) throw new Error("Cannot Found export");
     if (!defaultExportNodes[0]) throw new Error("Cannot Found export");
@@ -324,15 +320,6 @@ export const eraseExports = async (code: string) => {
       const exportName = defaultExportNodes[0];
       const { start, end } = exportName;
       const exportStr = jsCode.slice(start, end);
-      for (const exp of namedExportNodes) {
-        if (exp.declaration.declarations[0].id.name === "buildRequest") {
-          const buildRequestLine = jsCode.slice(exp.start, exp.end);
-          replaceDefaultRettle = replaceDefaultRettle.replace(
-            buildRequestLine,
-            ""
-          );
-        }
-      }
       const result =
         replaceDefaultRettle.replace(exportStr, "") +
         "\nexport default () => {};";

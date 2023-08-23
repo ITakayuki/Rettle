@@ -20,7 +20,6 @@ const fs_1 = __importDefault(require("fs"));
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const utility_1 = require("../utils/utility");
 const HTMLBuilder_1 = require("../utils/HTMLBuilder");
-const html_minifier_terser_1 = require("html-minifier-terser");
 const css_purge_1 = require("css-purge");
 const directoryControl_1 = require("../utils/directoryControl");
 const js_beautify_1 = __importDefault(require("js-beautify"));
@@ -97,32 +96,30 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
         const items = entryPaths[key];
         let styles = ``;
         yield Promise.all(items.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
-            const helmet = (0, HTMLBuilder_1.createHelmet)();
-            const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-            const root = key.replace(config_1.config.root, config_1.config.pathPrefix);
-            const script = path_1.default.join("/", root, config_1.config.js);
-            headers.push(`<link rel="stylesheet" href="${path_1.default.join("/", root, config_1.config.css)}">`);
-            const markup = config_1.config.template({
-                html,
-                headers,
-                script,
-                helmet: helmet.attributes,
-                noScript: helmet.body,
-            });
-            styles = styles + css;
-            const exName = path_1.default.extname(item);
-            const htmlOutputPath = path_1.default
-                .join(config_1.config.outDir, config_1.config.pathPrefix, item.replace(config_1.config.root, ""))
-                .replace(exName, ".html");
-            yield (0, utility_1.mkdirp)(htmlOutputPath);
-            const minifyHtml = yield (0, html_minifier_terser_1.minify)(markup, {
-                collapseInlineTagWhitespace: true,
-                collapseWhitespace: true,
-                preserveLineBreaks: true,
-            });
-            const code = config_1.config.build.buildHTML(minifyHtml, htmlOutputPath);
-            fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+            const pattern = /\[[^\]]*\]/;
+            if (pattern.test(item)) {
+                const relativePath = path_1.default.join("./", item);
+                if (config_1.config.build.dynamicRoutes) {
+                    if (config_1.config.build.dynamicRoutes[relativePath]) {
+                        const routeIsArray = Array.isArray(config_1.config.build.dynamicRoutes[relativePath]);
+                        const routingSetting = config_1.config.build.dynamicRoutes[relativePath];
+                        for (const id of routeIsArray
+                            ? routingSetting
+                            : routingSetting()) {
+                            const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSSDynamic)(item, id);
+                            const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData);
+                            styles = styles + style;
+                            fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+                        }
+                    }
+                }
+            }
+            else {
+                const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
+                const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData);
+                styles = styles + style;
+                fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+            }
         })));
         const root = key.replace(config_1.config.root, "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);

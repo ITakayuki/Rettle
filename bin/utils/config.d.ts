@@ -2,11 +2,16 @@
 import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
 import js_beautify from "js-beautify";
+type DynamicRouteArray = string[];
+type DynamicRouteFunction = () => DynamicRouteArray;
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: (outDir: string) => void;
     buildCss?: (code: string, outDir: string) => string | Buffer;
     buildHTML?: (code: string, outDir: string) => string | Buffer;
+    dynamicRoutes?: {
+        [path: `./${string}`]: string[] | DynamicRouteFunction;
+    };
 }
 interface esbuildInterface {
     plugins?: (mode: "server" | "client") => esBuild.Plugin[];

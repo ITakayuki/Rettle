@@ -11,6 +11,8 @@ import {
 import { getEntryPaths, mkdirp } from "../utils/utility";
 import {
   transformReact2HTMLCSS,
+  transformReact2HTMLCSSDynamic,
+  compileHTML,
   createHeaders,
   createHelmet,
 } from "../utils/HTMLBuilder";
@@ -105,34 +107,42 @@ export const build = async () => {
     let styles = ``;
     await Promise.all(
       items.map(async (item) => {
-        const { html, css, ids } = await transformReact2HTMLCSS(item);
-        const helmet = createHelmet();
-        const headers = createHeaders().concat(helmet.headers);
-        const root = key.replace(config.root, config.pathPrefix);
-        const script = path.join("/", root, config.js);
-        headers.push(
-          `<link rel="stylesheet" href="${path.join("/", root, config.css)}">`
-        );
-        const markup = config.template({
-          html,
-          headers,
-          script,
-          helmet: helmet.attributes,
-          noScript: helmet.body,
-        });
-        styles = styles + css;
-        const exName = path.extname(item);
-        const htmlOutputPath = path
-          .join(config.outDir, config.pathPrefix, item.replace(config.root, ""))
-          .replace(exName, ".html");
-        await mkdirp(htmlOutputPath);
-        const minifyHtml = await minify(markup, {
-          collapseInlineTagWhitespace: true,
-          collapseWhitespace: true,
-          preserveLineBreaks: true,
-        });
-        const code = config.build.buildHTML!(minifyHtml, htmlOutputPath);
-        fs.writeFileSync(htmlOutputPath, code, "utf-8");
+        const pattern = /\[[^\]]*\]/;
+        if (pattern.test(item)) {
+          const relativePath = path.join("./", item) as `./${string}`;
+          if (config.build.dynamicRoutes) {
+            if (config.build.dynamicRoutes[relativePath]) {
+              const routeIsArray = Array.isArray(
+                config.build.dynamicRoutes[relativePath]
+              );
+              const routingSetting = config.build.dynamicRoutes[relativePath];
+              for (const id of routeIsArray
+                ? (routingSetting as string[])
+                : ((routingSetting as () => string[])() as string[])) {
+                const compileData = await transformReact2HTMLCSSDynamic(
+                  item,
+                  id
+                );
+                const { htmlOutputPath, code, style } = await compileHTML(
+                  key,
+                  item,
+                  compileData
+                );
+                styles = styles + style;
+                fs.writeFileSync(htmlOutputPath, code, "utf-8");
+              }
+            }
+          }
+        } else {
+          const compileData = await transformReact2HTMLCSS(item);
+          const { htmlOutputPath, code, style } = await compileHTML(
+            key,
+            item,
+            compileData
+          );
+          styles = styles + style;
+          fs.writeFileSync(htmlOutputPath, code, "utf-8");
+        }
       })
     );
     const root = key.replace(config.root, "");
