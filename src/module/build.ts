@@ -116,24 +116,28 @@ export const build = async () => {
                 config.build.dynamicRoutes[relativePath]
               );
               const routingSetting = config.build.dynamicRoutes[relativePath];
-              for (const id of routeIsArray
+              const requestData = routeIsArray
                 ? (routingSetting as string[])
                 : ((await (
                     routingSetting as () => Promise<string[]>
-                  )()) as string[])) {
-                const compileData = await transformReact2HTMLCSSDynamic(
-                  item,
-                  id
-                );
-                const { htmlOutputPath, code, style } = await compileHTML(
-                  key,
-                  item,
-                  compileData,
-                  id
-                );
-                styles = styles + style;
-                fs.writeFileSync(htmlOutputPath, code, "utf-8");
-              }
+                  )()) as string[]);
+              const promises = requestData.map((id) => {
+                return new Promise(async (resolve) => {
+                  const compileData = await transformReact2HTMLCSSDynamic(
+                    item,
+                    id
+                  );
+                  const { htmlOutputPath, code, style } = await compileHTML(
+                    key,
+                    item,
+                    compileData,
+                    id
+                  );
+                  styles = styles + style;
+                  fs.writeFileSync(htmlOutputPath, code, "utf-8");
+                });
+              });
+              await Promise.all(promises);
             }
           }
         } else {
