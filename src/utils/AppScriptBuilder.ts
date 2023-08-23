@@ -227,15 +227,19 @@ export const eraseExports = async (code: string) => {
         item.type === "VariableDeclaration"
     );
     //@ts-ignore
-    const exportNodes = ast.body.filter(
+    const defaultExportNodes = ast.body.filter(
       (item: any) => item.type === "ExportDefaultDeclaration"
     );
+    // @ts-ignore
+    const namedExportNodes = ast.body.filter(
+      (item: any) => item.type === "ExportNamedDeclaration"
+    );
     const objects: Record<string, string> = {};
-    if (!exportNodes) throw new Error("Cannot Found export");
-    if (!exportNodes[0]) throw new Error("Cannot Found export");
-    if ("declaration" in exportNodes[0] === false)
+    if (!defaultExportNodes) throw new Error("Cannot Found export");
+    if (!defaultExportNodes[0]) throw new Error("Cannot Found export");
+    if ("declaration" in defaultExportNodes[0] === false)
       throw new Error("Cannot Found export");
-    if (exportNodes[0].declaration.name) {
+    if (defaultExportNodes[0].declaration.name) {
       // export default **
       for (const node of functionNodes) {
         const { start, end } = node;
@@ -248,8 +252,11 @@ export const eraseExports = async (code: string) => {
           objects[key] = text;
         }
       }
-      const exportName = exportNodes[0].declaration.name;
-      const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
+      const exportName = defaultExportNodes[0].declaration.name;
+      const exportLine = jsCode.slice(
+        defaultExportNodes[0].start,
+        defaultExportNodes[0].end
+      );
       const result = jsCode
         .replace(objects[exportName], "")
         .replace(exportLine, "export default () => {}");
@@ -259,10 +266,11 @@ export const eraseExports = async (code: string) => {
       let replaceDefaultRettle = "";
       let names: string[] = [];
       let cacheName = "";
-      if (exportNodes[0]) {
-        if (exportNodes[0].declaration) {
-          if (exportNodes[0].declaration.arguments) {
-            for (const argument of exportNodes[0].declaration.arguments) {
+      if (defaultExportNodes[0]) {
+        if (defaultExportNodes[0].declaration) {
+          if (defaultExportNodes[0].declaration.arguments) {
+            for (const argument of defaultExportNodes[0].declaration
+              .arguments) {
               if (argument) {
                 if (argument.name) {
                   names.push(argument.name);
@@ -313,9 +321,18 @@ export const eraseExports = async (code: string) => {
       } else {
         replaceDefaultRettle = jsCode;
       }
-      const exportName = exportNodes[0];
+      const exportName = defaultExportNodes[0];
       const { start, end } = exportName;
       const exportStr = jsCode.slice(start, end);
+      for (const exp of namedExportNodes) {
+        if (exp.declaration.declarations[0].id.name === "buildRequest") {
+          const buildRequestLine = jsCode.slice(exp.start, exp.end);
+          replaceDefaultRettle = replaceDefaultRettle.replace(
+            buildRequestLine,
+            ""
+          );
+        }
+      }
       const result =
         replaceDefaultRettle.replace(exportStr, "") +
         "\nexport default () => {};";
