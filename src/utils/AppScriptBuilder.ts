@@ -272,22 +272,24 @@ export const eraseExports = async (code: string) => {
     } else {
       // export default ()=>
       let replaceDefaultRettle = "";
-      let name = "";
+      let names: string[] = [];
       let cacheName = "";
       if (exportNodes[0]) {
         if (exportNodes[0].declaration) {
           if (exportNodes[0].declaration.arguments) {
-            if (exportNodes[0].declaration.arguments[0]) {
-              if (exportNodes[0].declaration.arguments[0].callee) {
-                if (exportNodes[0].declaration.arguments[0].callee.name) {
-                  name = exportNodes[0].declaration.arguments[0].callee.name;
+            for (const argument of exportNodes[0].declaration.arguments) {
+              if (argument) {
+                if (argument.callee) {
+                  if (argument.callee.name) {
+                    names.push(argument.callee.name);
+                  }
                 }
               }
             }
           }
         }
       }
-      if (name) {
+      if (names.length > 0) {
         for (const node of functionNodes) {
           const { start, end } = node;
           const text = jsCode.slice(start, end);
@@ -307,17 +309,23 @@ export const eraseExports = async (code: string) => {
             objects[key] = text;
           }
         }
-        replaceDefaultRettle = jsCode
-          .replace(
-            objects[name],
-            objects[name]
-              .split("\n")
-              .map((item) => {
-                return "";
-              })
-              .join("\n")
-          )
-          .replace(objects[cacheName], "//" + objects[cacheName]);
+        for (const name of names) {
+          if (objects[name]) {
+            replaceDefaultRettle = jsCode.replace(
+              objects[name],
+              objects[name]
+                .split("\n")
+                .map((item) => {
+                  return "";
+                })
+                .join("\n")
+            );
+          }
+        }
+        replaceDefaultRettle = replaceDefaultRettle.replace(
+          objects[cacheName],
+          "//" + objects[cacheName]
+        );
       } else {
         replaceDefaultRettle = jsCode;
       }
