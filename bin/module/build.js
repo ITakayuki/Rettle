@@ -20,9 +20,9 @@ const fs_1 = __importDefault(require("fs"));
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const utility_1 = require("../utils/utility");
 const HTMLBuilder_1 = require("../utils/HTMLBuilder");
-const css_purge_1 = require("css-purge");
 const directoryControl_1 = require("../utils/directoryControl");
 const js_beautify_1 = __importDefault(require("js-beautify"));
+const clean_css_1 = __importDefault(require("clean-css"));
 const resetDir = (dirRoot) => {
     return new Promise((resolve) => {
         if (fs_1.default.existsSync(dirRoot)) {
@@ -128,19 +128,19 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
         })));
         const root = key.replace(config_1.config.root, "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);
-        (0, css_purge_1.purgeCSS)(styles, {}, (error, result) => __awaiter(void 0, void 0, void 0, function* () {
-            if (error)
-                return console.log(`Cannot Purge style in ${key}`);
-            yield (0, utility_1.mkdirp)(cssOutputPath);
-            let style = result ? result : "";
-            style = config_1.config.beautify.css
-                ? typeof config_1.config.beautify.css === "boolean"
-                    ? js_beautify_1.default.css(style, {})
-                    : js_beautify_1.default.css(style, config_1.config.beautify.css)
-                : style;
-            const purge = config_1.config.build.buildCss(style, cssOutputPath);
-            fs_1.default.writeFileSync(cssOutputPath, purge, "utf-8");
-        }));
+        const formattedStyle = new clean_css_1.default({
+            level: {
+                2: {
+                    overrideProperties: true,
+                },
+            },
+        }).minify(styles);
+        const beautyStyle = config_1.config.beautify.css
+            ? typeof config_1.config.beautify.css === "boolean"
+                ? js_beautify_1.default.css(formattedStyle.styles, {})
+                : js_beautify_1.default.css(formattedStyle.styles, config_1.config.beautify.css)
+            : formattedStyle.styles;
+        fs_1.default.writeFileSync(cssOutputPath, beautyStyle, "utf-8");
     }));
     yield (0, directoryControl_1.copyStatic)();
     config_1.config.build.copyStatic();
