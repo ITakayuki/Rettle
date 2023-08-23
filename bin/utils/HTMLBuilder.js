@@ -244,7 +244,7 @@ const createHelmet = () => {
     return results;
 };
 exports.createHelmet = createHelmet;
-const compileHTML = (key, file, codes) => __awaiter(void 0, void 0, void 0, function* () {
+const compileHTML = (key, file, codes, dynamic) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let style = "";
         const helmet = (0, exports.createHelmet)();
@@ -261,9 +261,16 @@ const compileHTML = (key, file, codes) => __awaiter(void 0, void 0, void 0, func
         });
         style = style + codes.css;
         const exName = path.extname(file);
-        const htmlOutputPath = path
+        let htmlOutputPath = path
             .join(config_1.config.outDir, config_1.config.pathPrefix, file.replace(config_1.config.root, ""))
             .replace(exName, ".html");
+        if (dynamic) {
+            const pattern = /\[(.*?)\]/;
+            const result = htmlOutputPath.match(pattern);
+            htmlOutputPath = result
+                ? htmlOutputPath.replace(`[${result[1]}]`, dynamic)
+                : htmlOutputPath;
+        }
         yield (0, utility_1.mkdirp)(htmlOutputPath);
         const minifyHtml = yield (0, html_minifier_terser_1.minify)(markup, {
             collapseInlineTagWhitespace: true,

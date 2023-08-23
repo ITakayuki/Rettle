@@ -245,7 +245,8 @@ export const createHelmet = () => {
 export const compileHTML = async (
   key: string,
   file: string,
-  codes: { html: string; css: string; ids: string[] }
+  codes: { html: string; css: string; ids: string[] },
+  dynamic?: string
 ) => {
   try {
     let style = "";
@@ -265,9 +266,16 @@ export const compileHTML = async (
     });
     style = style + codes.css;
     const exName = path.extname(file);
-    const htmlOutputPath = path
+    let htmlOutputPath = path
       .join(config.outDir, config.pathPrefix, file.replace(config.root, ""))
       .replace(exName, ".html");
+    if (dynamic) {
+      const pattern = /\[(.*?)\]/;
+      const result = htmlOutputPath.match(pattern);
+      htmlOutputPath = result
+        ? htmlOutputPath.replace(`[${result[1]}]`, dynamic)
+        : htmlOutputPath;
+    }
     await mkdirp(htmlOutputPath);
     const minifyHtml = await minify(markup, {
       collapseInlineTagWhitespace: true,

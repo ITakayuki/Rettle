@@ -98,7 +98,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
         yield Promise.all(items.map((item) => __awaiter(void 0, void 0, void 0, function* () {
             const pattern = /\[[^\]]*\]/;
             if (pattern.test(item)) {
-                const relativePath = path_1.default.join("./", item);
+                const relativePath = ("./" + item);
                 if (config_1.config.build.dynamicRoutes) {
                     if (config_1.config.build.dynamicRoutes[relativePath]) {
                         const routeIsArray = Array.isArray(config_1.config.build.dynamicRoutes[relativePath]);
@@ -107,7 +107,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                             ? routingSetting
                             : routingSetting()) {
                             const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSSDynamic)(item, id);
-                            const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData);
+                            const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData, id);
                             styles = styles + style;
                             fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
                         }

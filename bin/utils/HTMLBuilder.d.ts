@@ -24,7 +24,7 @@ export declare const compileHTML: (key: string, file: string, codes: {
     html: string;
     css: string;
     ids: string[];
-}) => Promise<{
+}, dynamic?: string) => Promise<{
     code: string | Buffer;
     htmlOutputPath: string;
     style: string;

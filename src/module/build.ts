@@ -109,7 +109,7 @@ export const build = async () => {
       items.map(async (item) => {
         const pattern = /\[[^\]]*\]/;
         if (pattern.test(item)) {
-          const relativePath = path.join("./", item) as `./${string}`;
+          const relativePath = ("./" + item) as `./${string}`;
           if (config.build.dynamicRoutes) {
             if (config.build.dynamicRoutes[relativePath]) {
               const routeIsArray = Array.isArray(
@@ -126,7 +126,8 @@ export const build = async () => {
                 const { htmlOutputPath, code, style } = await compileHTML(
                   key,
                   item,
-                  compileData
+                  compileData,
+                  id
                 );
                 styles = styles + style;
                 fs.writeFileSync(htmlOutputPath, code, "utf-8");
