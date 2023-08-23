@@ -3,12 +3,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {
-  getDependencies,
-  getMadgeLeaves,
-  getMadgeObject,
-  checkScript,
-} from "./Dependencies";
+import { getDependencies, getMadgeObject, checkScript } from "./Dependencies";
 import { config, getIgnores } from "./config";
 import glob from "glob";
 import { mkdirp } from "./utility";
@@ -43,7 +38,7 @@ export const createTsConfigFile = () => {
 
 const createFileName = (filePath: string) => {
   const relativePath = path
-    .relative(path.resolve("./src/views/"), filePath)
+    .relative(path.resolve(config.root), filePath)
     .replace("/**/*", "")
     .replace("**/*", "");
   return relativePath;
@@ -97,9 +92,10 @@ export const createCacheAppFile = () => {
     const jsFileName = path.basename(config.js).replace(".js", "");
     const jsBaseDir = path.dirname(config.js);
     for (const endpoint of config.endpoints) {
-      const ignore = getIgnores(endpoint);
-      const files = await getDependencies(endpoint, ignore);
-      const appResolvePath = createFileName(endpoint);
+      const rootEndpoint = path.join(config.root, endpoint);
+      const ignore = getIgnores(rootEndpoint);
+      const files = await getDependencies(rootEndpoint, ignore);
+      const appResolvePath = createFileName(rootEndpoint);
       const appFilePath = path.join(
         ".cache/scripts",
         appResolvePath,
@@ -108,13 +104,13 @@ export const createCacheAppFile = () => {
       );
       const appImports = [`import {RettleStart} from "rettle/core";`];
       const scriptObject = [];
-      const scriptRunner = [`RettleStart(scripts, {})`];
+      const scriptRunner = [`RettleStart(clients, {})`];
       const defs = [];
       for (const file of files) {
         const hash = createHash(path.resolve(file));
         const hashName = createScriptHash(file);
         appImports.push(
-          `import {script as Script_${hashName}} from "${path
+          `import {client as Client_${hashName}} from "${path
             .relative(
               path.resolve(
                 path.join(".cache/scripts", appResolvePath, jsBaseDir)
@@ -124,12 +120,12 @@ export const createCacheAppFile = () => {
             .replace(".tsx", "")
             .replace(".jsx", "")}";`
         );
-        scriptObject.push(`"${hash}": Script_${hashName}`);
+        scriptObject.push(`"${hash}": Client_${hashName}`);
       }
       await mkdirp(appFilePath);
       const code = [
         appImports.join("\n"),
-        `const scripts = {${scriptObject.join(",\n")}};`,
+        `const clients = {${scriptObject.join(",\n")}};`,
         scriptRunner.join("\n"),
       ];
       fs.writeFileSync(appFilePath, code.join("\n"), "utf-8");
@@ -158,10 +154,9 @@ export const buildScript = ({ outDir }: BuildScriptInterface) => {
         target: "es6",
         tsconfig: ".cache/tsconfig.json",
         define: {
-          "process.env": JSON.stringify(config.envs),
+          "process.env": JSON.stringify(config.define),
         },
         minify: true,
-        plugins: config.esbuild.plugins("client"),
       })
       .then(() => {
         resolve(null);
@@ -192,9 +187,9 @@ export const watchScript = ({ outDir }: BuildScriptInterface) => {
         target: "es6",
         tsconfig: ".cache/tsconfig.json",
         define: {
-          "process.env": JSON.stringify(config.envs),
+          "process.env": JSON.stringify(config.define),
         },
-        plugins: config.esbuild.plugins("client"),
+        plugins: config.esbuild.plugins!("client"),
       })
       .then(() => {
         resolve(null);
@@ -232,19 +227,15 @@ export const eraseExports = async (code: string) => {
         item.type === "VariableDeclaration"
     );
     //@ts-ignore
-    const exportNodes = ast.body.filter(
+    const defaultExportNodes = ast.body.filter(
       (item: any) => item.type === "ExportDefaultDeclaration"
     );
-    const importReact =
-      importNodes.length !== 0
-        ? jsCode.slice(importNodes.start, importNodes.end)
-        : null;
     const objects: Record<string, string> = {};
-    if (!exportNodes) throw new Error("Cannot Found export");
-    if (!exportNodes[0]) throw new Error("Cannot Found export");
-    if ("declaration" in exportNodes[0] === false)
+    if (!defaultExportNodes) throw new Error("Cannot Found export");
+    if (!defaultExportNodes[0]) throw new Error("Cannot Found export");
+    if ("declaration" in defaultExportNodes[0] === false)
       throw new Error("Cannot Found export");
-    if (exportNodes[0].declaration.name) {
+    if (defaultExportNodes[0].declaration.name) {
       // export default **
       for (const node of functionNodes) {
         const { start, end } = node;
@@ -257,42 +248,40 @@ export const eraseExports = async (code: string) => {
           objects[key] = text;
         }
       }
-      const exportName = exportNodes[0].declaration.name;
-      const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
-      const removeReactJsCode = importReact
-        ? jsCode.replace(importReact, "//" + importReact)
-        : jsCode;
-      const result = removeReactJsCode
-        .replace(
-          objects[exportName],
-          objects[exportName]
-            .split("\n")
-            .map((item) => {
-              return "//" + item;
-            })
-            .join("\n")
-        )
+      const exportName = defaultExportNodes[0].declaration.name;
+      const exportLine = jsCode.slice(
+        defaultExportNodes[0].start,
+        defaultExportNodes[0].end
+      );
+      const result = jsCode
+        .replace(objects[exportName], "")
         .replace(exportLine, "export default () => {}");
       return translateTs2Js(result);
     } else {
       // export default ()=>
       let replaceDefaultRettle = "";
-      let name = "";
+      let names: string[] = [];
       let cacheName = "";
-      if (exportNodes[0]) {
-        if (exportNodes[0].declaration) {
-          if (exportNodes[0].declaration.arguments) {
-            if (exportNodes[0].declaration.arguments[1]) {
-              if (exportNodes[0].declaration.arguments[1].callee) {
-                if (exportNodes[0].declaration.arguments[1].callee.name) {
-                  name = exportNodes[0].declaration.arguments[1].callee.name;
+      if (defaultExportNodes[0]) {
+        if (defaultExportNodes[0].declaration) {
+          if (defaultExportNodes[0].declaration.arguments) {
+            for (const argument of defaultExportNodes[0].declaration
+              .arguments) {
+              if (argument) {
+                if (argument.name) {
+                  names.push(argument.name);
+                }
+                if (argument.callee) {
+                  if (argument.callee.name) {
+                    names.push(argument.callee.name);
+                  }
                 }
               }
             }
           }
         }
       }
-      if (name) {
+      if (names.length > 0) {
         for (const node of functionNodes) {
           const { start, end } = node;
           const text = jsCode.slice(start, end);
@@ -312,34 +301,28 @@ export const eraseExports = async (code: string) => {
             objects[key] = text;
           }
         }
-        replaceDefaultRettle = jsCode
-          .replace(
-            objects[name],
-            objects[name]
-              .split("\n")
-              .map((item) => {
-                return "//" + item;
-              })
-              .join("\n")
-          )
-          .replace(objects[cacheName], "//" + objects[cacheName]);
+        replaceDefaultRettle = jsCode;
+        for (const name of names) {
+          if (objects[name]) {
+            replaceDefaultRettle = replaceDefaultRettle.replace(
+              objects[name],
+              ""
+            );
+          }
+        }
+        replaceDefaultRettle = replaceDefaultRettle.replace(
+          objects[cacheName],
+          ""
+        );
       } else {
         replaceDefaultRettle = jsCode;
       }
-      const exportName = exportNodes[0];
+      const exportName = defaultExportNodes[0];
       const { start, end } = exportName;
       const exportStr = jsCode.slice(start, end);
-      const removeReactJsCode = importReact
-        ? replaceDefaultRettle.replace(importReact, "//" + importReact)
-        : replaceDefaultRettle;
       const result =
-        removeReactJsCode.replace(
-          exportStr,
-          exportStr
-            .split("\n")
-            .map((item) => "//" + item)
-            .join("\n")
-        ) + "\nexport default () => {}";
+        replaceDefaultRettle.replace(exportStr, "") +
+        "\nexport default () => {};";
       return translateTs2Js(result);
     }
     return "";

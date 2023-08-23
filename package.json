@@ -1,34 +1,42 @@
 {
   "name": "rettle",
-  "version": "0.0.8-beta2.6",
+  "version": "0.0.8-beta3.4",
   "main": "./bin/rettle.js",
-  "scripts": {
-    "start": "tsc",
-    "watch": "tsc -w",
-    "test": "ts-node src/index.ts -d",
-    "test:node": "node ./bin/index.js -d"
-  },
   "bin": {
     "rettle": "./bin/index.js"
   },
   "exports": {
     ".": {
-      "import": "./bin/rettle.js",
-      "require": "./bin/rettle.js",
-      "types": "./bin/rettle.d.ts"
+      "import": {
+        "default": "./bin/rettle.js",
+        "types": "./bin/rettle.d.ts"
+      },
+      "require": {
+        "default": "./bin/rettle.js",
+        "types": "./bin/rettle.d.ts"
+      }
     },
     "./core": {
-      "types": "./bin/rettle-core.d.ts",
-      "import": "./bin/rettle-core.js",
-      "require": "./bin/rettle-core.js"
+      "import": {
+        "default": "./bin/rettle-core.js",
+        "types": "./bin/rettle-core.d.ts"
+      },
+      "require": {
+        "default": "./bin/rettle-core.js",
+        "types": "./bin/rettle-core.d.ts"
+      }
     }
+  },
+  "typesVersions": {
+    "core": [
+      "bin/rettle-core"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "peerDependencies": {
-    "esbuild-plugin-rettle": "^0.0.1-beta2",
     "react": ">=16.8.0",
     "react-helmet": ">=6.1.0"
   },
@@ -42,6 +50,7 @@
     "@types/html-minifier-terser": "^7.0.0",
     "@types/js-beautify": "^1.13.3",
     "@types/madge": "^5.0.0",
+    "@types/mime-types": "^2.1.1",
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
@@ -49,14 +58,13 @@
     "@types/rechoir": "^0.6.1",
     "@types/webpack": "^5.28.0",
     "cross-env": "^7.0.3",
-    "esbuild-plugin-rettle": "^0.0.1-beta3",
     "prettier": "^2.8.4",
     "react": "^18.2.0",
     "react-helmet": "^6.1.0",
-    "typescript": "^4.8.4"
+    "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@babel/preset-env": "^7.22.6",
+    "@babel/preset-env": "^7.22.10",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
     "@babel/register": "^7.21.0",
@@ -72,6 +80,7 @@
     "css-purge": "^3.1.8",
     "deepmerge": "^4.2.2",
     "esbuild": "^0.15.18",
+    "esbuild-plugin-rettle": "^0.0.1-beta3",
     "express": "^4.18.2",
     "glob": "^8.0.3",
     "html-minifier-terser": "^7.1.0",
@@ -79,11 +88,14 @@
     "is-plain-object": "^5.0.0",
     "js-beautify": "^1.14.7",
     "madge": "^6.0.0",
+    "mime-types": "^2.1.35",
     "node-html-parser": "^6.1.5",
     "react-dom": "^18.2.0",
     "rechoir": "^0.8.0",
     "rimraf": "^4.1.2",
+    "terser": "^5.19.2",
     "ts-node": "^10.9.1",
-    "tsc-alias": "^1.8.2"
+    "tsc-alias": "^1.8.2",
+    "vite": "^4.3.1"
   }
 }

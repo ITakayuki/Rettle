@@ -1,79 +1,61 @@
-import {templateHTMLInterface} from "./template.html";
+import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
 import * as path from "path";
-import {Express} from "express";
-import * as core from "express-serve-static-core";
-import * as bodyParser from "body-parser";
-import * as serveStatic from "serve-static";
-import * as qs from "qs";
 import js_beautify from "js-beautify";
 interface RouterOptions {
   caseSensitive?: boolean | undefined;
   mergeParams?: boolean | undefined;
   strict?: boolean | undefined;
 }
-interface Application extends core.Application {}
 
-interface Handler extends core.Handler {}
-interface Request<
-  P = core.ParamsDictionary,
-  ResBody = any,
-  ReqBody = any,
-  ReqQuery = core.Query,
-  Locals extends Record<string, any> = Record<string, any>
-> extends core.Request<P, ResBody, ReqBody, ReqQuery, Locals> {}
-export interface Response<ResBody = any, Locals extends Record<string, any> = Record<string, any>>
-  extends core.Response<ResBody, Locals> {}
-type e = {
-  json: typeof bodyParser.json;
-  raw: typeof bodyParser.raw;
-  text: typeof bodyParser.text;
-  application: Application;
-  request: Request;
-  response: Response;
-  static: serveStatic.RequestHandlerConstructor<Response>;
-  urlencoded: typeof bodyParser.urlencoded;
-  query(options: qs.IParseOptions | typeof qs.parse): Handler;
-  Router(options?: RouterOptions): core.Router;
-}
+type DynamicRouteArray = string[];
+
+type DynamicRouteFunction = () => Promise<DynamicRouteArray>;
+
+type DynamicRoute = string[] | DynamicRouteFunction;
 
 interface BuildOptionsInterface {
-  copyStatic?: ()=> void;
+  copyStatic?: () => void;
   buildScript?: (outDir: string) => void;
   buildCss?: (code: string, outDir: string) => string | Buffer;
   buildHTML?: (code: string, outDir: string) => string | Buffer;
+  dynamicRoutes?: { [path: `./${string}`]: string[] | DynamicRouteFunction };
 }
 
 interface esbuildInterface {
-  plugins?: (mode: "server"|"client") => esBuild.Plugin[];
+  plugins?: (mode: "server" | "client") => esBuild.Plugin[];
 }
 
 interface BeautifyOptions {
-  css?: js_beautify.CSSBeautifyOptions | boolean,
-  html?: js_beautify.HTMLBeautifyOptions | boolean,
-  script?: js_beautify.JSBeautifyOptions | boolean
+  css?: js_beautify.CSSBeautifyOptions | boolean;
+  html?: js_beautify.HTMLBeautifyOptions | boolean;
+  script?: js_beautify.JSBeautifyOptions | boolean;
 }
 
-export interface  RettleConfigInterface {
+export interface RettleConfigInterface {
   pathPrefix: string;
-  port: number;
   css: string;
   js: string;
-  beautify: BeautifyOptions,
+  root: string;
+  beautify: BeautifyOptions;
   endpoints: Array<string>;
   static: string;
   outDir: string;
-  envs?: Record<string, string>;
+  define?: Record<string, string>;
   header?: {
-    meta?: Array<object>;
-    link?: Array<object>
-    script?: Array<object>;
-  },
+    meta?: Record<string, string | number | boolean>[];
+    link?: Record<string, string | number | boolean>[];
+    script?: Record<string, string | number | boolean>[];
+  };
   template: (options: templateHTMLInterface) => string;
-  build?: BuildOptionsInterface;
-  esbuild: esbuildInterface,
-  version: boolean,
-  server: (app: Express, express: e & (() => core.Express)) => void;
+  build: BuildOptionsInterface;
+  esbuild: esbuildInterface;
+  version: boolean;
+  server: {
+    port?: number;
+    host?: string;
+    listenDir?: string[];
+  };
 }
 
 const sortStringsBySlashCount = (strings: Array<string>) => {
@@ -91,43 +73,49 @@ const sortStringsBySlashCount = (strings: Array<string>) => {
   });
 
   return sorted;
-}
+};
 
 const getConfigure = () => {
   const path = require("path");
   const fs = require("fs");
-  const {extensions} = require("interpret");
+  const { extensions } = require("interpret");
   const deepmerge = require("deepmerge");
-  const {defaultConfig} = require("./defaultConfigure");
-  const {isPlainObject} = require("is-plain-object");
+  const { defaultConfig } = require("./defaultConfigure");
+  const { isPlainObject } = require("is-plain-object");
   const rechoir = require("rechoir");
   const tsConfigPath = path.resolve("./rettle-config.ts");
   const jsConfigPath = path.resolve("./rettle-config.js");
-  const inputConfig  = (() => {
+  const inputConfig = () => {
     if (fs.existsSync(tsConfigPath)) {
-      rechoir.prepare(extensions, './rettle-config.ts');
+      rechoir.prepare(extensions, "./rettle-config.ts");
       const requireConfig = require(tsConfigPath).default();
-      return requireConfig
+      return requireConfig;
     } else if (fs.existsSync(jsConfigPath)) {
       return require(jsConfigPath).default();
     } else {
-      return {}
+      return {};
     }
-  });
+  };
   const config = deepmerge(defaultConfig, inputConfig(), {
-    isMergeableObject: isPlainObject
-  })
+    isMergeableObject: isPlainObject,
+  });
   config.endpoints = sortStringsBySlashCount(config.endpoints);
   return config;
-}
+};
 
 export const getIgnores = (endpoint: string) => {
-  const ignores = config.endpoints.filter((x: string, i: number , self:string[]) => {
-    return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""))
-  }) as string[];
-  return ignores.map(item => {
-    return item.includes("/**/*") ? item : path.join(item, "/**/*")
+  const ignores = config.endpoints.filter(
+    (x: string, i: number, self: string[]) => {
+      const rootEndpoint = path.join(config.root, self[i]);
+      return (
+        self[i] !== endpoint &&
+        !endpoint.includes(rootEndpoint.replace("/**/*", ""))
+      );
+    }
+  ) as string[];
+  return ignores.map((item) => {
+    return item.includes("/**/*") ? item : path.join(item, "/**/*");
   });
-}
+};
 
-export const config = getConfigure();
+export const config: RettleConfigInterface = getConfigure();

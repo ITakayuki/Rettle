@@ -1,42 +1,17 @@
 /// <reference types="node" />
 import { templateHTMLInterface } from "./template.html";
 import * as esBuild from "esbuild";
-import { Express } from "express";
-import * as core from "express-serve-static-core";
-import * as bodyParser from "body-parser";
-import * as serveStatic from "serve-static";
-import * as qs from "qs";
 import js_beautify from "js-beautify";
-interface RouterOptions {
-    caseSensitive?: boolean | undefined;
-    mergeParams?: boolean | undefined;
-    strict?: boolean | undefined;
-}
-interface Application extends core.Application {
-}
-interface Handler extends core.Handler {
-}
-interface Request<P = core.ParamsDictionary, ResBody = any, ReqBody = any, ReqQuery = core.Query, Locals extends Record<string, any> = Record<string, any>> extends core.Request<P, ResBody, ReqBody, ReqQuery, Locals> {
-}
-export interface Response<ResBody = any, Locals extends Record<string, any> = Record<string, any>> extends core.Response<ResBody, Locals> {
-}
-declare type e = {
-    json: typeof bodyParser.json;
-    raw: typeof bodyParser.raw;
-    text: typeof bodyParser.text;
-    application: Application;
-    request: Request;
-    response: Response;
-    static: serveStatic.RequestHandlerConstructor<Response>;
-    urlencoded: typeof bodyParser.urlencoded;
-    query(options: qs.IParseOptions | typeof qs.parse): Handler;
-    Router(options?: RouterOptions): core.Router;
-};
+type DynamicRouteArray = string[];
+type DynamicRouteFunction = () => Promise<DynamicRouteArray>;
 interface BuildOptionsInterface {
     copyStatic?: () => void;
     buildScript?: (outDir: string) => void;
     buildCss?: (code: string, outDir: string) => string | Buffer;
     buildHTML?: (code: string, outDir: string) => string | Buffer;
+    dynamicRoutes?: {
+        [path: `./${string}`]: string[] | DynamicRouteFunction;
+    };
 }
 interface esbuildInterface {
     plugins?: (mode: "server" | "client") => esBuild.Plugin[];
@@ -48,25 +23,29 @@ interface BeautifyOptions {
 }
 export interface RettleConfigInterface {
     pathPrefix: string;
-    port: number;
     css: string;
     js: string;
+    root: string;
     beautify: BeautifyOptions;
     endpoints: Array<string>;
     static: string;
     outDir: string;
-    envs?: Record<string, string>;
+    define?: Record<string, string>;
     header?: {
-        meta?: Array<object>;
-        link?: Array<object>;
-        script?: Array<object>;
+        meta?: Record<string, string | number | boolean>[];
+        link?: Record<string, string | number | boolean>[];
+        script?: Record<string, string | number | boolean>[];
     };
     template: (options: templateHTMLInterface) => string;
-    build?: BuildOptionsInterface;
+    build: BuildOptionsInterface;
     esbuild: esbuildInterface;
     version: boolean;
-    server: (app: Express, express: e & (() => core.Express)) => void;
+    server: {
+        port?: number;
+        host?: string;
+        listenDir?: string[];
+    };
 }
 export declare const getIgnores: (endpoint: string) => string[];
-export declare const config: any;
+export declare const config: RettleConfigInterface;
 export {};

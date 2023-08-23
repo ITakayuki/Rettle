@@ -31,15 +31,15 @@ const template_html_1 = require("./template.html");
 const process = __importStar(require("process"));
 const esbuild_plugin_rettle_1 = __importDefault(require("esbuild-plugin-rettle"));
 const config = {
-    pathPrefix: "./",
-    port: 3000,
+    pathPrefix: "/",
     outDir: "./htdocs",
-    static: "/static",
+    static: "./static",
     css: "/assets/style/app.css",
     js: "/assets/script/app.js",
     beautify: {},
     template: template_html_1.templateHtml,
-    endpoints: ["./src/views"],
+    root: "src/views/",
+    endpoints: ["/"],
     build: {
         buildHTML: (code) => code,
         buildCss: (code) => code,
@@ -64,17 +64,27 @@ const config = {
                                 },
                             ],
                         ],
-                        plugins: ["@emotion/babel-plugin"],
+                        plugins: [
+                            [
+                                "@emotion/babel-plugin",
+                                {
+                                    labelFormat: "[filename]_[local]",
+                                },
+                            ],
+                        ],
                     },
                 }),
             ];
         },
     },
-    envs: {
+    server: {
+        port: 3000,
+        host: "0.0.0.0",
+    },
+    define: {
         NODE_ENV: process.env.NODE_ENV,
     },
     version: true,
-    server: (app, express) => { },
 };
 exports.defaultConfig = config;
 //# sourceMappingURL=defaultConfigure.js.map

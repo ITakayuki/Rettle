@@ -48,9 +48,9 @@ const getConfigure = () => {
     const rechoir = require("rechoir");
     const tsConfigPath = path.resolve("./rettle-config.ts");
     const jsConfigPath = path.resolve("./rettle-config.js");
-    const inputConfig = (() => {
+    const inputConfig = () => {
         if (fs.existsSync(tsConfigPath)) {
-            rechoir.prepare(extensions, './rettle-config.ts');
+            rechoir.prepare(extensions, "./rettle-config.ts");
             const requireConfig = require(tsConfigPath).default();
             return requireConfig;
         }
@@ -60,18 +60,20 @@ const getConfigure = () => {
         else {
             return {};
         }
-    });
+    };
     const config = deepmerge(defaultConfig, inputConfig(), {
-        isMergeableObject: isPlainObject
+        isMergeableObject: isPlainObject,
     });
     config.endpoints = sortStringsBySlashCount(config.endpoints);
     return config;
 };
 const getIgnores = (endpoint) => {
     const ignores = exports.config.endpoints.filter((x, i, self) => {
-        return self[i] !== endpoint && !endpoint.includes(self[i].replace("/**/*", ""));
+        const rootEndpoint = path.join(exports.config.root, self[i]);
+        return (self[i] !== endpoint &&
+            !endpoint.includes(rootEndpoint.replace("/**/*", "")));
     });
-    return ignores.map(item => {
+    return ignores.map((item) => {
         return item.includes("/**/*") ? item : path.join(item, "/**/*");
     });
 };

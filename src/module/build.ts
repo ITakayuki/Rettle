@@ -11,6 +11,8 @@ import {
 import { getEntryPaths, mkdirp } from "../utils/utility";
 import {
   transformReact2HTMLCSS,
+  transformReact2HTMLCSSDynamic,
+  compileHTML,
   createHeaders,
   createHelmet,
 } from "../utils/HTMLBuilder";
@@ -95,7 +97,7 @@ export const build = async () => {
   );
 
   for (const js of jsFiles) {
-    config.build?.buildScript(js);
+    config.build.buildScript!(js);
   }
 
   // Create HTML FILES
@@ -105,41 +107,48 @@ export const build = async () => {
     let styles = ``;
     await Promise.all(
       items.map(async (item) => {
-        const { html, css, ids } = await transformReact2HTMLCSS(item);
-        const helmet = createHelmet();
-        const headers = createHeaders().concat(helmet.headers);
-        const root = key.replace("src/views", config.pathPrefix);
-        const script = path.join("/", root, config.js);
-        headers.push(
-          `<link rel="stylesheet" href="${path.join("/", root, config.css)}">`
-        );
-        const markup = config.template({
-          html,
-          headers,
-          script,
-          helmet: helmet.attributes,
-          noScript: helmet.body,
-        });
-        styles = styles + css;
-        const exName = path.extname(item);
-        const htmlOutputPath = path
-          .join(
-            config.outDir,
-            config.pathPrefix,
-            item.replace("src/views/", "")
-          )
-          .replace(exName, ".html");
-        await mkdirp(htmlOutputPath);
-        const minifyHtml = await minify(markup, {
-          collapseInlineTagWhitespace: true,
-          collapseWhitespace: true,
-          preserveLineBreaks: true,
-        });
-        const code = config.build?.buildHTML(minifyHtml, htmlOutputPath);
-        fs.writeFileSync(htmlOutputPath, code, "utf-8");
+        const pattern = /\[[^\]]*\]/;
+        if (pattern.test(item)) {
+          const relativePath = ("./" + item) as `./${string}`;
+          if (config.build.dynamicRoutes) {
+            if (config.build.dynamicRoutes[relativePath]) {
+              const routeIsArray = Array.isArray(
+                config.build.dynamicRoutes[relativePath]
+              );
+              const routingSetting = config.build.dynamicRoutes[relativePath];
+              for (const id of routeIsArray
+                ? (routingSetting as string[])
+                : ((await (
+                    routingSetting as () => Promise<string[]>
+                  )()) as string[])) {
+                const compileData = await transformReact2HTMLCSSDynamic(
+                  item,
+                  id
+                );
+                const { htmlOutputPath, code, style } = await compileHTML(
+                  key,
+                  item,
+                  compileData,
+                  id
+                );
+                styles = styles + style;
+                fs.writeFileSync(htmlOutputPath, code, "utf-8");
+              }
+            }
+          }
+        } else {
+          const compileData = await transformReact2HTMLCSS(item);
+          const { htmlOutputPath, code, style } = await compileHTML(
+            key,
+            item,
+            compileData
+          );
+          styles = styles + style;
+          fs.writeFileSync(htmlOutputPath, code, "utf-8");
+        }
       })
     );
-    const root = key.replace("./src/views", "");
+    const root = key.replace(config.root, "");
     const cssOutputPath = path.join(
       config.outDir,
       config.pathPrefix,
@@ -155,10 +164,10 @@ export const build = async () => {
           ? js_beautify.css(style, {})
           : js_beautify.css(style, config.beautify.css)
         : style;
-      const purge = config.build?.buildCss(style, cssOutputPath);
+      const purge = config.build.buildCss!(style, cssOutputPath);
       fs.writeFileSync(cssOutputPath, purge, "utf-8");
     });
   });
   await copyStatic();
-  config.build?.copyStatic();
+  config.build.copyStatic!();
 };

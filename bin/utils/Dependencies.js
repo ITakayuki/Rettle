@@ -41,7 +41,7 @@ const madge_1 = __importDefault(require("madge"));
 const fs_1 = __importDefault(require("fs"));
 const path = __importStar(require("path"));
 const checkScript = (filePath) => {
-    return fs_1.default.readFileSync(filePath, "utf-8").includes("export const script");
+    return fs_1.default.readFileSync(filePath, "utf-8").includes("export const client");
 };
 exports.checkScript = checkScript;
 const getMadgeObject = (target, config) => __awaiter(void 0, void 0, void 0, function* () {
@@ -62,7 +62,7 @@ exports.getMadgeLeaves = getMadgeLeaves;
 const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0, function* () {
     const targets = glob_1.default.sync(path.join(targetDir, "/**/*"), {
         ignore: ignore,
-        nodir: true
+        nodir: true,
     });
     const dependenciesFiles = [];
     const madgePromises = [];
@@ -70,7 +70,7 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
         const promiseFunction = new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
             const obj = yield (0, exports.getMadgeObject)(target, {
                 baseDir: "./",
-                tsConfig: path.resolve("./tsconfig.json")
+                tsConfig: path.resolve("./tsconfig.json"),
             });
             Object.keys(obj).forEach((key) => {
                 if ((0, exports.checkScript)(key)) {
@@ -86,7 +86,6 @@ const getDependencies = (targetDir, ignore) => __awaiter(void 0, void 0, void 0,
         }));
         madgePromises.push(promiseFunction);
     }
-    ;
     yield Promise.all(madgePromises);
     return dependenciesFiles.filter((x, i, self) => {
         return self.indexOf(x) === i;

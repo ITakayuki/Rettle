@@ -20,7 +20,6 @@ const fs_1 = __importDefault(require("fs"));
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const utility_1 = require("../utils/utility");
 const HTMLBuilder_1 = require("../utils/HTMLBuilder");
-const html_minifier_terser_1 = require("html-minifier-terser");
 const css_purge_1 = require("css-purge");
 const directoryControl_1 = require("../utils/directoryControl");
 const js_beautify_1 = __importDefault(require("js-beautify"));
@@ -33,7 +32,6 @@ const resetDir = (dirRoot) => {
     });
 };
 const build = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     yield Promise.all([
         resetDir(config_1.config.outDir),
         resetDir(".cache/src"),
@@ -90,7 +88,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
         nodir: true,
     });
     for (const js of jsFiles) {
-        (_a = config_1.config.build) === null || _a === void 0 ? void 0 : _a.buildScript(js);
+        config_1.config.build.buildScript(js);
     }
     // Create HTML FILES
     const entryPaths = (0, utility_1.getEntryPaths)();
@@ -98,38 +96,34 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
         const items = entryPaths[key];
         let styles = ``;
         yield Promise.all(items.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            var _c;
-            const { html, css, ids } = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
-            const helmet = (0, HTMLBuilder_1.createHelmet)();
-            const headers = (0, HTMLBuilder_1.createHeaders)().concat(helmet.headers);
-            const root = key.replace("src/views", config_1.config.pathPrefix);
-            const script = path_1.default.join("/", root, config_1.config.js);
-            headers.push(`<link rel="stylesheet" href="${path_1.default.join("/", root, config_1.config.css)}">`);
-            const markup = config_1.config.template({
-                html,
-                headers,
-                script,
-                helmet: helmet.attributes,
-                noScript: helmet.body,
-            });
-            styles = styles + css;
-            const exName = path_1.default.extname(item);
-            const htmlOutputPath = path_1.default
-                .join(config_1.config.outDir, config_1.config.pathPrefix, item.replace("src/views/", ""))
-                .replace(exName, ".html");
-            yield (0, utility_1.mkdirp)(htmlOutputPath);
-            const minifyHtml = yield (0, html_minifier_terser_1.minify)(markup, {
-                collapseInlineTagWhitespace: true,
-                collapseWhitespace: true,
-                preserveLineBreaks: true,
-            });
-            const code = (_c = config_1.config.build) === null || _c === void 0 ? void 0 : _c.buildHTML(minifyHtml, htmlOutputPath);
-            fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+            const pattern = /\[[^\]]*\]/;
+            if (pattern.test(item)) {
+                const relativePath = ("./" + item);
+                if (config_1.config.build.dynamicRoutes) {
+                    if (config_1.config.build.dynamicRoutes[relativePath]) {
+                        const routeIsArray = Array.isArray(config_1.config.build.dynamicRoutes[relativePath]);
+                        const routingSetting = config_1.config.build.dynamicRoutes[relativePath];
+                        for (const id of routeIsArray
+                            ? routingSetting
+                            : (yield routingSetting())) {
+                            const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSSDynamic)(item, id);
+                            const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData, id);
+                            styles = styles + style;
+                            fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+                        }
+                    }
+                }
+            }
+            else {
+                const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSS)(item);
+                const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData);
+                styles = styles + style;
+                fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+            }
         })));
-        const root = key.replace("./src/views", "");
+        const root = key.replace(config_1.config.root, "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);
         (0, css_purge_1.purgeCSS)(styles, {}, (error, result) => __awaiter(void 0, void 0, void 0, function* () {
-            var _d;
             if (error)
                 return console.log(`Cannot Purge style in ${key}`);
             yield (0, utility_1.mkdirp)(cssOutputPath);
@@ -139,12 +133,12 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                     ? js_beautify_1.default.css(style, {})
                     : js_beautify_1.default.css(style, config_1.config.beautify.css)
                 : style;
-            const purge = (_d = config_1.config.build) === null || _d === void 0 ? void 0 : _d.buildCss(style, cssOutputPath);
+            const purge = config_1.config.build.buildCss(style, cssOutputPath);
             fs_1.default.writeFileSync(cssOutputPath, purge, "utf-8");
         }));
     }));
     yield (0, directoryControl_1.copyStatic)();
-    (_b = config_1.config.build) === null || _b === void 0 ? void 0 : _b.copyStatic();
+    config_1.config.build.copyStatic();
 });
 exports.build = build;
 //# sourceMappingURL=build.js.map

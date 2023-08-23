@@ -12,7 +12,7 @@ ${options.style ? options.style : ""}
 <body ${options.helmet.body}>
 ${options.noScript ? options.noScript.join("\n") : ""}
 ${options.html}
-<script src="${options.script}"></script>
+<script src="${options.script}" ${options.mode === "server" ? 'type="module"' : ""}></script>
 </body>
 </html>
   `;

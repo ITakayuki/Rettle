@@ -4,15 +4,15 @@ import * as process from "process";
 import RettlePlugin from "esbuild-plugin-rettle";
 
 const config: RettleConfigInterface = {
-  pathPrefix: "./",
-  port: 3000,
+  pathPrefix: "/",
   outDir: "./htdocs",
-  static: "/static",
+  static: "./static",
   css: "/assets/style/app.css",
   js: "/assets/script/app.js",
   beautify: {},
   template: templateHtml,
-  endpoints: ["./src/views"],
+  root: "src/views/",
+  endpoints: ["/"],
   build: {
     buildHTML: (code) => code,
     buildCss: (code) => code,
@@ -37,17 +37,27 @@ const config: RettleConfigInterface = {
                 },
               ],
             ],
-            plugins: ["@emotion/babel-plugin"],
+            plugins: [
+              [
+                "@emotion/babel-plugin",
+                {
+                  labelFormat: "[filename]_[local]",
+                },
+              ],
+            ],
           },
         }),
       ];
     },
   },
-  envs: {
+  server: {
+    port: 3000,
+    host: "0.0.0.0",
+  },
+  define: {
     NODE_ENV: process.env.NODE_ENV as string,
   },
   version: true,
-  server: (app, express) => {},
 };
 
 export const defaultConfig = config;

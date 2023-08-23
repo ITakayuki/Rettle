@@ -2,18 +2,19 @@ import { RettleConfigInterface } from "./utils/config";
 import { EmotionCache } from "@emotion/cache";
 import * as React from "react";
 import { SerializedStyles } from "@emotion/react";
-import { RettleMethods } from "./rettle-core";
-export declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
-export declare const createCache: (key: string) => EmotionCache;
-export declare const createRettle: (cache: EmotionCache, element: JSX.Element) => import("@emotion/server/create-instance").EmotionCritical;
+declare const defineOption: (options: () => Partial<RettleConfigInterface>) => () => Partial<RettleConfigInterface>;
+declare const createCache: (key: string) => EmotionCache;
+declare const createRettle: (element: JSX.Element, cache?: EmotionCache) => import("@emotion/server/create-instance").EmotionCritical;
+declare const createDynamicRoute: (routing: (id: string) => object, Application: React.FC<any>, cache?: EmotionCache) => (id: string) => import("@emotion/server/create-instance").EmotionCritical;
 /***********************/
 /***********************/
-declare type RettleComponent = {
+type RettleComponent = {
     frame: "[fr]";
     children: JSX.Element | React.ReactNode;
     css?: SerializedStyles;
+    clientKey?: string;
 };
-export declare const Component: {
+declare const Component: {
     a: (props: RettleComponent & React.ClassAttributes<HTMLAnchorElement> & React.AnchorHTMLAttributes<HTMLAnchorElement>) => JSX.Element;
     abbr: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
     address: (props: RettleComponent & React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>) => JSX.Element;
@@ -196,6 +197,5 @@ interface CommentOutProps {
     begin?: string;
     end?: string;
 }
-export declare const CommentOut: React.FC<CommentOutProps>;
-export declare type RettleFrame = (methods: RettleMethods, props: Record<string, any>) => Record<string, any> | void;
-export {};
+declare const CommentOut: React.FC<CommentOutProps>;
+export { Component, CommentOut, createRettle, defineOption, createCache, createDynamicRoute, };
