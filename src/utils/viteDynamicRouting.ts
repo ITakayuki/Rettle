@@ -4,16 +4,34 @@ import { config } from "./config";
 import { compileDynamicTsx } from "./viteCompileTsxFile";
 
 const getDynamicRootFiles = () => {
-  const files = glob.sync(path.join("./", config.root, "./**/*[[]*[]]*/*"), {
-    nodir: true,
-  });
+  const files = glob.sync(
+    path.resolve(path.join("./", config.root, "./**/*[[]*[]]*/*")),
+    {
+      nodir: true,
+    }
+  );
   return files;
 };
 
 const getTargetFileData = (filePath: string) => {
+  const result = {
+    path: "",
+    id: "",
+  };
+  const files = getDynamicRootFiles();
   const pattern = /\[(.*?)\]/g;
-  const id = filePath.match(pattern)![0].replace("[", "").replace("]", "");
-  return { path: filePath, id };
+  const requestPathArray = path.dirname(filePath).split("/");
+  result.id = requestPathArray[requestPathArray.length - 1];
+  const replaceReg = new RegExp(
+    filePath.replace(result.id, "[[]|[]]").replace(path.extname(filePath), ""),
+    "g"
+  );
+  for (const file of files) {
+    if (replaceReg.test(file)) {
+      result.path = file;
+    }
+  }
+  return result;
 };
 
 const checkDynamicRoute = (request: string) => {
@@ -32,8 +50,8 @@ const checkDynamicRoute = (request: string) => {
   return false;
 };
 
-const viteDynamicRouting = async (tsxPath: string) => {
-  const fileData = getTargetFileData(tsxPath);
+const viteDynamicRouting = async (request: string) => {
+  const fileData = getTargetFileData(request);
   if (fileData) {
     try {
       const result = await compileDynamicTsx(fileData.path, fileData.id);

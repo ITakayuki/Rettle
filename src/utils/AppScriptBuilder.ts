@@ -3,12 +3,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import tsConfig from "./template-tsconfig.json";
-import {
-  getDependencies,
-  getMadgeLeaves,
-  getMadgeObject,
-  checkScript,
-} from "./Dependencies";
+import { getDependencies, getMadgeObject, checkScript } from "./Dependencies";
 import { config, getIgnores } from "./config";
 import glob from "glob";
 import { mkdirp } from "./utility";
@@ -22,8 +17,6 @@ import {
   prepareSingleFileReplaceTscAliasPaths,
   SingleFileReplacer,
 } from "tsc-alias";
-import { minify } from "terser";
-import js_beautify from "js-beautify";
 
 interface BuildScriptInterface {
   outDir: string;
@@ -252,11 +245,9 @@ export const eraseExports = async (code: string) => {
         const { start, end } = node;
         const text = jsCode.slice(start, end);
         if (node.type === "FunctionDeclaration") {
-          console.log("FunctionDeclaration: ", node.id.name);
           const key = node.id.name;
           objects[key] = text;
         } else if (node.type === "VariableDeclaration") {
-          console.log("decorations: ", node.declarations);
           const key = node.declarations[0].id.name;
           objects[key] = text;
         }
@@ -344,13 +335,6 @@ export const eraseExports = async (code: string) => {
             .map((item) => "")
             .join("\n")
         ) + "\nexport default () => {}";
-      const minifyTest = await minify(result, {
-        compress: {
-          dead_code: true,
-        },
-      });
-      console.log(result);
-      console.log(js_beautify.js(minifyTest.code!));
       return translateTs2Js(result);
     }
     return "";
