@@ -4,7 +4,9 @@ export default defineOption(() => {
     outDir: "dist",
     build: {
       dynamicRoutes: {
-        "./src/views/[id]/index.tsx": ["hoge", "fuga"],
+        "./src/views/[id]/index.tsx": async () => {
+          return ["hoge", "fuga", "piyo"];
+        },
       },
     },
     header: {

@@ -22,6 +22,9 @@ export default createDynamicRoute((id) => {
     fuga: {
       text: "How are you?",
     },
+    piyo: {
+      text: "ふわふわ",
+    },
   } as { [index: string]: any };
   return data[id];
 }, Hoge);
