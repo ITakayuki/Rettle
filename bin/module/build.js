@@ -112,6 +112,7 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
                                 const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData, id);
                                 styles = styles + style;
                                 fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+                                resolve(null);
                             }));
                         });
                         yield Promise.all(promises);

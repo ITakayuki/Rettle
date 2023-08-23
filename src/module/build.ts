@@ -135,6 +135,7 @@ export const build = async () => {
                   );
                   styles = styles + style;
                   fs.writeFileSync(htmlOutputPath, code, "utf-8");
+                  resolve(null);
                 });
               });
               await Promise.all(promises);
