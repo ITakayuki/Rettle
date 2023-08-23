@@ -34,6 +34,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 
 export const client = createClient<{ handleCountUp: () => void }>(
   (_, props) => {
+    console.log("button");
     const onClick = () => {
       props.handleCountUp();
     };

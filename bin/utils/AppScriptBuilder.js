@@ -221,9 +221,6 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             item.type === "VariableDeclaration");
         //@ts-ignore
         const exportNodes = ast.body.filter((item) => item.type === "ExportDefaultDeclaration");
-        const importReact = importNodes.length !== 0
-            ? jsCode.slice(importNodes.start, importNodes.end)
-            : null;
         const objects = {};
         if (!exportNodes)
             throw new Error("Cannot Found export");
@@ -247,10 +244,7 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             }
             const exportName = exportNodes[0].declaration.name;
             const exportLine = jsCode.slice(exportNodes[0].start, exportNodes[0].end);
-            const removeReactJsCode = importReact
-                ? jsCode.replace(importReact, "")
-                : jsCode;
-            const result = removeReactJsCode
+            const result = jsCode
                 .replace(objects[exportName], "")
                 .replace(exportLine, "export default () => {}");
             return (0, exports.translateTs2Js)(result);
@@ -313,10 +307,8 @@ const eraseExports = (code) => __awaiter(void 0, void 0, void 0, function* () {
             const exportName = exportNodes[0];
             const { start, end } = exportName;
             const exportStr = jsCode.slice(start, end);
-            const removeReactJsCode = importReact
-                ? replaceDefaultRettle.replace(importReact, "")
-                : replaceDefaultRettle;
-            const result = removeReactJsCode.replace(exportStr, "") + "\nexport default () => {};";
+            const result = replaceDefaultRettle.replace(exportStr, "") +
+                "\nexport default () => {};";
             return (0, exports.translateTs2Js)(result);
         }
         return "";
