@@ -13,13 +13,10 @@ import {
   transformReact2HTMLCSS,
   transformReact2HTMLCSSDynamic,
   compileHTML,
-  createHeaders,
-  createHelmet,
 } from "../utils/HTMLBuilder";
-import { minify } from "html-minifier-terser";
-import { purgeCSS } from "css-purge";
 import { deleteDir, copyStatic } from "../utils/directoryControl";
 import js_beautify from "js-beautify";
+import CleanCSS from "clean-css";
 
 const resetDir = (dirRoot: string) => {
   return new Promise((resolve) => {
@@ -160,18 +157,19 @@ export const build = async () => {
       root,
       config.css
     );
-    purgeCSS(styles, {}, async (error, result) => {
-      if (error) return console.log(`Cannot Purge style in ${key}`);
-      await mkdirp(cssOutputPath);
-      let style = result ? result : "";
-      style = config.beautify.css
-        ? typeof config.beautify.css === "boolean"
-          ? js_beautify.css(style, {})
-          : js_beautify.css(style, config.beautify.css)
-        : style;
-      const purge = config.build.buildCss!(style, cssOutputPath);
-      fs.writeFileSync(cssOutputPath, purge, "utf-8");
-    });
+    const formattedStyle = new CleanCSS({
+      level: {
+        2: {
+          overrideProperties: true,
+        },
+      },
+    }).minify(styles);
+    const beautyStyle = config.beautify.css
+      ? typeof config.beautify.css === "boolean"
+        ? js_beautify.css(formattedStyle.styles, {})
+        : js_beautify.css(formattedStyle.styles, config.beautify.css)
+      : formattedStyle.styles;
+    fs.writeFileSync(cssOutputPath, beautyStyle, "utf-8");
   });
   await copyStatic();
   config.build.copyStatic!();
