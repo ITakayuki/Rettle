@@ -99,10 +99,10 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             const pattern = /\[[^\]]*\]/;
             if (pattern.test(item)) {
                 const relativePath = ("./" + item);
-                if (config_1.config.build.dynamicRoutes) {
-                    if (config_1.config.build.dynamicRoutes[relativePath]) {
-                        const routeIsArray = Array.isArray(config_1.config.build.dynamicRoutes[relativePath]);
-                        const routingSetting = config_1.config.build.dynamicRoutes[relativePath];
+                if (config_1.config.dynamicRoutes) {
+                    if (config_1.config.dynamicRoutes[relativePath]) {
+                        const routeIsArray = Array.isArray(config_1.config.dynamicRoutes[relativePath]);
+                        const routingSetting = config_1.config.dynamicRoutes[relativePath];
                         const requestData = routeIsArray
                             ? routingSetting
                             : (yield routingSetting());

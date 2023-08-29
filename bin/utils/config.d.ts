@@ -9,9 +9,6 @@ interface BuildOptionsInterface {
     buildScript?: (outDir: string) => void;
     buildCss?: (code: string, outDir: string) => string | Buffer;
     buildHTML?: (code: string, outDir: string) => string | Buffer;
-    dynamicRoutes?: {
-        [path: `./${string}`]: string[] | DynamicRouteFunction;
-    };
 }
 interface esbuildInterface {
     plugins?: (mode: "server" | "client") => esBuild.Plugin[];
@@ -35,6 +32,9 @@ export interface RettleConfigInterface {
         meta?: Record<string, string | number | boolean>[];
         link?: Record<string, string | number | boolean>[];
         script?: Record<string, string | number | boolean>[];
+    };
+    dynamicRoutes?: {
+        [path: `./${string}`]: string[] | DynamicRouteFunction;
     };
     template: (options: templateHTMLInterface) => string;
     build: BuildOptionsInterface;

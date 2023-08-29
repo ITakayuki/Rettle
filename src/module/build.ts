@@ -107,12 +107,12 @@ export const build = async () => {
         const pattern = /\[[^\]]*\]/;
         if (pattern.test(item)) {
           const relativePath = ("./" + item) as `./${string}`;
-          if (config.build.dynamicRoutes) {
-            if (config.build.dynamicRoutes[relativePath]) {
+          if (config.dynamicRoutes) {
+            if (config.dynamicRoutes[relativePath]) {
               const routeIsArray = Array.isArray(
-                config.build.dynamicRoutes[relativePath]
+                config.dynamicRoutes[relativePath]
               );
-              const routingSetting = config.build.dynamicRoutes[relativePath];
+              const routingSetting = config.dynamicRoutes[relativePath];
               const requestData = routeIsArray
                 ? (routingSetting as string[])
                 : ((await (
