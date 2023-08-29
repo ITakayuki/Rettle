@@ -63,13 +63,13 @@ exports.viteRettlePlugin = {
                 const root = server.config.root;
                 let fullReqPath = path_1.default.join(root, config_1.config.root, req.url || "");
                 let fullReqStaticPath = path_1.default.join(root, config_1.config.static, req.url || "");
-                const fullReqPathWithoutPrefix = path_1.default.join(...fullReqPath.split(config_1.config.pathPrefix).join("/"));
                 if (fullReqPath.endsWith("/")) {
                     fullReqPath += "index.html";
                 }
                 if (fullReqStaticPath.endsWith("/")) {
                     fullReqStaticPath += "index.html";
                 }
+                const fullReqPathWithoutPrefix = path_1.default.join(...fullReqPath.split(config_1.config.pathPrefix));
                 if (fullReqPath.endsWith(".html")) {
                     const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
                         fullReqPath}.tsx`.replace(path_1.default.join(config_1.config.root, config_1.config.pathPrefix), config_1.config.root);
