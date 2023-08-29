@@ -51,7 +51,7 @@ const getWaitingPath = () => __awaiter(void 0, void 0, void 0, function* () {
                 ? routingSetting
                 : (yield routingSetting());
             for (const key of requestData) {
-                const id = relativePath.match(pattern)[1];
+                const id = `[${relativePath.match(pattern)[1]}]`;
                 const exName = node_path_1.default.extname(relativePath);
                 const resolvePath = node_path_1.default.resolve(relativePath.replace(id, key).replace(exName, ".html"));
                 waitingData.push({

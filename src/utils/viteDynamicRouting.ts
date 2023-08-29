@@ -24,7 +24,7 @@ const getWaitingPath = async () => {
         ? (routingSetting as string[])
         : ((await (routingSetting as () => Promise<string[]>)()) as string[]);
       for (const key of requestData) {
-        const id = relativePath.match(pattern)![1];
+        const id = `[${relativePath.match(pattern)![1]}]`;
         const exName = path.extname(relativePath);
         const resolvePath = path.resolve(
           relativePath.replace(id, key).replace(exName, ".html")

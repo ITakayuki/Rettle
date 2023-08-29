@@ -5,11 +5,10 @@ export default defineOption(() => {
     beautify: {
       css: true,
     },
-    build: {
-      dynamicRoutes: {
-        "./src/views/[id]/index.tsx": async () => {
-          return ["hoge", "fuga", "piyo"];
-        },
+    build: {},
+    dynamicRoutes: {
+      "./src/views/[id]/index.tsx": async () => {
+        return ["hoge", "fuga", "piyo"];
       },
     },
     header: {
