@@ -36,18 +36,15 @@ export const viteRettlePlugin: Plugin = {
       const root = server.config.root;
       let fullReqPath = path.join(root, config.root, req.url || "");
       let fullReqStaticPath = path.join(root, config.static, req.url || "");
-      const fullReqPathWithoutPrefix = path.join(
-        ...fullReqPath.split(config.pathPrefix).join("/")
-      );
-
       if (fullReqPath.endsWith("/")) {
         fullReqPath += "index.html";
       }
-
       if (fullReqStaticPath.endsWith("/")) {
         fullReqStaticPath += "index.html";
       }
-
+      const fullReqPathWithoutPrefix = path.join(
+        ...fullReqPath.split(config.pathPrefix)
+      );
       if (fullReqPath.endsWith(".html")) {
         const tsxPath = `${
           fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||

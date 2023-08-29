@@ -1,6 +1,7 @@
 import { defineOption } from "rettle";
 export default defineOption(() => {
   return {
+    pathPrefix: "/prefix/",
     outDir: "dist",
     beautify: {
       css: true,
