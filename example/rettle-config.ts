@@ -10,6 +10,9 @@ export default defineOption(() => {
       "./src/views/[id]/index.tsx": async () => {
         return ["hoge", "fuga", "piyo"];
       },
+      "./src/views/result_[id]/index.tsx": async () => {
+        return ["hoge", "fuga", "piyo"];
+      },
     },
     header: {
       meta: [
