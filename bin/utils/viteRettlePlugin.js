@@ -46,7 +46,7 @@ const viteDynamicRouting_1 = require("./viteDynamicRouting");
 const errorResult = (e) => {
     const errorType = String(e);
     const stack = e.stack
-        .split("\n")
+        .split("<br/>")
         .map((item, i) => (i !== 0 ? item + "<br/>" : ""))
         .join("");
     return (0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`));
@@ -63,6 +63,7 @@ exports.viteRettlePlugin = {
                 const root = server.config.root;
                 let fullReqPath = path_1.default.join(root, config_1.config.root, req.url || "");
                 let fullReqStaticPath = path_1.default.join(root, config_1.config.static, req.url || "");
+                const fullReqPathWithoutPrefix = path_1.default.join(...fullReqPath.split(config_1.config.pathPrefix).join("/"));
                 if (fullReqPath.endsWith("/")) {
                     fullReqPath += "index.html";
                 }
@@ -82,8 +83,8 @@ exports.viteRettlePlugin = {
                             return (0, vite_1.send)(req, res, result, "html", {});
                         }
                     }
-                    else if ((0, viteDynamicRouting_1.checkDynamicRoute)(fullReqPath, dynamicPaths)) {
-                        const dynamicPath = (0, viteDynamicRouting_1.checkDynamicRoute)(fullReqPath, dynamicPaths);
+                    else if ((0, viteDynamicRouting_1.checkDynamicRoute)(fullReqPathWithoutPrefix, dynamicPaths)) {
+                        const dynamicPath = (0, viteDynamicRouting_1.checkDynamicRoute)(fullReqPathWithoutPrefix, dynamicPaths);
                         // Dynamic Routing
                         try {
                             const result = yield (0, viteDynamicRouting_1.viteDynamicRouting)(dynamicPath.src, dynamicPath.id);

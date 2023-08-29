@@ -14,7 +14,7 @@ import {
 const errorResult = (e: any) => {
   const errorType = String(e);
   const stack = e.stack
-    .split("\n")
+    .split("<br/>")
     .map((item: string, i: number) => (i !== 0 ? item + "<br/>" : ""))
     .join("");
   return errorTemplateHtml(
@@ -36,6 +36,9 @@ export const viteRettlePlugin: Plugin = {
       const root = server.config.root;
       let fullReqPath = path.join(root, config.root, req.url || "");
       let fullReqStaticPath = path.join(root, config.static, req.url || "");
+      const fullReqPathWithoutPrefix = path.join(
+        ...fullReqPath.split(config.pathPrefix).join("/")
+      );
 
       if (fullReqPath.endsWith("/")) {
         fullReqPath += "index.html";
@@ -58,9 +61,9 @@ export const viteRettlePlugin: Plugin = {
             const result = errorResult(e);
             return send(req, res, result, "html", {});
           }
-        } else if (checkDynamicRoute(fullReqPath, dynamicPaths)) {
+        } else if (checkDynamicRoute(fullReqPathWithoutPrefix, dynamicPaths)) {
           const dynamicPath = checkDynamicRoute(
-            fullReqPath,
+            fullReqPathWithoutPrefix,
             dynamicPaths
           ) as waitingConfig[number];
           // Dynamic Routing
