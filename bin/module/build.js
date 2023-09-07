@@ -20,9 +20,9 @@ const fs_1 = __importDefault(require("fs"));
 const AppScriptBuilder_1 = require("../utils/AppScriptBuilder");
 const utility_1 = require("../utils/utility");
 const HTMLBuilder_1 = require("../utils/HTMLBuilder");
-const css_purge_1 = require("css-purge");
 const directoryControl_1 = require("../utils/directoryControl");
 const js_beautify_1 = __importDefault(require("js-beautify"));
+const clean_css_1 = __importDefault(require("clean-css"));
 const resetDir = (dirRoot) => {
     return new Promise((resolve) => {
         if (fs_1.default.existsSync(dirRoot)) {
@@ -99,18 +99,23 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
             const pattern = /\[[^\]]*\]/;
             if (pattern.test(item)) {
                 const relativePath = ("./" + item);
-                if (config_1.config.build.dynamicRoutes) {
-                    if (config_1.config.build.dynamicRoutes[relativePath]) {
-                        const routeIsArray = Array.isArray(config_1.config.build.dynamicRoutes[relativePath]);
-                        const routingSetting = config_1.config.build.dynamicRoutes[relativePath];
-                        for (const id of routeIsArray
+                if (config_1.config.dynamicRoutes) {
+                    if (config_1.config.dynamicRoutes[relativePath]) {
+                        const routeIsArray = Array.isArray(config_1.config.dynamicRoutes[relativePath]);
+                        const routingSetting = config_1.config.dynamicRoutes[relativePath];
+                        const requestData = routeIsArray
                             ? routingSetting
-                            : (yield routingSetting())) {
-                            const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSSDynamic)(item, id);
-                            const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData, id);
-                            styles = styles + style;
-                            fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
-                        }
+                            : (yield routingSetting());
+                        const promises = requestData.map((id) => {
+                            return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
+                                const compileData = yield (0, HTMLBuilder_1.transformReact2HTMLCSSDynamic)(item, id);
+                                const { htmlOutputPath, code, style } = yield (0, HTMLBuilder_1.compileHTML)(key, item, compileData, id);
+                                styles = styles + style;
+                                fs_1.default.writeFileSync(htmlOutputPath, code, "utf-8");
+                                resolve(null);
+                            }));
+                        });
+                        yield Promise.all(promises);
                     }
                 }
             }
@@ -123,19 +128,21 @@ const build = () => __awaiter(void 0, void 0, void 0, function* () {
         })));
         const root = key.replace(config_1.config.root, "");
         const cssOutputPath = path_1.default.join(config_1.config.outDir, config_1.config.pathPrefix, root, config_1.config.css);
-        (0, css_purge_1.purgeCSS)(styles, {}, (error, result) => __awaiter(void 0, void 0, void 0, function* () {
-            if (error)
-                return console.log(`Cannot Purge style in ${key}`);
-            yield (0, utility_1.mkdirp)(cssOutputPath);
-            let style = result ? result : "";
-            style = config_1.config.beautify.css
-                ? typeof config_1.config.beautify.css === "boolean"
-                    ? js_beautify_1.default.css(style, {})
-                    : js_beautify_1.default.css(style, config_1.config.beautify.css)
-                : style;
-            const purge = config_1.config.build.buildCss(style, cssOutputPath);
-            fs_1.default.writeFileSync(cssOutputPath, purge, "utf-8");
-        }));
+        const formattedStyle = new clean_css_1.default({
+            level: {
+                2: {
+                    overrideProperties: true,
+                },
+            },
+        }).minify(styles);
+        const beautyStyle = config_1.config.beautify.css
+            ? typeof config_1.config.beautify.css === "boolean"
+                ? js_beautify_1.default.css(formattedStyle.styles, {})
+                : js_beautify_1.default.css(formattedStyle.styles, config_1.config.beautify.css)
+            : formattedStyle.styles;
+        const resultCss = config_1.config.build.buildCss(beautyStyle, cssOutputPath);
+        yield (0, utility_1.mkdirp)(cssOutputPath);
+        fs_1.default.writeFileSync(cssOutputPath, resultCss, "utf-8");
     }));
     yield (0, directoryControl_1.copyStatic)();
     config_1.config.build.copyStatic();

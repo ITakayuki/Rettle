@@ -13,13 +13,10 @@ import {
   transformReact2HTMLCSS,
   transformReact2HTMLCSSDynamic,
   compileHTML,
-  createHeaders,
-  createHelmet,
 } from "../utils/HTMLBuilder";
-import { minify } from "html-minifier-terser";
-import { purgeCSS } from "css-purge";
 import { deleteDir, copyStatic } from "../utils/directoryControl";
 import js_beautify from "js-beautify";
+import CleanCSS from "clean-css";
 
 const resetDir = (dirRoot: string) => {
   return new Promise((resolve) => {
@@ -110,30 +107,35 @@ export const build = async () => {
         const pattern = /\[[^\]]*\]/;
         if (pattern.test(item)) {
           const relativePath = ("./" + item) as `./${string}`;
-          if (config.build.dynamicRoutes) {
-            if (config.build.dynamicRoutes[relativePath]) {
+          if (config.dynamicRoutes) {
+            if (config.dynamicRoutes[relativePath]) {
               const routeIsArray = Array.isArray(
-                config.build.dynamicRoutes[relativePath]
+                config.dynamicRoutes[relativePath]
               );
-              const routingSetting = config.build.dynamicRoutes[relativePath];
-              for (const id of routeIsArray
+              const routingSetting = config.dynamicRoutes[relativePath];
+              const requestData = routeIsArray
                 ? (routingSetting as string[])
                 : ((await (
                     routingSetting as () => Promise<string[]>
-                  )()) as string[])) {
-                const compileData = await transformReact2HTMLCSSDynamic(
-                  item,
-                  id
-                );
-                const { htmlOutputPath, code, style } = await compileHTML(
-                  key,
-                  item,
-                  compileData,
-                  id
-                );
-                styles = styles + style;
-                fs.writeFileSync(htmlOutputPath, code, "utf-8");
-              }
+                  )()) as string[]);
+              const promises = requestData.map((id) => {
+                return new Promise(async (resolve) => {
+                  const compileData = await transformReact2HTMLCSSDynamic(
+                    item,
+                    id
+                  );
+                  const { htmlOutputPath, code, style } = await compileHTML(
+                    key,
+                    item,
+                    compileData,
+                    id
+                  );
+                  styles = styles + style;
+                  fs.writeFileSync(htmlOutputPath, code, "utf-8");
+                  resolve(null);
+                });
+              });
+              await Promise.all(promises);
             }
           }
         } else {
@@ -155,18 +157,21 @@ export const build = async () => {
       root,
       config.css
     );
-    purgeCSS(styles, {}, async (error, result) => {
-      if (error) return console.log(`Cannot Purge style in ${key}`);
-      await mkdirp(cssOutputPath);
-      let style = result ? result : "";
-      style = config.beautify.css
-        ? typeof config.beautify.css === "boolean"
-          ? js_beautify.css(style, {})
-          : js_beautify.css(style, config.beautify.css)
-        : style;
-      const purge = config.build.buildCss!(style, cssOutputPath);
-      fs.writeFileSync(cssOutputPath, purge, "utf-8");
-    });
+    const formattedStyle = new CleanCSS({
+      level: {
+        2: {
+          overrideProperties: true,
+        },
+      },
+    }).minify(styles);
+    const beautyStyle = config.beautify.css
+      ? typeof config.beautify.css === "boolean"
+        ? js_beautify.css(formattedStyle.styles, {})
+        : js_beautify.css(formattedStyle.styles, config.beautify.css)
+      : formattedStyle.styles;
+    const resultCss = config.build.buildCss!(beautyStyle, cssOutputPath);
+    await mkdirp(cssOutputPath);
+    fs.writeFileSync(cssOutputPath, resultCss, "utf-8");
   });
   await copyStatic();
   config.build.copyStatic!();

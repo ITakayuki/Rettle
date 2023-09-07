@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import * as buffer from "buffer";
 export declare const transformReact2HTMLCSS: (path: string) => Promise<{
     html: string;
     ids: Array<string>;
@@ -25,7 +26,7 @@ export declare const compileHTML: (key: string, file: string, codes: {
     css: string;
     ids: string[];
 }, dynamic?: string) => Promise<{
-    code: string | Buffer;
+    code: string | buffer.Buffer;
     htmlOutputPath: string;
     style: string;
 }>;

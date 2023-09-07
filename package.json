@@ -1,6 +1,6 @@
 {
   "name": "rettle",
-  "version": "0.0.8-beta3.4",
+  "version": "0.0.8-beta3.4-hotfix4",
   "main": "./bin/rettle.js",
   "bin": {
     "rettle": "./bin/index.js"
@@ -44,6 +44,7 @@
     "optional": true
   },
   "devDependencies": {
+    "@types/clean-css": "^4.2.6",
     "@types/commander": "^2.12.2",
     "@types/express": "^4.17.14",
     "@types/glob": "^8.0.0",
@@ -75,9 +76,9 @@
     "acorn": "^8.8.2",
     "acorn-jsx": "^5.3.2",
     "chokidar": "^3.5.3",
+    "clean-css": "^5.3.2",
     "commander": "^9.4.1",
     "crypto": "^1.0.1",
-    "css-purge": "^3.1.8",
     "deepmerge": "^4.2.2",
     "esbuild": "^0.15.18",
     "esbuild-plugin-rettle": "^0.0.1-beta3",

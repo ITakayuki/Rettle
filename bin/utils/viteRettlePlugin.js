@@ -46,65 +46,71 @@ const viteDynamicRouting_1 = require("./viteDynamicRouting");
 const errorResult = (e) => {
     const errorType = String(e);
     const stack = e.stack
-        .split("\n")
+        .split("<br/>")
         .map((item, i) => (i !== 0 ? item + "<br/>" : ""))
         .join("");
     return (0, errorTemplate_html_1.default)("Build Error", (0, errorTemplate_html_1.errorTemplate)(`<p class="color-red">${errorType}</p><p class="pl-20">${stack}</p>`));
 };
+let dynamicPaths;
 exports.viteRettlePlugin = {
     name: "vite-plugin-rettle",
     apply: "serve",
     configureServer(server) {
-        server.middlewares.use((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            const root = server.config.root;
-            let fullReqPath = path_1.default.join(root, config_1.config.root, req.url || "");
-            let fullReqStaticPath = path_1.default.join(root, config_1.config.static, req.url || "");
-            if (fullReqPath.endsWith("/")) {
-                fullReqPath += "index.html";
-            }
-            if (fullReqStaticPath.endsWith("/")) {
-                fullReqStaticPath += "index.html";
-            }
-            if (fullReqPath.endsWith(".html")) {
-                const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
-                    fullReqPath}.tsx`.replace(path_1.default.join(config_1.config.root, config_1.config.pathPrefix), config_1.config.root);
-                if (fs_1.default.existsSync(tsxPath)) {
-                    try {
-                        const result = yield (0, viteCompileTsxFile_1.compileTsx)(tsxPath);
-                        return (0, vite_1.send)(req, res, result, "html", {});
-                    }
-                    catch (e) {
-                        const result = errorResult(e);
-                        return (0, vite_1.send)(req, res, result, "html", {});
-                    }
+        return __awaiter(this, void 0, void 0, function* () {
+            dynamicPaths = yield (0, viteDynamicRouting_1.getWaitingPath)();
+            server.middlewares.use((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                const root = server.config.root;
+                let fullReqPath = path_1.default.join(root, config_1.config.root, req.url || "");
+                let fullReqStaticPath = path_1.default.join(root, config_1.config.static, req.url || "");
+                if (fullReqPath.endsWith("/")) {
+                    fullReqPath += "index.html";
                 }
-                else if ((0, viteDynamicRouting_1.checkDynamicRoute)(tsxPath)) {
-                    // Dynamic Routing
-                    try {
-                        const result = yield (0, viteDynamicRouting_1.viteDynamicRouting)(tsxPath);
-                        return (0, vite_1.send)(req, res, result, "html", {});
-                    }
-                    catch (e) {
-                        const result = errorResult(e);
-                        return (0, vite_1.send)(req, res, result, "html", {});
-                    }
+                if (fullReqStaticPath.endsWith("/")) {
+                    fullReqStaticPath += "index.html";
                 }
-                else if (fs_1.default.existsSync(fullReqStaticPath)) {
-                    if ((_a = req.url) === null || _a === void 0 ? void 0 : _a.endsWith("/")) {
-                        req.url = req.url + "index.html";
+                const fullReqPathWithoutPrefix = path_1.default.join(...fullReqPath.split(config_1.config.pathPrefix));
+                if (fullReqPath.endsWith(".html")) {
+                    const tsxPath = `${fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
+                        fullReqPath}.tsx`.replace(path_1.default.join(config_1.config.root, config_1.config.pathPrefix), config_1.config.root);
+                    if (fs_1.default.existsSync(tsxPath)) {
+                        try {
+                            const result = yield (0, viteCompileTsxFile_1.compileTsx)(tsxPath);
+                            return (0, vite_1.send)(req, res, result, "html", {});
+                        }
+                        catch (e) {
+                            const result = errorResult(e);
+                            return (0, vite_1.send)(req, res, result, "html", {});
+                        }
                     }
-                    return next();
+                    else if ((0, viteDynamicRouting_1.checkDynamicRoute)(fullReqPathWithoutPrefix, dynamicPaths)) {
+                        const dynamicPath = (0, viteDynamicRouting_1.checkDynamicRoute)(fullReqPathWithoutPrefix, dynamicPaths);
+                        // Dynamic Routing
+                        try {
+                            const result = yield (0, viteDynamicRouting_1.viteDynamicRouting)(dynamicPath.src, dynamicPath.id);
+                            return (0, vite_1.send)(req, res, result, "html", {});
+                        }
+                        catch (e) {
+                            const result = errorResult(e);
+                            return (0, vite_1.send)(req, res, result, "html", {});
+                        }
+                    }
+                    else if (fs_1.default.existsSync(fullReqStaticPath)) {
+                        if ((_a = req.url) === null || _a === void 0 ? void 0 : _a.endsWith("/")) {
+                            req.url = req.url + "index.html";
+                        }
+                        return next();
+                    }
+                    else {
+                        const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;
+                        return (0, vite_1.send)(req, res, (0, errorTemplate_html_1.default)("", html), "html", {});
+                    }
                 }
                 else {
-                    const html = `<div><h1 class="title text-center">404 Page Not Found</h1></div>`;
-                    return (0, vite_1.send)(req, res, (0, errorTemplate_html_1.default)("", html), "html", {});
+                    return next();
                 }
-            }
-            else {
-                return next();
-            }
-        }));
+            }));
+        });
     },
 };
 //# sourceMappingURL=viteRettlePlugin.js.map

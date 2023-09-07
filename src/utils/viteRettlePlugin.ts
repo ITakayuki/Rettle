@@ -4,12 +4,17 @@ import fs from "fs";
 import { send, Plugin } from "vite";
 import errorTemplateHtml, { errorTemplate } from "./errorTemplate.html";
 import { compileTsx } from "./viteCompileTsxFile";
-import { viteDynamicRouting, checkDynamicRoute } from "./viteDynamicRouting";
+import {
+  viteDynamicRouting,
+  checkDynamicRoute,
+  getWaitingPath,
+  type waitingConfig,
+} from "./viteDynamicRouting";
 
 const errorResult = (e: any) => {
   const errorType = String(e);
   const stack = e.stack
-    .split("\n")
+    .split("<br/>")
     .map((item: string, i: number) => (i !== 0 ? item + "<br/>" : ""))
     .join("");
   return errorTemplateHtml(
@@ -20,23 +25,26 @@ const errorResult = (e: any) => {
   );
 };
 
+let dynamicPaths: waitingConfig;
+
 export const viteRettlePlugin: Plugin = {
   name: "vite-plugin-rettle",
   apply: "serve",
-  configureServer(server) {
+  async configureServer(server) {
+    dynamicPaths = await getWaitingPath();
     server.middlewares.use(async (req, res, next) => {
       const root = server.config.root;
       let fullReqPath = path.join(root, config.root, req.url || "");
       let fullReqStaticPath = path.join(root, config.static, req.url || "");
-
       if (fullReqPath.endsWith("/")) {
         fullReqPath += "index.html";
       }
-
       if (fullReqStaticPath.endsWith("/")) {
         fullReqStaticPath += "index.html";
       }
-
+      const fullReqPathWithoutPrefix = path.join(
+        ...fullReqPath.split(config.pathPrefix)
+      );
       if (fullReqPath.endsWith(".html")) {
         const tsxPath = `${
           fullReqPath.slice(0, Math.max(0, fullReqPath.lastIndexOf("."))) ||
@@ -50,10 +58,17 @@ export const viteRettlePlugin: Plugin = {
             const result = errorResult(e);
             return send(req, res, result, "html", {});
           }
-        } else if (checkDynamicRoute(tsxPath)) {
+        } else if (checkDynamicRoute(fullReqPathWithoutPrefix, dynamicPaths)) {
+          const dynamicPath = checkDynamicRoute(
+            fullReqPathWithoutPrefix,
+            dynamicPaths
+          ) as waitingConfig[number];
           // Dynamic Routing
           try {
-            const result = await viteDynamicRouting(tsxPath);
+            const result = await viteDynamicRouting(
+              dynamicPath.src,
+              dynamicPath.id
+            );
             return send(req, res, result, "html", {});
           } catch (e) {
             const result = errorResult(e);

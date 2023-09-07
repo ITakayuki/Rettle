@@ -4,11 +4,12 @@ import fs from "fs";
 import * as path from "path";
 import { config } from "./config";
 import { version } from "./variable";
-import Helmet, { HelmetData } from "react-helmet";
+import Helmet from "react-helmet";
 import { parse } from "node-html-parser";
 import js_beautify from "js-beautify";
 import { mkdirp } from "./utility";
 import { minify } from "html-minifier-terser";
+import * as buffer from "buffer";
 
 const { dependencies } = JSON.parse(
   fs.readFileSync(path.resolve("./package.json"), "utf-8")
@@ -77,6 +78,7 @@ export const transformReact2HTMLCSS = (
             require,
             __filename,
             __dirname,
+            Buffer: buffer.Buffer,
           };
           vm.runInNewContext(code, context);
           const result = context.module.exports.default as {
@@ -137,6 +139,7 @@ export const transformReact2HTMLCSSDynamic = (
             require,
             __filename,
             __dirname,
+            Buffer: buffer.Buffer,
           };
           vm.runInNewContext(code, context);
           const dynamicRouteFunction = context.module.exports.default as (

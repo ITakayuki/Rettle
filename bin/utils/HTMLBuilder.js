@@ -47,6 +47,7 @@ const node_html_parser_1 = require("node-html-parser");
 const js_beautify_1 = __importDefault(require("js-beautify"));
 const utility_1 = require("./utility");
 const html_minifier_terser_1 = require("html-minifier-terser");
+const buffer = __importStar(require("buffer"));
 const { dependencies } = JSON.parse(fs_1.default.readFileSync(path.resolve("./package.json"), "utf-8"));
 const insertCommentOut = (code) => {
     const root = (0, node_html_parser_1.parse)(code);
@@ -101,6 +102,7 @@ const transformReact2HTMLCSS = (path) => {
                     require,
                     __filename,
                     __dirname,
+                    Buffer: buffer.Buffer,
                 };
                 vm_1.default.runInNewContext(code, context);
                 const result = context.module.exports.default;
@@ -155,6 +157,7 @@ const transformReact2HTMLCSSDynamic = (path, id) => {
                     require,
                     __filename,
                     __dirname,
+                    Buffer: buffer.Buffer,
                 };
                 vm_1.default.runInNewContext(code, context);
                 const dynamicRouteFunction = context.module.exports.default;

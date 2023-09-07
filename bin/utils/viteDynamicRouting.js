@@ -35,52 +35,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkDynamicRoute = exports.viteDynamicRouting = void 0;
+exports.getWaitingPath = exports.checkDynamicRoute = exports.viteDynamicRouting = void 0;
 const node_path_1 = __importDefault(require("node:path"));
-const glob = __importStar(require("glob"));
 const config_1 = require("./config");
 const viteCompileTsxFile_1 = require("./viteCompileTsxFile");
-const getDynamicRootFiles = () => {
-    const files = glob.sync(node_path_1.default.resolve(node_path_1.default.join("./", config_1.config.root, "./**/*[[]*[]]*/*")), {
-        nodir: true,
-    });
-    return files;
-};
-const getTargetFileData = (filePath) => {
-    const result = {
-        path: "",
-        id: "",
-    };
-    const files = getDynamicRootFiles();
-    const pattern = /\[(.*?)\]/g;
-    const requestPathArray = node_path_1.default.dirname(filePath).split("/");
-    result.id = requestPathArray[requestPathArray.length - 1];
-    const replaceReg = new RegExp(filePath.replace(result.id, "[[]|[]]").replace(node_path_1.default.extname(filePath), ""), "g");
-    for (const file of files) {
-        if (replaceReg.test(file)) {
-            result.path = file;
+const fs = __importStar(require("node:fs"));
+const getWaitingPath = () => __awaiter(void 0, void 0, void 0, function* () {
+    const waitingData = [];
+    const pattern = /\[(.*?)\]/;
+    if (config_1.config.dynamicRoutes) {
+        for (const relativePath of Object.keys(config_1.config.dynamicRoutes)) {
+            const routeIsArray = Array.isArray(config_1.config.dynamicRoutes[relativePath]);
+            const routingSetting = config_1.config.dynamicRoutes[relativePath];
+            const requestData = routeIsArray
+                ? routingSetting
+                : (yield routingSetting());
+            for (const key of requestData) {
+                const id = `[${relativePath.match(pattern)[1]}]`;
+                const exName = node_path_1.default.extname(relativePath);
+                const resolvePath = node_path_1.default.resolve(relativePath.replace(id, key).replace(exName, ".html"));
+                waitingData.push({
+                    wait: resolvePath,
+                    src: relativePath,
+                    id: key,
+                });
+            }
         }
     }
-    return result;
-};
-const checkDynamicRoute = (request) => {
-    const files = getDynamicRootFiles();
-    const requestPathArray = node_path_1.default.dirname(request).split("/");
-    const nearDir = requestPathArray[requestPathArray.length - 1];
-    const replaceReg = new RegExp(request.replace(nearDir, "[[]|[]]").replace(node_path_1.default.extname(request), ""), "g");
-    for (const file of files) {
-        if (replaceReg.test(file)) {
-            return true;
+    return waitingData;
+});
+exports.getWaitingPath = getWaitingPath;
+const checkDynamicRoute = (requestHTML, config) => {
+    for (const conf of config) {
+        if (requestHTML === conf.wait) {
+            return conf;
         }
     }
     return false;
 };
 exports.checkDynamicRoute = checkDynamicRoute;
-const viteDynamicRouting = (request) => __awaiter(void 0, void 0, void 0, function* () {
-    const fileData = getTargetFileData(request);
-    if (fileData) {
+const viteDynamicRouting = (tsxPath, id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (fs.existsSync(tsxPath)) {
         try {
-            const result = yield (0, viteCompileTsxFile_1.compileDynamicTsx)(fileData.path, fileData.id);
+            const result = yield (0, viteCompileTsxFile_1.compileDynamicTsx)(tsxPath, id);
             return yield Promise.resolve(result);
         }
         catch (e) {
