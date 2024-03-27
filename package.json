@@ -82,7 +82,7 @@
     "deepmerge": "^4.2.2",
     "esbuild": "^0.15.18",
     "esbuild-plugin-rettle": "^0.0.1-beta3",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "glob": "^8.0.3",
     "html-minifier-terser": "^7.1.0",
     "interpret": "^3.1.1",
