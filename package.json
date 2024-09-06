@@ -65,9 +65,9 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-env": "^7.23.3",
     "@babel/preset-react": "^7.18.6",
-    "@babel/preset-typescript": "^7.18.6",
+    "@babel/preset-typescript": "^7.22.11",
     "@babel/register": "^7.21.0",
     "@emotion/babel-plugin": "^11.10.5",
     "@emotion/cache": "^11.10.5",
@@ -87,8 +87,8 @@
     "html-minifier-terser": "^7.1.0",
     "interpret": "^3.1.1",
     "is-plain-object": "^5.0.0",
-    "js-beautify": "^1.14.7",
-    "madge": "^6.0.0",
+    "js-beautify": "^1.14.9",
+    "madge": "^8.0.0",
     "mime-types": "^2.1.35",
     "node-html-parser": "^6.1.5",
     "react-dom": "^18.2.0",
@@ -97,6 +97,6 @@
     "terser": "^5.19.2",
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.2",
-    "vite": "^4.3.9"
+    "vite": "^5.0.0"
   }
 }
